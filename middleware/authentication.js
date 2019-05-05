@@ -3,26 +3,24 @@ const cognitoValidate = require("../lib/validateToken");
 module.exports = {
   verify: (req, res, next) => {
     let token = req.headers["authorization"];
-    if (token.startsWith("Bearer ")) {
+    let jwt;
+    if (token && token.startsWith("Bearer ")) {
       // Remove Bearer from string
-      token = token.slice(7, token.length);
-    }
-
-    if (token) {
+      jwt = token.slice(7, token.length);
       cognitoValidate
-        .validate(token)
+        .validate(jwt)
         .then(user => {
           req.body.user = user;
           next();
         })
         .catch(err => {
-          return res.json({
+          res.json({
             success: false,
-            message: "Auth token is not valid"
+            message: err
           });
         });
     } else {
-      return res.json({
+      res.json({
         success: false,
         message: "Auth token is not supplied"
       });
