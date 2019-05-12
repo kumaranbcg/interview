@@ -11,4 +11,6 @@ router.get("/authenticated", authentication.verify, function(req, res) {
   res.send("Authenticated!");
 });
 
+require("./shinobi")(router);
+
 module.exports = router;
