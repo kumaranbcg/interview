@@ -3,6 +3,9 @@ const shortid = require("shortid");
 const router = express.Router();
 const { BASE, API_KEY, GROUP_KEY } = require("../shinobiConfig.json");
 const BASE_API = BASE + API_KEY + "/";
+const DB = require("../lib/db");
+const monitor = require("../models/monitor.js");
+
 router.get("/all", (req, res, next) => {
   // Get All For User
   res
@@ -11,11 +14,27 @@ router.get("/all", (req, res, next) => {
     .end();
 });
 
-router.get("/:id", (req, res, next) => {
-  res
-    .send("WIP")
-    .status(200)
-    .end();
+router.get("/:id", async (req, res, next) => {
+  try {
+    // Several Things To Do When setup
+    const shinobiResponse = await axios.get(
+      `${BASE_API}/monitor/${GROUP_KEY}/${MONITOR_ID}`
+    );
+
+    const shinobiMonitor = shinobiResponse.data;
+
+    res
+      .send({
+        monitor: shinobiMonitor
+      })
+      .status(200)
+      .end();
+  } catch (err) {
+    res
+      .send(err)
+      .status(400)
+      .end();
+  }
 });
 
 router.post("/", async (req, res, next) => {
