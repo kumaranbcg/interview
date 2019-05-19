@@ -25,5 +25,10 @@ module.exports = {
         message: "Auth token is not supplied"
       });
     }
+  },
+  verifyMachine: (req, res, next) => {
+    if (req.headers["x-customindz-key"] === "customindz") {
+      next();
+    }
   }
 };

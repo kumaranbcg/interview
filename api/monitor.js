@@ -4,8 +4,8 @@ const router = express.Router();
 const { BASE, API_KEY, GROUP_KEY } = require("../shinobiConfig.json");
 const BASE_API = BASE + API_KEY + "/";
 const DB = require("../lib/db");
-const monitor = require("../models/monitor.js");
-
+const Monitor = require("../models/monitor");
+const Detection = require("../models/detection");
 router.get("/all", (req, res, next) => {
   // Get All For User
   res
@@ -29,6 +29,25 @@ router.get("/:id", async (req, res, next) => {
       })
       .status(200)
       .end();
+  } catch (err) {
+    res
+      .send(err)
+      .status(400)
+      .end();
+  }
+});
+
+// Get the latest detection for a monitor
+router.get("/:id/latest_detection", async (req, res, next) => {
+  try {
+    var data = await Detection.findAll({
+      where: {
+        monitor_id: req.params.id
+      },
+      limit: req.query.number || 1,
+      order: [["timestamp", "DESC"]]
+    });
+    res.status(200).json(data);
   } catch (err) {
     res
       .send(err)

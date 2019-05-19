@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authentication = require("../middleware/authentication");
 const monitorRouter = require("./monitor");
+const detectionRouter = require("./detection");
 
 // define the home page route
 router.get("/", function(req, res) {
@@ -16,5 +17,6 @@ require("./shinobi")(router);
 require("./alert")(router);
 
 router.use("/monitor", authentication.verify, monitorRouter);
+router.use("/detection", authentication.verifyMachine, detectionRouter);
 
 module.exports = router;

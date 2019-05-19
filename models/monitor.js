@@ -9,6 +9,10 @@ const Monitor = sequelize.define(
       allowNull: false,
       primaryKey: true
     },
+    user_id: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
     name: {
       type: Sequelize.STRING
     },
