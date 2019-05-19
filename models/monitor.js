@@ -16,11 +16,12 @@ const Monitor = sequelize.define(
     name: {
       type: Sequelize.STRING
     },
-    connectionUri: {
+    connection_uri: {
       type: Sequelize.STRING
     }
   },
   {
+    underscored: true
     // options
   }
 );

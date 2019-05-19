@@ -40,7 +40,7 @@ router.post("/", async (req, res, next) => {
       timestamp: new Date()
     };
 
-    await Watcher.create(newDetetion);
+    await Detection.create(newDetetion);
 
     res.status(200).json({
       id: newDetection.id,

@@ -27,6 +27,7 @@ const Detection = sequelize.define(
     }
   },
   {
+    underscored: true
     // options
   }
 );
