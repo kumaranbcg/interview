@@ -21,33 +21,27 @@ router.get("/:id", async (req, res, next) => {
   try {
     // Several Things To Do When setup
     const shinobiResponse = await axios.get(
-      `${BASE_API}/monitor/${GROUP_KEY}/${MONITOR_ID}`
+      `${BASE_API}/monitor/${GROUP_KEY}/${req.params.id}`
     );
 
     const shinobiMonitor = shinobiResponse.data;
 
-    try {
-      var data = await Detection.findOne({
-        where: {
-          id: req.params.id
-        }
-      });
-      data.shinobiMonitor = shinobiMonitor;
-      res.status(200).json(data);
-    } catch (err) {
-      res
-        .send(err)
-        .status(400)
-        .end();
+    let data = await Monitor.findOne({
+      where: {
+        id: req.params.id
+      }
+    });
+
+    if (!data) {
+      throw new Error("No Monitor Found");
     }
 
-    res
-      .send({
-        monitor: shinobiMonitor
-      })
-      .status(200)
-      .end();
+    res.send({
+      monitor: data,
+      shinobi: shinobiMonitor
+    });
   } catch (err) {
+    console.log(err);
     res
       .send(err)
       .status(400)
