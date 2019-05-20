@@ -10,4 +10,4 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => res.send("Hello World!"));
 app.use("/api", api);
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`Customindz listening on port ${port}!`));
