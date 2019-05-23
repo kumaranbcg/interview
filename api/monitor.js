@@ -92,7 +92,7 @@ router.post("/", async (req, res, next) => {
       mid: MONITOR_ID,
       host,
       port,
-      path,
+      path: path || 80,
       protocol: protocol.replace(":", ""),
       name: req.body.name || "Default Monitor Name",
       details: JSON.stringify({

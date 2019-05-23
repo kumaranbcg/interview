@@ -7,7 +7,7 @@ module.exports = {
     // Part for connection
     protocol: "",
     host: "",
-    port: "",
+    port: 80,
     path: "",
     ext: "mp4",
     // FPS
