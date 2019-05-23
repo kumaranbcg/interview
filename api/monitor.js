@@ -9,12 +9,25 @@ const Monitor = require("../models/monitor");
 const Detection = require("../models/detection");
 const axios = require("axios");
 const url = require("url");
-router.get("/all", (req, res, next) => {
+router.get("/", async (req, res) => {
   // Get All For User
-  res
-    .send("WIP")
-    .status(200)
-    .end();
+  try {
+    const data = await Monitor.findAll({
+      where: {
+        user_id: req.body.user["cognito:username"]
+      }
+    });
+    res
+      .send(data)
+      .status(200)
+      .end();
+  } catch (err) {
+    console.log(err);
+    res
+      .send(err)
+      .status(400)
+      .end();
+  }
 });
 
 router.get("/:id", async (req, res, next) => {
