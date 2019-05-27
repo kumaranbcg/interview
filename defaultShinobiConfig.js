@@ -157,7 +157,7 @@ module.exports = {
     detector_use_detect_object: "0",
     detector_send_frames_object: null,
     detector_obj_region: null,
-    detector_use_motion: "1",
+    detector_use_motion: "0",
     detector_fps_object: "",
     detector_scale_x_object: "",
     detector_scale_y_object: "",

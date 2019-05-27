@@ -3,6 +3,7 @@ const router = express.Router();
 const authentication = require("../middleware/authentication");
 const monitorRouter = require("./monitor");
 const detectionRouter = require("./detection");
+const vodRouter = require("./vod");
 
 // define the home page route
 router.get("/", function(req, res) {
@@ -18,5 +19,6 @@ require("./alert")(router);
 
 router.use("/monitor", authentication.verify, monitorRouter);
 router.use("/detection", authentication.verifyMachine, detectionRouter);
+router.use("/vod", authentication.verifyMachine, vodRouter);
 
 module.exports = router;

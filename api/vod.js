@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const DB = require("../lib/db");
-const moment = require("moment");
 const uuidv4 = require("uuid/v4");
-const Detection = require("../models/detection.js");
+const Vod = require("../models/vod.js");
 
 router.get("/", (req, res, next) => {
   // Get All For User
@@ -15,7 +13,7 @@ router.get("/", (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    var data = await Detection.findOne({
+    var data = await Vod.findOne({
       where: {
         id: req.params.id
       }
@@ -32,19 +30,18 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     // Create Monitor In Our Database
-    const newDetection = {
+    const newVod = {
       id: uuidv4(),
       monitor_id: req.body.monitor_id,
-      result: req.body.result,
-      alert: req.body.result.alert || false,
+      mp4_url: req.body.mp4_url,
       timestamp: new Date()
     };
 
-    await Detection.create(newDetetion);
+    await Vod.create(newDetetion);
 
     res.status(200).json({
-      id: newDetection.id,
-      message: "Successfully Added Detection"
+      id: newVod.id,
+      message: "Successfully Added Vod"
     });
   } catch (err) {
     res
@@ -56,7 +53,7 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    await Detection.update(req.body, {
+    await Vod.update(req.body, {
       where: { id: req.params.id }
     });
     res.status(200).json({

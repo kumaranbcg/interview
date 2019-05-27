@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../lib/db");
-const Monitor = sequelize.define(
+const Vod = sequelize.define(
   "monitor",
   {
     // attributes
@@ -9,18 +9,15 @@ const Monitor = sequelize.define(
       allowNull: false,
       primaryKey: true
     },
-    user_id: {
+    monitor_id: {
       type: Sequelize.STRING,
       allowNull: false
     },
     name: {
       type: Sequelize.STRING
     },
-    connection_uri: {
+    mp4_url: {
       type: Sequelize.STRING
-    },
-    play_from_source: {
-      type: Sequelize.BOOLEAN
     }
   },
   {
@@ -29,4 +26,4 @@ const Monitor = sequelize.define(
   }
 );
 
-module.exports = Monitor;
+module.exports = Vod;

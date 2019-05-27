@@ -9,6 +9,7 @@ const Monitor = require("../models/monitor");
 const Detection = require("../models/detection");
 const axios = require("axios");
 const url = require("url");
+
 router.get("/", async (req, res) => {
   // Get All For User
   try {
@@ -91,8 +92,8 @@ router.post("/", async (req, res, next) => {
       ...defaultConfig,
       mid: MONITOR_ID,
       host,
-      port,
-      path: path || 80,
+      port: port || (protocol === "https" ? 443 : 80),
+      path,
       protocol: protocol.replace(":", ""),
       name: req.body.name || "Default Monitor Name",
       details: JSON.stringify({
@@ -115,7 +116,8 @@ router.post("/", async (req, res, next) => {
       id: MONITOR_ID,
       user_id: req.body.user["cognito:username"],
       name: req.body.name || "Default Monitor Name",
-      connection_uri: req.body.connection_uri
+      connection_uri: req.body.connection_uri,
+      play_from_source: req.body.play_from_source
     };
 
     await Monitor.create(newMonitor);
@@ -136,14 +138,40 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    const MONITOR_ID = req.body.monitor_id;
-    const config = JSON.stringify(req.body.config);
-    await axios.get(
-      `${BASE_API}/configureMonitor/${GROUP_KEY}/${MONITOR_ID}/edit?data=` +
-        config
-    );
+    const MONITOR_ID = req.params.id;
+
+    if (req.body.connection_uri) {
+      const { host, port, path, protocol } = url.parse(req.body.connection_uri);
+      const config = {
+        ...defaultConfig,
+        mid: MONITOR_ID,
+        host,
+        port: port || (protocol === "https" ? 443 : 80),
+        path,
+        protocol: protocol.replace(":", ""),
+        name: req.body.name || "Default Monitor Name",
+        details: JSON.stringify({
+          ...defaultDetail,
+          auto_host: req.body.connection_uri
+        })
+      };
+      await axios.get(
+        `${BASE_API}/configureMonitor/${GROUP_KEY}/${MONITOR_ID}/edit?data=` +
+          JSON.stringify(config),
+        {
+          timeout: 1000
+        }
+      );
+    }
+
+    await Monitor.update(req.body, {
+      where: { id: req.params.id }
+    });
+
     res
-      .send("WIP")
+      .send({
+        message: "Successfully Update"
+      })
       .status(200)
       .end();
   } catch (err) {
