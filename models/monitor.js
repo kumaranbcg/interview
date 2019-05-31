@@ -14,13 +14,24 @@ const Monitor = sequelize.define(
       allowNull: false
     },
     name: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
     connection_uri: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
     play_from_source: {
       type: Sequelize.BOOLEAN
+    },
+    engines: {
+      type: Sequelize.TEXT,
+      get: function() {
+        return JSON.parse(this.getDataValue("value"));
+      },
+      set: function(value) {
+        this.setDataValue("value", JSON.stringify(value));
+      }
     }
   },
   {

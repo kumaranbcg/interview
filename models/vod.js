@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../lib/db");
 const Vod = sequelize.define(
-  "monitor",
+  "vod",
   {
     // attributes
     id: {
@@ -13,11 +13,18 @@ const Vod = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false
     },
+    user_id: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
     name: {
       type: Sequelize.STRING
     },
     mp4_url: {
       type: Sequelize.STRING
+    },
+    timestamp: {
+      type: Sequelize.DATE
     }
   },
   {

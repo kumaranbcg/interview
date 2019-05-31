@@ -3,12 +3,24 @@ const router = express.Router();
 const uuidv4 = require("uuid/v4");
 const Vod = require("../models/vod.js");
 
-router.get("/", (req, res, next) => {
-  // Get All For User
-  res
-    .send("WIP")
-    .status(200)
-    .end();
+router.get("/", async (req, res) => {
+  try {
+    const data = await Vod.findAll({
+      where: {
+        user_id: req.body.user["cognito:username"]
+      }
+    });
+    res
+      .send(data)
+      .status(200)
+      .end();
+  } catch (err) {
+    console.log(err);
+    res
+      .send(err)
+      .status(400)
+      .end();
+  }
 });
 
 router.get("/:id", async (req, res, next) => {
