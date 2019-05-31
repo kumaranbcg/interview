@@ -117,7 +117,8 @@ router.post("/", async (req, res, next) => {
       user_id: req.body.user["cognito:username"],
       name: req.body.name || "Default Monitor Name",
       connection_uri: req.body.connection_uri,
-      play_from_source: req.body.play_from_source
+      play_from_source: req.body.play_from_source,
+      engines: []
     };
 
     await Monitor.create(newMonitor);
