@@ -23,7 +23,7 @@ const Vod = sequelize.define(
     flv_url: {
       type: Sequelize.STRING
     },
-    thumnail_url: {
+    thumbnail_url: {
       type: Sequelize.STRING
     },
     timestamp: {
