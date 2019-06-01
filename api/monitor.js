@@ -25,8 +25,8 @@ router.get("/", async (req, res) => {
   } catch (err) {
     console.log(err);
     res
-      .send(err)
       .status(400)
+      .send(err)
       .end();
   }
 });
@@ -45,8 +45,8 @@ router.get("/:id", async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res
-      .send(err)
       .status(400)
+      .send(err)
       .end();
   }
 });
@@ -73,32 +73,7 @@ router.get("/:id/latest_detection", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   console.log("Creating Monitor");
   try {
-    // Several Things To Do When setup
     const MONITOR_ID = shortid.generate();
-    const { host, port, path, protocol } = url.parse(req.body.connection_uri);
-    const config = {
-      ...defaultConfig,
-      mid: MONITOR_ID,
-      host,
-      port: port || (protocol === "https" ? 443 : 80),
-      path,
-      protocol: protocol.replace(":", ""),
-      name: req.body.name || "Default Monitor Name",
-      details: JSON.stringify({
-        ...defaultDetail,
-        auto_host: req.body.connection_uri
-      })
-    };
-
-    console.log(config);
-
-    await axios.get(
-      `${BASE_API}/configureMonitor/${GROUP_KEY}/${MONITOR_ID}/add?data=` +
-        JSON.stringify(config),
-      {
-        timeout: 1000
-      }
-    );
 
     const newMonitor = {
       id: MONITOR_ID,
@@ -111,10 +86,9 @@ router.post("/", async (req, res, next) => {
 
     await Monitor.create(newMonitor);
 
-    // Create Monitor In Our Database
     res.status(200).json({
       id: newMonitor.id,
-      message: "Successfully Added Detection"
+      message: "Successfully Added Monitor"
     });
   } catch (err) {
     console.log(err);

@@ -5,6 +5,7 @@ const monitorRouter = require("./monitor");
 const monitorAdminRouter = require("./monitor-admin");
 const detectionRouter = require("./detection");
 const vodRouter = require("./vod");
+const vodAdminRouter = require("./vod-admin");
 
 // define the home page route
 router.get("/", function(req, res) {
@@ -19,8 +20,10 @@ require("./shinobi")(router);
 require("./alert")(router);
 
 router.use("/monitor", authentication.verify, monitorRouter);
-router.use("/detection", authentication.verifyMachine, detectionRouter);
-router.use("/vod", authentication.verifyMachine, vodRouter);
-router.use("/admin/monitor", authentication.verifyMachine, monitorAdminRouter);
+router.use("/detection", authentication.verify, detectionRouter);
+router.use("/vod", authentication.verify, vodRouter);
 
+router.use("/admin/monitor", authentication.verifyMachine, monitorAdminRouter);
+router.use("/admin/detection", authentication.verifyMachine, detectionRouter);
+router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
 module.exports = router;

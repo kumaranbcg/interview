@@ -24,6 +24,9 @@ const Monitor = sequelize.define(
     play_from_source: {
       type: Sequelize.BOOLEAN
     },
+    recording: {
+      type: Sequelize.BOOLEAN
+    },
     engines: {
       type: Sequelize.TEXT,
       get: function() {

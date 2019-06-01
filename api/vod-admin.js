@@ -4,26 +4,6 @@ const uuidv4 = require("uuid/v4");
 const Vod = require("../models/vod.js");
 const Monitor = require("../models/monitor");
 
-router.get("/", async (req, res) => {
-  try {
-    const data = await Vod.findAll({
-      where: {
-        user_id: req.body.user["cognito:username"]
-      }
-    });
-    res
-      .send(data)
-      .status(200)
-      .end();
-  } catch (err) {
-    console.log(err);
-    res
-      .status(400)
-      .send(err)
-      .end();
-  }
-});
-
 router.get("/:id", async (req, res, next) => {
   try {
     var data = await Vod.findOne({
