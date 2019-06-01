@@ -33,27 +33,15 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    // Several Things To Do When setup
-    const shinobiResponse = await axios.get(
-      `${BASE_API}/monitor/${GROUP_KEY}/${req.params.id}`
-    );
-
-    const shinobiMonitor = shinobiResponse.data;
-
     let data = await Monitor.findOne({
       where: {
         id: req.params.id
       }
     });
-
     if (!data) {
       throw new Error("No Monitor Found");
     }
-
-    res.send({
-      monitor: data,
-      shinobi: shinobiMonitor
-    });
+    res.send(data);
   } catch (err) {
     console.log(err);
     res

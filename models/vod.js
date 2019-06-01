@@ -20,7 +20,10 @@ const Vod = sequelize.define(
     name: {
       type: Sequelize.STRING
     },
-    mp4_url: {
+    flv_url: {
+      type: Sequelize.STRING
+    },
+    thumnail_url: {
       type: Sequelize.STRING
     },
     timestamp: {
