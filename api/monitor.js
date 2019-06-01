@@ -173,10 +173,10 @@ router.put("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    const MONITOR_ID = req.params.id;
-    await axios.get(
-      `${BASE_API}/configureMonitor/${GROUP_KEY}/${MONITOR_ID}/delete`
-    );
+    // const MONITOR_ID = req.params.id;
+    // await axios.get(
+    //   `${BASE_API}/configureMonitor/${GROUP_KEY}/${MONITOR_ID}/delete`
+    // );
 
     await Monitor.destroy({
       where: {
