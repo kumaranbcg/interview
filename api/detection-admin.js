@@ -18,7 +18,7 @@ router.post("/", async (req, res, next) => {
       timestamp: new Date()
     };
 
-    await Detection.create(newDetection);
+    // await Detection.create(newDetection);
     io.in(req.body.monitor_id).emit("detection", req.body.result || []);
 
     res.status(200).json({
