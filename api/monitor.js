@@ -80,7 +80,8 @@ router.post("/", async (req, res, next) => {
       user_id: req.body.user["cognito:username"],
       name: req.body.name || "Default Monitor Name",
       connection_uri: req.body.connection_uri,
-      play_from_source: req.body.play_from_source,
+      play_from_source: false,
+      graph: [],
       engines: []
     };
 
@@ -101,36 +102,10 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    const MONITOR_ID = req.params.id;
-
-    if (req.body.connection_uri) {
-      const { host, port, path, protocol } = url.parse(req.body.connection_uri);
-      const config = {
-        ...defaultConfig,
-        mid: MONITOR_ID,
-        host,
-        port: port || (protocol === "https" ? 443 : 80),
-        path,
-        protocol: protocol.replace(":", ""),
-        name: req.body.name || "Default Monitor Name",
-        details: JSON.stringify({
-          ...defaultDetail,
-          auto_host: req.body.connection_uri
-        })
-      };
-      await axios.get(
-        `${BASE_API}/configureMonitor/${GROUP_KEY}/${MONITOR_ID}/edit?data=` +
-          JSON.stringify(config),
-        {
-          timeout: 1000
-        }
-      );
-    }
-
+    delete req.body.id;
     await Monitor.update(req.body, {
       where: { id: req.params.id }
     });
-
     res
       .send({
         message: "Successfully Update"
@@ -138,9 +113,10 @@ router.put("/:id", async (req, res, next) => {
       .status(200)
       .end();
   } catch (err) {
+    console.log(err);
     res
-      .send(err)
       .status(400)
+      .send(err)
       .end();
   }
 });

@@ -21,6 +21,7 @@
     "nodemailer": "^6.1.1",
     "sequelize": "^5.8.6",
     "shortid": "^2.2.14",
+    "socket.io": "^2.2.0",
     "sqlite3": "^4.0.8"
   },
   "devDependencies": {

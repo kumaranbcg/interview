@@ -4,6 +4,7 @@ const authentication = require("../middleware/authentication");
 const monitorRouter = require("./monitor");
 const monitorAdminRouter = require("./monitor-admin");
 const detectionRouter = require("./detection");
+const detectionAdminRouter = require("./detection-admin");
 const vodRouter = require("./vod");
 const vodAdminRouter = require("./vod-admin");
 
@@ -24,6 +25,10 @@ router.use("/detection", authentication.verify, detectionRouter);
 router.use("/vod", authentication.verify, vodRouter);
 
 router.use("/admin/monitor", authentication.verifyMachine, monitorAdminRouter);
-router.use("/admin/detection", authentication.verifyMachine, detectionRouter);
+router.use(
+  "/admin/detection",
+  authentication.verifyMachine,
+  detectionAdminRouter
+);
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
 module.exports = router;

@@ -30,10 +30,27 @@ const Monitor = sequelize.define(
     engines: {
       type: Sequelize.TEXT,
       get: function() {
-        return JSON.parse(this.getDataValue("engines"));
+        if (this.getDataValue("engines")) {
+          return JSON.parse(this.getDataValue("engines"));
+        } else {
+          return [];
+        }
       },
       set: function(value) {
         this.setDataValue("engines", JSON.stringify(value));
+      }
+    },
+    graph: {
+      type: Sequelize.TEXT,
+      get: function() {
+        if (this.getDataValue("graph")) {
+          return JSON.parse(this.getDataValue("graph"));
+        } else {
+          return [];
+        }
+      },
+      set: function(value) {
+        this.setDataValue("graph", JSON.stringify(value));
       }
     }
   },

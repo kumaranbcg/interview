@@ -1,8 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const DB = require("../lib/db");
-const moment = require("moment");
-const uuidv4 = require("uuid/v4");
 const Detection = require("../models/detection.js");
 
 router.get("/", (req, res, next) => {
@@ -21,31 +18,6 @@ router.get("/:id", async (req, res, next) => {
       }
     });
     res.status(200).json(data);
-  } catch (err) {
-    res
-      .send(err)
-      .status(400)
-      .end();
-  }
-});
-
-router.post("/", async (req, res, next) => {
-  try {
-    // Create Monitor In Our Database
-    const newDetection = {
-      id: uuidv4(),
-      monitor_id: req.body.monitor_id,
-      result: req.body.result,
-      alert: req.body.result.alert || false,
-      timestamp: new Date()
-    };
-
-    await Detection.create(newDetetion);
-
-    res.status(200).json({
-      id: newDetection.id,
-      message: "Successfully Added Detection"
-    });
   } catch (err) {
     res
       .send(err)
