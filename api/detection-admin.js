@@ -3,6 +3,7 @@ const router = express.Router();
 const uuidv4 = require("uuid/v4");
 const Detection = require("../models/detection.js");
 const io = require("../io")();
+const kafka = require("../lib/kafka");
 
 router.post("/", async (req, res, next) => {
   try {
@@ -33,6 +34,10 @@ router.post("/", async (req, res, next) => {
 
       .end();
   }
+});
+
+kafka.on("message", message => {
+  console.log(message);
 });
 
 module.exports = router;
