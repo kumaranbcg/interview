@@ -8,9 +8,6 @@ const kafka = require("../lib/kafka");
 router.post("/", async (req, res, next) => {
   try {
     // Create Monitor In Our Database
-
-    console.log(req.body);
-
     const newDetection = {
       id: uuidv4(),
       monitor_id: req.body.monitor_id,
