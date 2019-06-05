@@ -64,8 +64,9 @@ router.get("/:id/latest_detection", async (req, res, next) => {
     res.status(200).json(data);
   } catch (err) {
     res
-      .send(err)
       .status(400)
+      .send(err)
+
       .end();
   }
 });
@@ -98,8 +99,8 @@ router.post("/", async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res
-      .send(err.message)
       .status(400)
+      .send(err.message)
       .end();
   }
 });
@@ -146,8 +147,8 @@ router.delete("/:id", async (req, res, next) => {
       .end();
   } catch (err) {
     res
-      .send(err)
       .status(400)
+      .send(err)
       .end();
   }
 });
