@@ -9,7 +9,8 @@ router.get("/", async (req, res) => {
     const data = await Vod.findAll({
       where: {
         user_id: req.body.user["cognito:username"]
-      }
+      },
+      order: [[req.query.orderBy, req.query.direction]]
     });
     res
       .send(data)
