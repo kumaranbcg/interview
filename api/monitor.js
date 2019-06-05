@@ -73,8 +73,12 @@ router.get("/:id/latest_detection", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   console.log("Creating Monitor");
   try {
-    const MONITOR_ID = shortid.generate();
+    await axios.get(
+      "https://media.customindz.com/server/probe?path=" +
+        req.body.connection_uri
+    );
 
+    const MONITOR_ID = shortid.generate();
     const newMonitor = {
       id: MONITOR_ID,
       user_id: req.body.user["cognito:username"],
@@ -94,7 +98,7 @@ router.post("/", async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res
-      .send(err)
+      .send(err.message)
       .status(400)
       .end();
   }
