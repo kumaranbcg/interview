@@ -2,8 +2,12 @@ const express = require("express");
 const router = express.Router();
 const uuidv4 = require("uuid/v4");
 const Detection = require("../models/detection.js");
+const Monitor = require("../models/monitor");
+const Alert = require("../models/alert");
+const AlertLog = require("../models/alert-log");
 const io = require("../io")();
 const kafka = require("../lib/kafka");
+const alertUtil = require("../lib/alert");
 
 router.post("/", async (req, res, next) => {
   try {
@@ -12,12 +16,32 @@ router.post("/", async (req, res, next) => {
       id: uuidv4(),
       monitor_id: req.body.monitor_id,
       result: req.body.result,
-      alert: req.body.result.alert || false,
+      alert: req.body.alert || false,
       timestamp: new Date()
     };
 
     // await Detection.create(newDetection);
     io.in(req.body.monitor_id).emit("detection", req.body.result || []);
+
+    if (req.body.alert === true && req.body.engine) {
+      const alert = await Alert.findOne({
+        where: {
+          monitor_id: req.body.monitor_id,
+          engine: req.body.engine
+        },
+        include: [
+          {
+            model: Monitor,
+            required: true
+          }
+        ]
+      });
+      await AlertLog.create({
+        id: uuidv4(),
+        alert_id: alert.id
+      });
+      await alertUtil.alert(alert);
+    }
 
     res.status(200).json({
       id: newDetection.id,
@@ -28,7 +52,6 @@ router.post("/", async (req, res, next) => {
     res
       .status(400)
       .send(err)
-
       .end();
   }
 });

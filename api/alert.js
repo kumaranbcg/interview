@@ -1,8 +1,125 @@
-module.exports = router => {
-  router.post("/alert", (req, res, next) => {
+const express = require("express");
+const router = express.Router();
+const uuidv4 = require("uuid/v4");
+const Alert = require("../models/alert");
+const Monitor = require("../models/monitor");
+
+router.get("/", async (req, res) => {
+  try {
+    let query = {
+      offset: 0,
+      include: [
+        {
+          model: Monitor,
+          required: true,
+          where: {
+            user_id: req.body.user["cognito:username"]
+          }
+        }
+      ]
+    };
+
+    if (req.query.limit) {
+      query.limit = req.query.limit;
+      if (req.query.page) {
+        query.offset = (Math.min(req.query.page) - 1) * req.query.limit;
+      }
+    }
+
+    if (req.query.orderBy) {
+      query.order = [[req.query.orderBy]];
+    }
+
+    const data = await Alert.findAndCountAll(query);
+
     res
-      .send("WIP")
+      .send(data)
       .status(200)
       .end();
-  });
-};
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    var data = await Alert.findOne({
+      where: {
+        id: req.params.id
+      }
+    });
+    res.status(200).json(data);
+  } catch (err) {
+    res
+      .send(err)
+      .status(400)
+      .end();
+  }
+});
+
+router.post("/", async (req, res, next) => {
+  try {
+    // Create Log In Our Database
+    const id = uuidv4();
+    await Alert.create({
+      id,
+      ...req.body
+    });
+
+    console.log(req.body);
+
+    res.status(200).json({
+      id: id,
+      message: "Successfully Added Alert"
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
+router.put("/:id", async (req, res, next) => {
+  try {
+    await Alert.update(req.body, {
+      where: { id: req.params.id }
+    });
+    res.status(200).json({
+      message: "Successfully Updated"
+    });
+  } catch (err) {
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
+router.delete("/:id", async (req, res, next) => {
+  try {
+    await Alert.destroy({
+      where: {
+        id: req.params.id
+      }
+    });
+    res
+      .json({
+        message: "Successfully Deleted Alert"
+      })
+      .status(200)
+      .end();
+  } catch (err) {
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
+module.exports = router;

@@ -7,6 +7,8 @@ const detectionRouter = require("./detection");
 const detectionAdminRouter = require("./detection-admin");
 const vodRouter = require("./vod");
 const vodAdminRouter = require("./vod-admin");
+const alertRouter = require("./alert");
+const alertLogRouter = require("./alert-log");
 
 // define the home page route
 router.get("/", function(req, res) {
@@ -17,12 +19,11 @@ router.get("/authenticated", authentication.verify, function(req, res) {
   res.send("Authenticated!");
 });
 
-require("./shinobi")(router);
-require("./alert")(router);
-
 router.use("/monitor", authentication.verify, monitorRouter);
 router.use("/detection", authentication.verify, detectionRouter);
 router.use("/vod", authentication.verify, vodRouter);
+router.use("/alert", authentication.verify, alertRouter);
+router.use("/alert-log", authentication.verify, alertLogRouter);
 
 router.use("/admin/monitor", authentication.verifyMachine, monitorAdminRouter);
 router.use(
@@ -31,4 +32,5 @@ router.use(
   detectionAdminRouter
 );
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
+
 module.exports = router;
