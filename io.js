@@ -16,7 +16,8 @@ module.exports = server => {
       });
 
       socket.on("monitor-frame", data => {
-        if ((data.key = "customindz")) {
+        if (data.key === "customindz") {
+          console.log("Broadcasting frames");
           io.in(data.monitor_id).emit("frame", data.frame);
         }
       });
