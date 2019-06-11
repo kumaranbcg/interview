@@ -6,7 +6,6 @@ const Monitor = require("../models/monitor");
 const Alert = require("../models/alert");
 const AlertLog = require("../models/alert-log");
 const io = require("../io")();
-const kafka = require("../lib/kafka");
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
 const moment = require("moment");
@@ -38,23 +37,50 @@ router.post("/", async (req, res, next) => {
           }
         ]
       });
-
-      const recentLog = await AlertLog.findOne({
-        where: {
-          createdAt: {
-            [Op.gte]: moment()
-              .subtract(1, "minutes")
-              .toDate()
+      if (alert.monitor.engines.indexOf(req.body.engine) !== -1) {
+        const recentLog = await AlertLog.findOne({
+          where: {
+            createdAt: {
+              [Op.gte]: moment()
+                .subtract(1, "minutes")
+                .toDate()
+            }
           }
-        }
-      });
-
-      if (!recentLog) {
-        await AlertLog.create({
-          id: uuidv4(),
-          alert_id: alert.id
         });
-        await alertUtil.alert(alert);
+
+        if (!recentLog) {
+          if (alert.trigger_record === true) {
+            console.log("Trigerring record");
+            await Monitor.update(
+              {
+                recording: true
+              },
+              {
+                where: {
+                  id: req.body.monitor_id
+                }
+              }
+            );
+
+            setTimeout(() => {
+              Monitor.update(
+                {
+                  recording: false
+                },
+                {
+                  where: {
+                    id: req.body.monitor_id
+                  }
+                }
+              );
+            }, 20 * 1000);
+          }
+          await AlertLog.create({
+            id: uuidv4(),
+            alert_id: alert.id
+          });
+          await alertUtil.alert(alert);
+        }
       }
     }
 
@@ -69,10 +95,6 @@ router.post("/", async (req, res, next) => {
       .send(err)
       .end();
   }
-});
-
-kafka.on("message", message => {
-  console.log(message);
 });
 
 module.exports = router;
