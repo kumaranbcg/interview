@@ -8,6 +8,8 @@ const AlertLog = require("../models/alert-log");
 const io = require("../io")();
 const kafka = require("../lib/kafka");
 const alertUtil = require("../lib/alert");
+const { Op } = require("sequelize");
+const moment = require("moment");
 
 router.post("/", async (req, res, next) => {
   try {
@@ -36,11 +38,24 @@ router.post("/", async (req, res, next) => {
           }
         ]
       });
-      await AlertLog.create({
-        id: uuidv4(),
-        alert_id: alert.id
+
+      const recentLog = await AlertLog.findOne({
+        where: {
+          createdAt: {
+            [Op.gte]: moment()
+              .subtract(1, "minutes")
+              .toDate()
+          }
+        }
       });
-      await alertUtil.alert(alert);
+
+      if (!recentLog) {
+        await AlertLog.create({
+          id: uuidv4(),
+          alert_id: alert.id
+        });
+        await alertUtil.alert(alert);
+      }
     }
 
     res.status(200).json({

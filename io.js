@@ -14,6 +14,12 @@ module.exports = server => {
         console.log("Some one left monitor " + room);
         socket.leave(room);
       });
+
+      socket.on("monitor-frame", data => {
+        if ((data.key = "customindz")) {
+          io.in(data.monitor_id).emit("frame", data.frame);
+        }
+      });
     });
   }
 
