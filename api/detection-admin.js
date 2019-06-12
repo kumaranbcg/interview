@@ -44,7 +44,8 @@ router.post("/", async (req, res, next) => {
               [Op.gte]: moment()
                 .subtract(1, "minutes")
                 .toDate()
-            }
+            },
+            alert_id: alert.id
           }
         });
 
