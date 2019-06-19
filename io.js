@@ -21,6 +21,12 @@ module.exports = server => {
           io.in(data.monitor_id).emit("frame", data.frame);
         }
       });
+
+      socket.on("kafka", auth => {
+        if (auth.key === "customindz") {
+          socket.join("kafka");
+        }
+      });
     });
   }
 

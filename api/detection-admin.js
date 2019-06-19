@@ -51,7 +51,6 @@ router.post("/", async (req, res, next) => {
 
         if (!recentLog) {
           if (alert.trigger_record === true) {
-            console.log("Trigerring record");
             await Monitor.update(
               {
                 recording: true
@@ -62,7 +61,6 @@ router.post("/", async (req, res, next) => {
                 }
               }
             );
-
             setTimeout(() => {
               Monitor.update(
                 {
