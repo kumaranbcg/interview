@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
       where: {
         monitor_id: req.query.monitor_id
       },
-      order: [["createdAt", "ASC"]]
+      order: [["createdAt", "DESC"]]
     });
     let returnData = data.map(item => {
       return {
