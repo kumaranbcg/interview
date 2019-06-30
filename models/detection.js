@@ -24,6 +24,12 @@ const Detection = sequelize.define(
       set: function(value) {
         this.setDataValue("value", JSON.stringify(value));
       }
+    },
+    numberOfPerson: {
+      type: Sequelize.INTEGER
+    },
+    numberOfSmoker: {
+      type: Sequelize.INTEGER
     }
   },
   {

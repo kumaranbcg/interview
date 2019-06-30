@@ -12,7 +12,8 @@ const alertLogRouter = require("./alert-log");
 
 // define the home page route
 router.get("/", function(req, res) {
-  res.send("API page");
+  console.log(req.query);
+  res.send("API page" + req.query.name);
 });
 // define the about route
 router.get("/authenticated", authentication.verify, function(req, res) {

@@ -29,6 +29,8 @@ module.exports = {
   verifyMachine: (req, res, next) => {
     if (req.headers["x-customindz-key"] === "customindz") {
       next();
+    } else {
+      res.status(402).end();
     }
   }
 };
