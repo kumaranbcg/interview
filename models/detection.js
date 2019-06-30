@@ -25,6 +25,9 @@ const Detection = sequelize.define(
         this.setDataValue("value", JSON.stringify(value));
       }
     },
+    monitor_id: {
+      type: Sequelize.STRING
+    },
     numberOfPerson: {
       type: Sequelize.INTEGER
     },

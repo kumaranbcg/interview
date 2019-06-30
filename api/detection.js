@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Detection = require("../models/detection.js");
 
-router.get("/", async (req, res, next) => {
+router.get("/", async (req, res) => {
   // Get All For User
   try {
     let interval = req.query.interval;
@@ -16,7 +16,10 @@ router.get("/", async (req, res, next) => {
 
     const data = await Detection.findAll({
       limit,
-      order: [["timestamp", "ASC"]]
+      where: {
+        monitor_id: req.query.monitor_id
+      },
+      order: [["createdAt", "ASC"]]
     });
     let returnData = data.map(item => {
       return {
