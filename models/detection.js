@@ -11,7 +11,7 @@ const Detection = sequelize.define(
       primaryKey: true
     },
     timestamp: {
-      type: Sequelize.TIME
+      type: Sequelize.DATE
     },
     alert: {
       type: Sequelize.BOOLEAN

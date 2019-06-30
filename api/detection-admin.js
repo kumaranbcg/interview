@@ -13,15 +13,23 @@ const moment = require("moment");
 router.post("/", async (req, res, next) => {
   try {
     // Create Monitor In Our Database
+
+    const numberOfPerson = req.body.result.length;
+    const numberOfSmoker = req.body.result.filter(
+      item => item.conf && item.conf > 0.5
+    ).length;
+
     const newDetection = {
       id: uuidv4(),
       monitor_id: req.body.monitor_id,
       result: req.body.result,
       alert: req.body.alert || false,
-      timestamp: new Date()
+      timestamp: new Date(),
+      numberOfPerson,
+      numberOfSmoker
     };
 
-    // await Detection.create(newDetection);
+    await Detection.create(newDetection);
     io.in(req.body.monitor_id).emit("detection", req.body.result || []);
 
     if (req.body.alert === true && req.body.engine) {
