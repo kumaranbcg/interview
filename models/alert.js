@@ -14,7 +14,7 @@ const Alert = sequelize.define(
       type: Sequelize.STRING
     },
     interval: {
-      type: Sequelize.STRING
+      type: Sequelize.INTEGER
     },
     output_type: {
       type: Sequelize.STRING
