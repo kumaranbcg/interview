@@ -50,7 +50,7 @@ router.post("/", async (req, res, next) => {
           where: {
             createdAt: {
               [Op.gte]: moment()
-                .subtract(alert.interval, "minutes")
+                .subtract(alert.interval || 1, "minutes")
                 .toDate()
             },
             alert_id: alert.id
