@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const server = require("http").createServer(app);
+const path = require("path");
 const io = require("./io")(server);
 const bodyParser = require("body-parser");
 
@@ -13,6 +14,7 @@ app.use(bodyParser.json());
 
 app.get("/", (req, res) => res.send("Hello World!"));
 app.use("/api", api);
+app.use("/frames", express.static(path.join(process.cwd(), "frames")));
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 server.listen(port, () => console.log(`Customindz listening on port ${port}!`));

@@ -34,4 +34,8 @@ router.use(
 );
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
 
+router.post("/local", authentication.verifyMachine, (req, res) => {
+  res.status(200).end();
+});
+
 module.exports = router;

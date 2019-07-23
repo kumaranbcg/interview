@@ -1,19 +1,11 @@
-FROM node:10
+FROM justadudewhohacks/opencv-nodejs:node9-opencv3.4.1-contrib
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+COPY ./package.json /app/package.json
+RUN npm install -g nodemon --registry=https://registry.npm.taobao.org && npm install --registry=https://registry.npm.taobao.org
 
-RUN npm install --only=production
-# If you are building your code for production
-# RUN npm ci --only=production
+COPY ./src /app/src
 
-# Bundle app source
-COPY . .
-
-EXPOSE 8080
-CMD [ "npm", "start" ]
+CMD ["nodemon", "-L", "./index.js"]
+CMD ["nodemon", "-L", "./media-server/demo-camera.js"]

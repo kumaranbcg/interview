@@ -1,9 +1,6 @@
 const express = require("express");
 const shortid = require("shortid");
 const router = express.Router();
-const { BASE, API_KEY, GROUP_KEY } = require("../shinobiConfig.json");
-const { defaultDetail, defaultConfig } = require("../defaultShinobiConfig");
-const BASE_API = BASE + "/" + API_KEY;
 const DB = require("../lib/db");
 const Monitor = require("../models/monitor");
 const Detection = require("../models/detection");
