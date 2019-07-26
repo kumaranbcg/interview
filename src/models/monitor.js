@@ -31,7 +31,6 @@ const Monitor = sequelize.define(
       type: Sequelize.TEXT,
       get: function() {
         if (this.getDataValue("engines")) {
-          console.log(this.getDataValue("engines"));
           return JSON.parse(this.getDataValue("engines"));
         } else {
           return [];

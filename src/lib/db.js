@@ -5,7 +5,8 @@ let sequelize;
 if (process.env.NODE_ENV === "local") {
   sequelize = new Sequelize({
     dialect: "sqlite",
-    storage: "./customindz.sqlite"
+    storage: "./db/customindz.sqlite",
+    logging: false
   });
 } else {
   sequelize = new Sequelize("customindz", "customindz", "Customindz2019", {

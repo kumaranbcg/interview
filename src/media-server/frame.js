@@ -1,5 +1,4 @@
-const faceplusplus = require("./lib/faceplusplus");
-const customindz = require("./lib/customindz");
+// const customindz = require("./lib/customindz");
 const axios = require("axios");
 
 module.exports = {
@@ -7,36 +6,12 @@ module.exports = {
     // const slimmedData = await sharp(data).resize(640, 360).toBuffer;
     const base64 = data.toString("base64");
     let detections = [];
-    if (monitor.engines) {
-      if (monitor.engines.indexOf("faceplusplus") !== -1) {
-        const faceplusplusData = await faceplusplus.detect(base64);
-        detections = detections.concat(faceplusplusData);
-      }
-
-      if (monitor.engines.indexOf("baidu") !== -1) {
-        const baiduData = await client.advancedGeneral(base64);
-        detections = detections.concat(baiduData);
-      }
-
-      if (monitor.engines.indexOf("mock") !== -1) {
-        const mockData = [];
-        const numberOfPeople = Math.floor(Math.random() * 6 + 1);
-        for (let i = 0; i < numberOfPeople; i++) {
-          mockData.push({
-            left: Math.floor(Math.random() * 640),
-            top: Math.floor(Math.random() * 360),
-            width: 100,
-            height: 100
-          });
-        }
-        detections = detections.concat(mockData);
-      }
-
-      if (monitor.engines.indexOf("customindz") !== -1) {
-        const customindzData = await customindz.handle(monitor, base64);
-        detections = detections.concat(customindzData);
-      }
-    }
+    // if (monitor.engines) {
+    // if (monitor.engines.indexOf("customindz") !== -1) {
+    // const customindzData = await customindz.handle(monitor, base64);
+    // detections = detections.concat(customindzData);
+    // }
+    // }
 
     if (detections.length > 0) {
       let alert = false;
@@ -48,7 +23,7 @@ module.exports = {
 
       axios
         .post(
-          "https://api.customindz.com/api/admin/detection",
+          "http://localhost:5000/api/admin/detection",
           {
             engine: "customindz",
             monitor_id: monitor.id,

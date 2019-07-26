@@ -1,16 +1,9 @@
 const stream = require("./stream");
 const axios = require("axios");
+const Monitor = require("../models/monitor");
 
 async function run() {
-  const { data } = await axios.get(
-    "https://api.customindz.com/api/admin/monitor",
-    {
-      headers: {
-        "x-customindz-key": "customindz"
-      }
-    }
-  );
-
+  const data = await Monitor.findAll();
   data.forEach((monitor, index) => {
     if (stream.get(monitor.id)) {
       if (stream.get(monitor.id).url === monitor.connection_uri) {

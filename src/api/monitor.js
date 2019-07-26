@@ -71,10 +71,14 @@ router.get("/:id/latest_detection", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   console.log("Creating Monitor");
   try {
-    await axios.get(
-      "https://media.customindz.com/server/probe?path=" +
-        req.body.connection_uri
-    );
+    if (process.env.NODE_ENV === "local") {
+    } else {
+      console.log("Checking server address");
+      await axios.get(
+        "https://media.customindz.com/server/probe?path=" +
+          req.body.connection_uri
+      );
+    }
 
     const MONITOR_ID = shortid.generate();
     const newMonitor = {

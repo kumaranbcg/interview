@@ -4,11 +4,12 @@ const draw = require("./lib/draw");
 const { transferFrames } = require("./frame");
 const id = "local";
 const frameDir = `frames/${id}`;
+const Monitor = require("../models/monitor");
 fs.ensureDirSync(frameDir);
 function create() {
   let lastFrameEnqueued = 0;
   let ffmpegProcess = ffmpeg("video=HD Webcam")
-    .inputOptions("-f dshow")
+    .inputOptions("-f v4l2")
     .on("start", function(commandLine) {
       console.log("Spawned Ffmpeg with command: " + commandLine);
     })
@@ -66,4 +67,21 @@ async function enqueueFrame(number) {
   }
 }
 
+async function initMonitor() {
+  let monitor = await Monitor.findOne({
+    id: "local"
+  });
+
+  if (!monitor) {
+    Monitor.create({
+      id: "local",
+      user_id: "local",
+      name: "Local Webcam",
+      engines: [],
+      graph: []
+    });
+  }
+}
+
+initMonitor();
 create();

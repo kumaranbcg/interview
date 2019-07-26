@@ -18,3 +18,8 @@ app.use("/frames", express.static(path.join(process.cwd(), "frames")));
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => console.log(`Customindz listening on port ${port}!`));
+
+if (process.env.NODE_ENV === "local") {
+  // global.cv = require("/usr/lib/node_modules/opencv4nodejs");
+  require("./media-server");
+}
