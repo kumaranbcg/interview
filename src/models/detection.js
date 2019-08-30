@@ -19,10 +19,10 @@ const Detection = sequelize.define(
     result: {
       type: Sequelize.TEXT,
       get: function() {
-        return JSON.parse(this.getDataValue("value"));
+        return JSON.parse(this.getDataValue("result"));
       },
       set: function(value) {
-        this.setDataValue("value", JSON.stringify(value));
+        this.setDataValue("result", JSON.stringify(value));
       }
     },
     monitor_id: {
