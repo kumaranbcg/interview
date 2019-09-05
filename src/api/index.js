@@ -10,6 +10,7 @@ const vodAdminRouter = require("./vod-admin");
 const alertRouter = require("./alert");
 const alertLogRouter = require("./alert-log");
 const configurationRouter = require("./configuration");
+const configurationAdminRouter = require("./configuration-admin");
 
 // define the home page route
 router.get("/", function(req, res) {
@@ -35,6 +36,12 @@ router.use(
   detectionAdminRouter
 );
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
+
+router.use(
+  "/admin/configuration",
+  authentication.verifyMachine,
+  configurationAdminRouter
+);
 
 router.post("/local", authentication.verifyMachine, (req, res) => {
   res.status(200).end();
