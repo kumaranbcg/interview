@@ -49,20 +49,42 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   console.log("Creating Configuration");
   try {
-    const CONFIGURATION_ID = shortid.generate();
-    const newConfiguration = {
-      id: CONFIGURATION_ID,
-      monitor_id: req.body.monitor_id,
-      engine: req.body.engine,
-      config: req.body.config
-    };
 
-    await Configuration.create(newConfiguration);
-
-    res.status(200).json({
-      id: newConfiguration.id,
-      message: "Successfully Added Configuration"
+    const existingConfig = await Configuration.findOne({
+      where: {
+        monitor_id: req.body.monitor_id,
+        engine: req.body.engine
+      }
     });
+
+    if (existingConfig) {
+      await Configuration.update({
+        config:req.body.config
+      }, {
+        where: { id: existingConfig.id }
+      });
+      res.status(200).json({
+        message: "Successfully Updated Configuration"
+      });
+    }
+    else {
+      const CONFIGURATION_ID = shortid.generate();
+      const newConfiguration = {
+        id: CONFIGURATION_ID,
+        monitor_id: req.body.monitor_id,
+        engine: req.body.engine,
+        config: req.body.config
+      };
+
+      await Configuration.create(newConfiguration);
+
+      res.status(200).json({
+        id: newConfiguration.id,
+        message: "Successfully Added Configuration"
+      });
+    }
+
+    
   } catch (err) {
     console.log(err);
     res
