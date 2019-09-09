@@ -24,6 +24,9 @@ const Alert = sequelize.define(
     },
     trigger_record: {
       type: Sequelize.BOOLEAN
+    },
+    alert_type: {
+      type: Sequelize.STRING
     }
   },
   {
