@@ -14,26 +14,19 @@ router.post("/", async (req, res, next) => {
   try {
     // Create Monitor In Our Database
 
-    const numberOfPerson = req.body.result.length;
-    const numberOfSmoker = req.body.result.filter(
-      item => item.conf && item.conf > 0.5
-    ).length;
-
     const newDetection = {
       id: uuidv4(),
       monitor_id: req.body.monitor_id,
       result: req.body.result,
       alert: req.body.alert || false,
-      timestamp: new Date(),
-      numberOfPerson,
-      numberOfSmoker
+      timestamp: new Date()
     };
 
     await Detection.create(newDetection);
     io.in(req.body.monitor_id).emit("detection", req.body.result || []);
 
     if (req.body.alert === true && req.body.engine) {
-      const alert = await Alert.findOne({
+      const alert = await Alert.find({
         where: {
           monitor_id: req.body.monitor_id,
           engine: req.body.engine
@@ -82,10 +75,12 @@ router.post("/", async (req, res, next) => {
               );
             }, 20 * 1000);
           }
+
           await AlertLog.create({
             id: uuidv4(),
             alert_id: alert.id
           });
+
           await alertUtil.alert(alert);
         }
       }

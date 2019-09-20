@@ -27,12 +27,6 @@ const Detection = sequelize.define(
     },
     monitor_id: {
       type: Sequelize.STRING
-    },
-    numberOfPerson: {
-      type: Sequelize.INTEGER
-    },
-    numberOfSmoker: {
-      type: Sequelize.INTEGER
     }
   },
   {
