@@ -22,22 +22,14 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    // Create Monitor In Our Database
-    console.log(req.body.monitor_id);
-    let monitorData = await Monitor.findOne({
-      where: {
-        id: req.body.monitor_id
-      }
-    });
-
     const newVod = {
       id: uuidv4(),
       monitor_id: req.body.monitor_id,
       flv_url: req.body.flv_url,
       user_id: monitorData.user_id,
-      name: monitorData.name,
       thumbnail_url: req.body.thumbnail_url,
-      timestamp: new Date(req.body.timestamp)
+      start_timestamp: new Date(req.body.start_timestamp),
+      end_timestamp: new Date(req.body.end_timestamp)
     };
 
     await Vod.create(newVod);

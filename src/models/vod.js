@@ -26,7 +26,10 @@ const Vod = sequelize.define(
     thumbnail_url: {
       type: Sequelize.STRING
     },
-    timestamp: {
+    start_timestamp: {
+      type: Sequelize.DATE
+    },
+    end_timestamp: {
       type: Sequelize.DATE
     }
   },
