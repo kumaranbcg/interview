@@ -3,6 +3,7 @@ const shortid = require("shortid");
 const router = express.Router();
 const DB = require("../lib/db");
 const Monitor = require("../models/monitor");
+const Vod = require("../models/vod");
 const Detection = require("../models/detection");
 const axios = require("axios");
 const url = require("url");
@@ -58,7 +59,7 @@ router.get("/:id/vod", async (req, res, next) => {
       },
       limit,
       offset,
-      order: [[req.query.orderBy, req.query.direction]]
+      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]]
     });
     res
       .send(data)
