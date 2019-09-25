@@ -13,10 +13,6 @@ const Vod = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false
     },
-    user_id: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
     name: {
       type: Sequelize.STRING
     },
