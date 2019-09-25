@@ -26,7 +26,6 @@ router.post("/", async (req, res, next) => {
       id: uuidv4(),
       monitor_id: req.body.monitor_id,
       flv_url: req.body.flv_url,
-      user_id: monitorData.user_id,
       thumbnail_url: req.body.thumbnail_url,
       start_timestamp: new Date(req.body.start_timestamp),
       end_timestamp: new Date(req.body.end_timestamp)
