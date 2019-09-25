@@ -6,12 +6,23 @@ const Monitor = require("../models/monitor");
 
 router.get("/", async (req, res) => {
   try {
-    const data = await Vod.findAll({
+    const query = {
       where: {
         user_id: req.body.user["cognito:username"]
       },
       order: [[req.query.orderBy, req.query.direction]]
-    });
+    };
+
+    if (req.query.timestamp) {
+      query.where.start_time = {
+        [Op.lt]: new Date(parseInt(req.query.timestamp))
+      };
+      query.where.end_time = {
+        [Op.gt]: new Date(parseInt(req.query.timestamp))
+      };
+    }
+
+    const data = await Vod.findAll(query);
     res
       .send(data)
       .status(200)

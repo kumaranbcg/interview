@@ -48,6 +48,31 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+router.get("/:id/vod", async (req, res, next) => {
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    const offset = req.query.offset ? parseInt(req.query.offset) : 0;
+    const data = await Vod.findAndCountAll({
+      where: {
+        monitor_id: req.params.id
+      },
+      limit,
+      offset,
+      order: [[req.query.orderBy, req.query.direction]]
+    });
+    res
+      .send(data)
+      .status(200)
+      .end();
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 // Get the latest detection for a monitor
 router.get("/:id/latest_detection", async (req, res, next) => {
   try {
