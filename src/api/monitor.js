@@ -7,6 +7,7 @@ const Vod = require("../models/vod");
 const Detection = require("../models/detection");
 const axios = require("axios");
 const url = require("url");
+const { Op } = require("sequelize");
 
 router.get("/", async (req, res) => {
   // Get All For User
