@@ -49,7 +49,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/:id/detections", async (req, res, next) => {
+router.get("/:id/detection", async (req, res, next) => {
   try {
     const query = {
       where: {
