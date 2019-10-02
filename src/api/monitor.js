@@ -72,7 +72,10 @@ router.get("/:id/detection", async (req, res, next) => {
           [Op.lte]: new Date(req.query.end_timestamp)
         };
       } else {
-        query.where.timestamp[[Op.lte]] = new Date(req.query.end_timestamp);
+        query.where.timestamp = {
+          ...query.where.timestamp,
+          [Op.lte]: new Date(req.query.end_timestamp)
+        };
       }
     }
     const data = await Detection.findAll(query);
