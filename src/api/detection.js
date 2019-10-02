@@ -3,6 +3,7 @@ const moment = require("moment");
 const router = express.Router();
 const Detection = require("../models/detection.js");
 const Monitor = require("../models/monitor.js");
+const Vod = require("../models/vod.js");
 const { Op } = require("sequelize");
 
 router.get("/", async (req, res) => {
@@ -180,7 +181,7 @@ router.get("/:id/vod", async (req, res, next) => {
     res.status(200).json(vods);
   } catch (err) {
     res
-      .send(err)
+      .send(err.message)
       .status(400)
       .end();
   }
