@@ -78,6 +78,10 @@ router.get("/:id/detection", async (req, res, next) => {
         };
       }
     }
+    if (req.query.alert) {
+      query.where.alert = true;
+    }
+
     const data = await Detection.findAll(query);
     res.status(200).json(data);
   } catch (err) {
