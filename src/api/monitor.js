@@ -67,13 +67,13 @@ router.get("/:id/detection", async (req, res, next) => {
       };
     }
     if (req.query.end_timestamp) {
-      if (!query.where.timestamp) {
+      if (!query.where.createdAt) {
         query.where.createdAt = {
           [Op.lte]: new Date(parseInt(req.query.end_timestamp))
         };
       } else {
-        query.where.timestamp = {
-          ...query.where.timestamp,
+        query.where.createdAt = {
+          ...query.where.createdAt,
           [Op.lte]: new Date(req.query.end_timestamp)
         };
       }
