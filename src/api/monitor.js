@@ -62,14 +62,14 @@ router.get("/:id/detection", async (req, res, next) => {
       query.where.engine = req.query.engine;
     }
     if (req.query.start_timestamp) {
-      query.where.timestamp = {
-        [Op.gte]: new Date(req.query.start_timestamp)
+      query.where.createdAt = {
+        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
       };
     }
     if (req.query.end_timestamp) {
       if (!query.where.timestamp) {
-        query.where.timestamp = {
-          [Op.lte]: new Date(req.query.end_timestamp)
+        query.where.createdAt = {
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
         };
       } else {
         query.where.timestamp = {
@@ -80,7 +80,6 @@ router.get("/:id/detection", async (req, res, next) => {
     }
     const data = await Detection.findAll(query);
     res.status(200).json(data);
-    res.send(data);
   } catch (err) {
     console.log(err);
     res
