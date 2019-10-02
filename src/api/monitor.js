@@ -49,6 +49,39 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+router.get("/:id/detections", async (req, res, next) => {
+  try {
+    const query = {
+      where: {
+        monitor_id: req.params.id
+      },
+      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]]
+    };
+    if (req.query.engine) {
+      query.where.engine = req.query.engine;
+    }
+    if (req.query.start_timestamp) {
+      query.where.timestamp = {
+        [Op.gte]: new Date(req.query.start_timestamp)
+      };
+    }
+    if (req.query.end_timestamp) {
+      query.where.timestamp = {
+        [Op.lte]: new Date(req.query.end_timestamp)
+      };
+    }
+    const data = await Detection.findAll(query);
+    res.status(200).json(data);
+    res.send(data);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 router.get("/:id/vod", async (req, res, next) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit) : 10;
