@@ -19,72 +19,74 @@ router.post("/", async (req, res, next) => {
       monitor_id: req.body.monitor_id,
       result: req.body.result,
       alert: req.body.alert || false,
-      timestamp: new Date()
+      timestamp: new Date(),
+      image_url: req.body.image_url,
+      engine: req.body.engine
     };
 
     await Detection.create(newDetection);
     io.in(req.body.monitor_id).emit("detection", req.body.result || []);
 
-    if (req.body.alert === true && req.body.engine) {
-      const alert = await Alert.find({
-        where: {
-          monitor_id: req.body.monitor_id,
-          engine: req.body.engine
-        },
-        include: [
-          {
-            model: Monitor,
-            required: true
-          }
-        ]
-      });
-      if (alert.monitor.engines.indexOf(req.body.engine) !== -1) {
-        const recentLog = await AlertLog.findOne({
-          where: {
-            createdAt: {
-              [Op.gte]: moment()
-                .subtract(alert.interval || 1, "minutes")
-                .toDate()
-            },
-            alert_id: alert.id
-          }
-        });
+    // if (req.body.alert === true && req.body.engine) {
+    //   const alert = await Alert.find({
+    //     where: {
+    //       monitor_id: req.body.monitor_id,
+    //       engine: req.body.engine
+    //     },
+    //     include: [
+    //       {
+    //         model: Monitor,
+    //         required: true
+    //       }
+    //     ]
+    //   });
+    //   if (alert.monitor.engines.indexOf(req.body.engine) !== -1) {
+    //     const recentLog = await AlertLog.findOne({
+    //       where: {
+    //         createdAt: {
+    //           [Op.gte]: moment()
+    //             .subtract(alert.interval || 1, "minutes")
+    //             .toDate()
+    //         },
+    //         alert_id: alert.id
+    //       }
+    //     });
 
-        if (!recentLog) {
-          if (alert.trigger_record === true) {
-            await Monitor.update(
-              {
-                recording: true
-              },
-              {
-                where: {
-                  id: req.body.monitor_id
-                }
-              }
-            );
-            setTimeout(() => {
-              Monitor.update(
-                {
-                  recording: false
-                },
-                {
-                  where: {
-                    id: req.body.monitor_id
-                  }
-                }
-              );
-            }, 20 * 1000);
-          }
+    //     if (!recentLog) {
+    //       if (alert.trigger_record === true) {
+    //         await Monitor.update(
+    //           {
+    //             recording: true
+    //           },
+    //           {
+    //             where: {
+    //               id: req.body.monitor_id
+    //             }
+    //           }
+    //         );
+    //         setTimeout(() => {
+    //           Monitor.update(
+    //             {
+    //               recording: false
+    //             },
+    //             {
+    //               where: {
+    //                 id: req.body.monitor_id
+    //               }
+    //             }
+    //           );
+    //         }, 20 * 1000);
+    //       }
 
-          await AlertLog.create({
-            id: uuidv4(),
-            alert_id: alert.id
-          });
+    //       await AlertLog.create({
+    //         id: uuidv4(),
+    //         alert_id: alert.id
+    //       });
 
-          await alertUtil.alert(alert);
-        }
-      }
-    }
+    //       await alertUtil.alert(alert);
+    //     }
+    //   }
+    // }
 
     res.status(200).json({
       id: newDetection.id,

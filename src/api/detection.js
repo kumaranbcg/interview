@@ -2,8 +2,55 @@ const express = require("express");
 const moment = require("moment");
 const router = express.Router();
 const Detection = require("../models/detection.js");
+const Monitor = require("../models/monitor.js");
+const { Op } = require("sequelize");
 
 router.get("/", async (req, res) => {
+  try {
+    const query = {
+      where: {
+        alert: true,
+        image_url: {
+          [Op.ne]: null
+        }
+      },
+      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]]
+    };
+
+    if (req.query.engine) {
+      query.where.engine = req.query.engine;
+    }
+
+    if (req.query.start_timestamp) {
+      query.where.timestamp = {
+        [Op.gte]: new Date(req.query.start_timestamp)
+      };
+    }
+
+    if (req.query.end_timestamp) {
+      query.where.timestamp = {
+        [Op.lte]: new Date(req.query.end_timestamp)
+      };
+    }
+
+    query.include = [
+      {
+        model: Monitor,
+        required: true,
+        where: {
+          user_id: req.body.user["cognito:username"]
+        }
+      }
+    ];
+    const data = await Detection.findAndCountAll(query);
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send(err);
+  }
+});
+
+router.get("/engine/:engineName", async (req, res) => {
   // Get All For User
   try {
     let interval = req.query.interval || "second";

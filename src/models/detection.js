@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../lib/db");
 const Monitor = require("./monitor");
+const Vod = require("./vod");
 const Detection = sequelize.define(
   "detection",
   {
@@ -26,6 +27,12 @@ const Detection = sequelize.define(
       }
     },
     monitor_id: {
+      type: Sequelize.STRING
+    },
+    engine: {
+      type: Sequelize.STRING
+    },
+    image_url: {
       type: Sequelize.STRING
     }
   },

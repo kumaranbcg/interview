@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../lib/db");
+const Monitor = require("./monitor");
 const Vod = sequelize.define(
   "vod",
   {
@@ -8,10 +9,6 @@ const Vod = sequelize.define(
       type: Sequelize.STRING,
       allowNull: false,
       primaryKey: true
-    },
-    monitor_id: {
-      type: Sequelize.STRING,
-      allowNull: false
     },
     name: {
       type: Sequelize.STRING
@@ -34,5 +31,9 @@ const Vod = sequelize.define(
     // options
   }
 );
+
+Vod.belongsTo(Monitor, {
+  foreignKey: "monitor_id"
+});
 
 module.exports = Vod;
