@@ -155,6 +155,37 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+router.get("/:id/vod", async (req, res, next) => {
+  try {
+    var detection = await Detection.findOne({
+      where: {
+        id: req.params.id
+      }
+    });
+
+    const timestamp = detection.createdAt;
+
+    const vods = await Vod.findAll({
+      where: {
+        monitor_id: detection.monitor_id,
+        start_timestamp: {
+          [Op.lte]: timestamp
+        },
+        end_timestamp: {
+          [Op.gte]: timestamp
+        }
+      }
+    });
+
+    res.status(200).json(vods);
+  } catch (err) {
+    res
+      .send(err)
+      .status(400)
+      .end();
+  }
+});
+
 router.put("/:id", async (req, res, next) => {
   try {
     await Detection.update(req.body, {
