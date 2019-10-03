@@ -170,10 +170,10 @@ router.get("/:id/vod", async (req, res, next) => {
       where: {
         monitor_id: detection.monitor_id,
         start_timestamp: {
-          [Op.lte]: timestamp
+          [Op.lte]: new Date(timestamp + 20 * 1000)
         },
         end_timestamp: {
-          [Op.gte]: timestamp
+          [Op.gte]: new Date(timestamp - 20 * 1000)
         }
       }
     });
