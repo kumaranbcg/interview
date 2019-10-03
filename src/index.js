@@ -10,7 +10,7 @@ const api = require("./api/index.js");
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json({ limit: '50mb'}));
+app.use(bodyParser.json({ limit: "50mb" }));
 
 app.get("/", (req, res) => res.send("Hello World!"));
 app.use("/api", api);
