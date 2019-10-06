@@ -101,4 +101,31 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+router.post("/incoming", async (req, res, next) => {
+  try {
+    // Create Monitor In Our Database
+    // const newDetection = {
+    //   id: uuidv4(),
+    //   monitor_id: req.body.monitor_id,
+    //   result: req.body.result,
+    //   alert: req.body.alert || false,
+    //   timestamp: new Date(),
+    //   image_url: req.body.image_url,
+    //   engine: req.body.engine
+    // };
+    // await Detection.create(newDetection);
+    // io.in(req.body.monitor_id).emit("detection", req.body.result || []);
+    res.status(200).json({
+      // id: newDetection.id,
+      message: "Successfully Added Detection"
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 module.exports = router;
