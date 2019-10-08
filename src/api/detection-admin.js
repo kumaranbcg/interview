@@ -110,54 +110,79 @@ router.post("/incoming", async (req, res, next) => {
     // io.in(req.body.monitor_id).emit("detection", req.body.result || []);
 
     const MONITOR = req.body.monitor_id;
-    const IMAGE = req.body.image;
-    const data = req.body.detection;
+    const objects = req.body.objects;
 
-    // Drawing
-
-    const detections = Object.keys(data.objects).map(key => data.objects[key]);
-    const boxes = detections.map(box => {
-      const category = box.category;
-      const location = JSON.parse(box.location.replace(/'/g, '"'));
-      let color = "#3498db";
-      if (category === "Person") {
-        color = "yellow";
+    const minimumDetection = await Detection.findOne({
+      where: {
+        monitor_id: req.body.monitor_id,
+        engine: req.body.engine || "helmet",
+        createdAt: {
+          [Op.gte]: moment()
+            .subtract(10, "seconds")
+            .toDate()
+        }
       }
-
-      if (category === "Helmet") {
-        color = "red";
-      }
-      return {
-        type: "percentage",
-        color,
-        location
-      };
     });
-    if (boxes.length === 0) {
-      throw new Error("No Detection");
+
+    if (minimumDetection) {
+      throw new Error("Detection abandoned for this request");
     }
 
-    const noHelmetCount = data.alert.filter(type => type === "N").length;
+    if (!MONITOR) {
+      throw new Error("No Monitor, check the 'monitor' key in your post");
+    }
+
+    if (!objects) {
+      throw new Error(
+        "No Detection Body, check the 'objects' key in your post"
+      );
+    }
+
+    // Drawing
+    // const detections = Object.keys(objects).map(key => objects[key]);
+    // const boxes = detections.map(box => {
+    //   const category = box.category;
+    //   const location = JSON.parse(box.location.replace(/'/g, '"'));
+    //   let color = "#3498db";
+    //   if (category === "Person") {
+    //     color = "yellow";
+    //   }
+
+    //   if (category === "Helmet") {
+    //     color = "red";
+    //   }
+    //   return {
+    //     type: "percentage",
+    //     color,
+    //     location
+    //   };
+    // });
+    // if (boxes.length === 0) {
+    //   throw new Error("No Detection in detection body");
+    // }
+
+    // console.log(req.body.alert);
+    const noHelmetCount = req.body.alert.filter(type => type === "N").length;
     const isAlertTriggering = noHelmetCount > 0;
 
     // const drawedImage = await canvas.draw(IMAGE, boxes);
-    let params = {
-      ACL: "public-read",
-      Bucket: "customindz-shinobi",
-      Key: `frames/${MONITOR}/latest-detection-helmet.jpg`,
-      Body: IMAGE
-    };
-    await s3.putObject(params).promise();
+    // let params = {
+    //   ACL: "public-read",
+    //   Bucket: "customindz-shinobi",
+    //   Key: `frames/${MONITOR}/latest-detection-${req.body.engine}.jpg`,
+    //   Body: Buffer.from(IMAGE, "base64")
+    // };
+    // await s3.putObject(params).promise();
 
     const uuid = uuidv4();
     const newDetection = {
       id: uuid,
       monitor_id: req.body.monitor_id,
-      result: req.body.detection,
+      result: req.body.alert,
       alert: isAlertTriggering,
       timestamp: new Date(),
       image_url: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
-      engine: req.body.engine
+      engine: req.body.engine || "helmet"
     };
     await Detection.create(newDetection);
 
@@ -170,10 +195,44 @@ router.post("/incoming", async (req, res, next) => {
           Key: `alerts/${MONITOR}/${uuid}.jpg`
         })
         .promise();
-      alertUtil.do(alerts, {
-        image: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
-        url: `https://windht.github.io/customindz-front-end-react-app/#/report/${MONITOR}/detection/${uuid}`
+
+      const alert = await Alert.findOne({
+        where: {
+          monitor_id: req.body.monitor_id,
+          engine: req.body.engine || "helmet",
+          alert_type: "Trigger"
+        },
+        include: [
+          {
+            model: Monitor,
+            required: true
+          }
+        ]
       });
+
+      const recentLog = await AlertLog.findOne({
+        where: {
+          createdAt: {
+            [Op.gte]: moment()
+              .subtract(10, "minutes")
+              .toDate()
+          },
+          alert_id: alert.id
+        }
+      });
+      if (!recentLog) {
+        await AlertLog.create({
+          id: uuidv4(),
+          alert_id: alert.id
+        });
+
+        const alerts = [alert];
+
+        alertUtil.do(alerts, {
+          image: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
+          url: `https://windht.github.io/customindz-front-end-react-app/#/report/${MONITOR}/detection/${uuid}`
+        });
+      }
     }
 
     res.status(200).json({
@@ -181,7 +240,7 @@ router.post("/incoming", async (req, res, next) => {
       message: "Successfully Added Detection"
     });
   } catch (err) {
-    console.log(err.message);
+    // console.log(err.message);
     res
       .status(400)
       .send(err.message)

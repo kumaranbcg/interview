@@ -164,16 +164,18 @@ router.get("/:id/vod", async (req, res, next) => {
       }
     });
 
-    const timestamp = detection.createdAt;
+    console.log(detection);
+
+    const timestamp = new Date(detection.createdAt);
 
     const vods = await Vod.findAll({
       where: {
         monitor_id: detection.monitor_id,
         start_timestamp: {
-          [Op.lte]: new Date(timestamp + 20 * 1000)
+          [Op.lte]: new Date(timestamp + 60 * 1000)
         },
         end_timestamp: {
-          [Op.gte]: new Date(timestamp - 20 * 1000)
+          [Op.gte]: new Date(timestamp - 60 * 1000)
         }
       }
     });
