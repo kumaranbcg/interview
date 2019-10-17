@@ -15,21 +15,33 @@ router.get("/", async (req, res) => {
           [Op.ne]: null
         }
       },
-      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]]
+      order: [
+        [req.query.orderBy || "createdAt", req.query.direction || "DESC"]
+      ],
+      limit: 50,
+      offset: 0
     };
+
+    if (req.query.limit) {
+      query.limit = parseInt(req.query.limit);
+      if (req.query.page) {
+        query.offset =
+          (parseInt(req.query.page) - 1) * parseInt(req.query.limit);
+      }
+    }
 
     if (req.query.engine) {
       query.where.engine = req.query.engine;
     }
 
     if (req.query.start_timestamp) {
-      query.where.timestamp = {
+      query.where.createdAt = {
         [Op.gte]: new Date(req.query.start_timestamp)
       };
     }
 
     if (req.query.end_timestamp) {
-      query.where.timestamp = {
+      query.where.createdAt = {
         [Op.lte]: new Date(req.query.end_timestamp)
       };
     }

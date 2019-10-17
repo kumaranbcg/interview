@@ -112,6 +112,8 @@ router.post("/incoming", async (req, res, next) => {
     const MONITOR = req.body.monitor_id;
     const objects = req.body.objects;
 
+    io.in(MONITOR).emit("detection", req.body.alert || []);
+
     const minimumDetection = await Detection.findOne({
       where: {
         monitor_id: req.body.monitor_id,
