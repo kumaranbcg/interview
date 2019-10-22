@@ -1,0 +1,36 @@
+swagger: '2.0'
+info:
+  description: "This is the backen documentation for custommindz"
+  version: 1.0.0
+  title: "Customindz"
+  termsOfService: 'http://swagger.io/terms/'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+basePath: /dev
+tags:
+  - name: alert
+    description: alert
+  - name: configuration
+    description: configuration
+  - name: detection
+    description: detection
+schemes:
+  - https
+  - http
+paths:
+  /pet:
+    post:
+      tags:
+        - alert
+      summary: Add 
+      description: ''
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/xml
+        - application/json
+      responses:
+        '405':
+          description: Invalid input
