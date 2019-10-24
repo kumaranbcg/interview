@@ -20,20 +20,186 @@ schemes:
   - http
 paths:
   /alert:
+    get:
+      tags:
+      - "alert"
+      description: "alert"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "user_id"
+        required: true
+        type: "string"
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        type: "string"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        type: "string"
+      - name: "orderBy"
+        in: "query"
+        description: "order"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/alert"
+        400:
+          description: "err"
+  /alert-log:
+    get:
+      tags:
+      - "alert-log"
+      description: "alert-log"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "user_id"
+        required: true
+        type: "string"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        required: true
+        type: "string"
+      - name: "orderBy"
+        in: "query"
+        description: "order"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/alert-log"
+        400:
+          description: "err"
+  /configuration:
+    get:
+      tags:
+      - "configuration"
+      description: "alert"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "engine"
+        in: "query"
+        description: "engine"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/configuration"
+        400:
+          description: "err"
     post:
       tags:
-        - alert
-      summary: Add 
-      description: ''
+      - "configuration"
+      description: ""
       consumes:
-        - application/json
-        - application/xml
+      - "application/x-www-form-urlencoded"
       produces:
-        - application/xml
-        - application/json
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "engine"
+        in: "query"
+        description: "engine"
+        required: true
+        type: "string"
       responses:
-        '405':
-          description: Invalid input
+        200:
+          description: "success"
+        400:
+          description: "err"
+    put:
+      tags:
+      - "configuration"
+      description: ""
+      operationId: "updateUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/configuration"
+      responses:
+        200:
+          description: "Successfully Update"
+        400:
+          description: "err"
+    delete:
+      tags:
+      - "configuration"
+      summary: "Deletes a configuration"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Configuration id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully Deleted Configuration"
+        400:
+          description: "err"
+  /configuration/:id:
+    get:
+      tags:
+       - "configuration"
+      description: "alert"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/configuration"
+        400:
+          description: "err"
 definitions:
   alert:
     type: "object"
