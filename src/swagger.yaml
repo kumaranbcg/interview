@@ -9,80 +9,82 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 basePath: /dev
 tags:
-  - name: alert
-    description: alert
   - name: configuration
     description: configuration
+  - name: vod
+    description: vod
+  - name: monitor
+    description: monitor
   - name: detection
     description: detection
 schemes:
   - https
   - http
 paths:
-  /alert:
-    get:
-      tags:
-      - "alert"
-      description: "alert"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "user_id"
-        required: true
-        type: "string"
-      - name: "monitor_id"
-        in: "query"
-        description: "monitor_id"
-        type: "string"
-      - name: "limit"
-        in: "query"
-        description: "limit"
-        type: "string"
-      - name: "orderBy"
-        in: "query"
-        description: "order"
-        type: "string"
-      responses:
-        200:
-          description: "success"
-          schema:
-            $ref: "#/definitions/alert"
-        400:
-          description: "err"
-  /alert-log:
-    get:
-      tags:
-      - "alert-log"
-      description: "alert-log"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "user_id"
-        required: true
-        type: "string"
-      - name: "limit"
-        in: "query"
-        description: "limit"
-        required: true
-        type: "string"
-      - name: "orderBy"
-        in: "query"
-        description: "order"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "success"
-          schema:
-            $ref: "#/definitions/alert-log"
-        400:
-          description: "err"
+  # /alert:
+  #   get:
+  #     tags:
+  #     - "alert"
+  #     description: "alert"
+  #     produces:
+  #     - "application/xml"
+  #     - "application/json"
+  #     parameters:
+  #     - name: "username"
+  #       in: "query"
+  #       description: "user_id"
+  #       required: true
+  #       type: "string"
+  #     - name: "monitor_id"
+  #       in: "query"
+  #       description: "monitor_id"
+  #       type: "string"
+  #     - name: "limit"
+  #       in: "query"
+  #       description: "limit"
+  #       type: "string"
+  #     - name: "orderBy"
+  #       in: "query"
+  #       description: "order"
+  #       type: "string"
+  #     responses:
+  #       200:
+  #         description: "success"
+  #         schema:
+  #           $ref: "#/definitions/alert"
+  #       400:
+  #         description: "err"
+  # /alert-log:
+  #   get:
+  #     tags:
+  #     - "alert-log"
+  #     description: "alert-log"
+  #     produces:
+  #     - "application/xml"
+  #     - "application/json"
+  #     parameters:
+  #     - name: "username"
+  #       in: "query"
+  #       description: "user_id"
+  #       required: true
+  #       type: "string"
+  #     - name: "limit"
+  #       in: "query"
+  #       description: "limit"
+  #       required: true
+  #       type: "string"
+  #     - name: "orderBy"
+  #       in: "query"
+  #       description: "order"
+  #       required: true
+  #       type: "string"
+  #     responses:
+  #       200:
+  #         description: "success"
+  #         schema:
+  #           $ref: "#/definitions/alert-log"
+  #       400:
+  #         description: "err"
   /configuration:
     get:
       tags:
@@ -134,6 +136,27 @@ paths:
           description: "success"
         400:
           description: "err"
+  /configuration/:id:
+    get:
+      tags:
+       - "configuration"
+      description: "alert"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/configuration"
+        400:
+          description: "err"
     put:
       tags:
       - "configuration"
@@ -177,27 +200,6 @@ paths:
       responses:
         200:
           description: "Successfully Deleted Configuration"
-        400:
-          description: "err"
-  /configuration/:id:
-    get:
-      tags:
-       - "configuration"
-      description: "alert"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "id"
-        in: "query"
-        description: "id"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "success"
-          schema:
-            $ref: "#/definitions/configuration"
         400:
           description: "err"
 definitions:
