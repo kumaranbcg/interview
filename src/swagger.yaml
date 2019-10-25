@@ -9,14 +9,14 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 basePath: /dev
 tags:
-  - name: configuration
-    description: configuration
-  - name: vod
-    description: vod
-  - name: monitor
-    description: monitor
-  - name: detection
-    description: detection
+- name: configuration
+  description: configuration
+- name: vod
+  description: vod
+- name: monitor
+  description: monitor
+- name: detection
+  description: detection
 schemes:
   - https
   - http
@@ -89,7 +89,7 @@ paths:
     get:
       tags:
       - "configuration"
-      description: "alert"
+      description: ""
       produces:
       - "application/xml"
       - "application/json"
@@ -140,7 +140,7 @@ paths:
     get:
       tags:
        - "configuration"
-      description: "alert"
+      description: ""
       produces:
       - "application/xml"
       - "application/json"
@@ -185,7 +185,7 @@ paths:
     delete:
       tags:
       - "configuration"
-      summary: "Deletes a configuration"
+      summary: "Delete a configuration"
       description: ""
       produces:
       - "application/xml"
@@ -202,6 +202,72 @@ paths:
           description: "Successfully Deleted Configuration"
         400:
           description: "err"
+  /vod/:id:
+    get:
+      tags:
+       - "vod"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/vod"
+        400:
+          description: "err"
+    put:
+      tags:
+      - "vod"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "Update"
+        required: true
+        schema:
+          $ref: "#/definitions/vod"
+      responses:
+        200:
+          description: "Successfully Updated"
+        400:
+          description: "err"
+    delete:
+      tags:
+      - "vod"
+      summary: "Delete a vod"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully Deleted Vod"
+        400:
+          description: "err"
+  
 definitions:
   alert:
     type: "object"
