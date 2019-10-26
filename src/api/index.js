@@ -12,6 +12,7 @@ const alertLogRouter = require("./alert-log");
 const configurationRouter = require("./configuration");
 const configurationAdminRouter = require("./configuration-admin");
 const reportRouter = require("./report");
+const ysRouter = require('./ys');
 
 // define the home page route
 router.get("/", function(req, res) {
@@ -30,6 +31,7 @@ router.use("/alert", authentication.verify, alertRouter);
 router.use("/alert-log", authentication.verify, alertLogRouter);
 router.use("/configuration", authentication.verify, configurationRouter);
 router.use("/report", reportRouter);
+router.use('/ys',ysRouter)
 
 router.use("/admin/monitor", authentication.verifyMachine, monitorAdminRouter);
 router.use(
@@ -44,6 +46,8 @@ router.use(
   authentication.verifyMachine,
   configurationAdminRouter
 );
+
+
 
 router.post("/local", authentication.verifyMachine, (req, res) => {
   res.status(200).end();

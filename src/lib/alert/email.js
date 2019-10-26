@@ -1,9 +1,8 @@
 const nodemailer = require("nodemailer");
-
+const Email = require("email-templates");
 const EMAIL_USER = "viact@hotmail.com";
 const EMAIL_PASSWORD = "GaryNg123";
 const transporter = nodemailer.createTransport({
-  // QQ Mail Testing Check https://www.ctolib.com/topics-114298.html
   service: "Hotmail",
   auth: {
     user: EMAIL_USER,
@@ -11,22 +10,25 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+const email = new Email({
+  message: {
+    from: `Viact Official<${EMAIL_USER}>`
+  },
+  transport: transporter
+});
+
 module.exports = {
-  send: ({ message, address, image, url, title }) => {
-    return new Promise((resolve, reject) => {
-      // Main code
-      let mailOptions = {
-        from: `Viact Official<${EMAIL_USER}>`, // sender address
-        to: address, // list of receivers
-        subject: title, // Subject line
-        html: `${message} <a href="${url}">here</a></br><img src="${image}"/>` // html body
-      };
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          return reject(error);
-        }
-        resolve(info);
-      });
+  send: ({ template, alert, ...rest }) => {
+    console.log(template);
+    return email.send({
+      template,
+      message: {
+        to: alert.output_address
+      },
+      locals: {
+        alert,
+        ...rest
+      }
     });
   }
 };

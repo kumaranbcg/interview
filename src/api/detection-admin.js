@@ -232,7 +232,7 @@ router.post("/incoming", async (req, res, next) => {
 
         alertUtil.do(alerts, {
           image: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
-          url: `https://windht.github.io/customindz-front-end-react-app/#/report/${MONITOR}/detection/${uuid}`
+          url: `https://app.viact.ai/#/report/${MONITOR}/detection/${uuid}`
         });
       }
     }
