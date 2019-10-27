@@ -95,7 +95,7 @@ router.post("/", async (req, res, next) => {
       message: "Successfully Added Detection"
     });
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
     res
       .status(400)
       .send(err)
@@ -177,6 +177,14 @@ router.post("/incoming", async (req, res, next) => {
     // await s3.putObject(params).promise();
 
     const uuid = uuidv4();
+    await s3
+      .copyObject({
+        ACL: "public-read",
+        CopySource: `/customindz-shinobi/frames/${MONITOR}/latest-detection-helmet.jpg`,
+        Bucket: "customindz-shinobi",
+        Key: `alerts/${MONITOR}/${uuid}.jpg`
+      })
+      .promise();
     const newDetection = {
       id: uuid,
       monitor_id: req.body.monitor_id,
@@ -188,61 +196,58 @@ router.post("/incoming", async (req, res, next) => {
     };
     await Detection.create(newDetection);
 
-    if (isAlertTriggering) {
-      await s3
-        .copyObject({
-          ACL: "public-read",
-          CopySource: `/customindz-shinobi/frames/${MONITOR}/latest-detection-helmet.jpg`,
-          Bucket: "customindz-shinobi",
-          Key: `alerts/${MONITOR}/${uuid}.jpg`
-        })
-        .promise();
-
-      const alert = await Alert.findOne({
-        where: {
-          monitor_id: req.body.monitor_id,
-          engine: req.body.engine || "helmet",
-          alert_type: "Trigger"
-        },
-        include: [
-          {
-            model: Monitor,
-            required: true
-          }
-        ]
-      });
-
-      const recentLog = await AlertLog.findOne({
-        where: {
-          createdAt: {
-            [Op.gte]: moment()
-              .subtract(10, "minutes")
-              .toDate()
-          },
-          alert_id: alert.id
-        }
-      });
-      if (!recentLog) {
-        await AlertLog.create({
-          id: uuidv4(),
-          alert_id: alert.id
-        });
-
-        const alerts = [alert];
-
-        alertUtil.do(alerts, {
-          image: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
-          url: `https://app.viact.ai/#/report/${MONITOR}/detection/${uuid}`
-        });
-      }
-    }
-
     res.status(200).json({
       id: newDetection.id,
       message: "Successfully Added Detection"
     });
+
+    try {
+      if (isAlertTriggering) {
+        const alert = await Alert.findOne({
+          where: {
+            monitor_id: req.body.monitor_id,
+            engine: req.body.engine || "helmet",
+            alert_type: "Trigger"
+          },
+          include: [
+            {
+              model: Monitor,
+              required: true
+            }
+          ]
+        });
+
+        if (!alert) {
+          return;
+        }
+
+        const recentLog = await AlertLog.findOne({
+          where: {
+            createdAt: {
+              [Op.gte]: moment()
+                .subtract(1, "minutes")
+                .toDate()
+            },
+            alert_id: alert.id
+          }
+        });
+        if (!recentLog) {
+          await AlertLog.create({
+            id: uuidv4(),
+            alert_id: alert.id
+          });
+
+          const alerts = [alert];
+
+          alertUtil.do(alerts, {
+            image: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
+            url: `http://app.viact.ai/#/report/${MONITOR}/detection/${uuid}`
+          });
+        }
+      }
+    } catch (err) {}
   } catch (err) {
-    // console.log(err.message);
+    console.log(err.message);
     res
       .status(400)
       .send(err.message)

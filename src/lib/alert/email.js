@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const Email = require("email-templates");
+// gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
 const EMAIL_USER = "viact@hotmail.com";
 const EMAIL_PASSWORD = "GaryNg123";
 const transporter = nodemailer.createTransport({
@@ -14,15 +15,17 @@ const email = new Email({
   message: {
     from: `Viact Official<${EMAIL_USER}>`
   },
-  transport: transporter
+  transport: transporter,
+  send: true,
+  preview: false
 });
 
 module.exports = {
   send: ({ template, alert, ...rest }) => {
-    console.log(template);
     return email.send({
       template,
       message: {
+        from: EMAIL_USER,
         to: alert.output_address
       },
       locals: {
