@@ -255,4 +255,97 @@ router.post("/incoming", async (req, res, next) => {
   }
 });
 
+router.post("/incoming-test", async (req, res, next) => {
+  try {
+    const MONITOR = "tuspark-roof";
+    const objects = req.body.objects;
+
+    if (!MONITOR) {
+      throw new Error("No Monitor, check the 'monitor' key in your post");
+    }
+
+    if (!objects) {
+      throw new Error(
+        "No Detection Body, check the 'objects' key in your post"
+      );
+    }
+
+    const noHelmetCount = req.body.alert.filter(type => type === "N").length;
+    const isAlertTriggering = noHelmetCount > 0;
+
+    const uuid = uuidv4();
+
+    try {
+      const newDetection = {
+        id: uuid,
+        monitor_id: MONITOR,
+        result: req.body.alert,
+        alert: isAlertTriggering,
+        timestamp: new Date(),
+        image_url: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
+        engine: req.body.engine || "helmet"
+      };
+      await Detection.create(newDetection);
+    } catch (err) {}
+
+    if (isAlertTriggering) {
+      await s3
+        .copyObject({
+          ACL: "public-read",
+          CopySource: `/customindz-shinobi/frames/${MONITOR}/latest-detection-helmet.jpg`,
+          Bucket: "customindz-shinobi",
+          Key: `alerts/${MONITOR}/${uuid}.jpg`
+        })
+        .promise();
+
+      const alert = await Alert.findOne({
+        where: {
+          monitor_id: MONITOR,
+          engine: req.body.engine || "helmet",
+          alert_type: "Trigger"
+        },
+        include: [
+          {
+            model: Monitor,
+            required: true
+          }
+        ]
+      });
+
+      const recentLog = await AlertLog.findOne({
+        where: {
+          createdAt: {
+            [Op.gte]: moment()
+              .subtract(20, "seconds")
+              .toDate()
+          },
+          alert_id: alert.id
+        }
+      });
+      if (!recentLog) {
+        await AlertLog.create({
+          id: uuidv4(),
+          alert_id: alert.id
+        });
+        const alerts = [alert];
+        alertUtil.do(alerts, {
+          image: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
+          url: `https://windht.github.io/customindz-front-end-react-app/#/report/${MONITOR}/detection/${uuid}`
+        });
+      }
+    }
+
+    res.status(200).json({
+      id: uuid,
+      message: "Successfully Added Detection"
+    });
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(400)
+      .send(err.message)
+      .end();
+  }
+});
+
 module.exports = router;
