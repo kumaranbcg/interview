@@ -29,6 +29,7 @@ style(type='text/css').
 
   .card-image {
     width:100%;
+    margin: 15px auto;
   }
 
   .center {
@@ -68,7 +69,8 @@ style(type='text/css').
 
 .card 
   .card-title Detection Image
-  img(src=`${image}`).card-image
+  .center 
+    img(src=`${image}`).card-image
 
 .center 
   a(href=`${url}`) 

@@ -58,6 +58,15 @@ router.get("/:id/detection", async (req, res, next) => {
       },
       order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]]
     };
+
+    if (req.query.limit) {
+      query.limit = parseInt(req.query.limit);
+      if (req.query.page) {
+        query.offset =
+          (parseInt(req.query.page) - 1) * parseInt(req.query.limit);
+      }
+    }
+
     if (req.query.engine) {
       query.where.engine = req.query.engine;
     }
