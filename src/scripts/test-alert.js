@@ -8,7 +8,7 @@ alert.do(
       interval: 0,
       output_type: "Email",
       output_address:
-        "gary.ng@customindz.com,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com",
+        "gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com",
       // output_address: "buildmindht@outlook.com",
       trigger_record: false,
       alert_type: "Trigger",
