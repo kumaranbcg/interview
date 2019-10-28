@@ -114,21 +114,21 @@ router.post("/incoming", async (req, res, next) => {
 
     io.in(MONITOR).emit("detection", req.body.alert || []);
 
-    const minimumDetection = await Detection.findOne({
-      where: {
-        monitor_id: req.body.monitor_id,
-        engine: req.body.engine || "helmet",
-        createdAt: {
-          [Op.gte]: moment()
-            .subtract(10, "seconds")
-            .toDate()
-        }
-      }
-    });
+    // const minimumDetection = await Detection.findOne({
+    //   where: {
+    //     monitor_id: req.body.monitor_id,
+    //     engine: req.body.engine || "helmet",
+    //     createdAt: {
+    //       [Op.gte]: moment()
+    //         .subtract(10, "seconds")
+    //         .toDate()
+    //     }
+    //   }
+    // });
 
-    if (minimumDetection) {
-      throw new Error("Detection abandoned for this request");
-    }
+    // if (minimumDetection) {
+    //   throw new Error("Detection abandoned for this request");
+    // }
 
     if (!MONITOR) {
       throw new Error("No Monitor, check the 'monitor' key in your post");
@@ -243,9 +243,14 @@ router.post("/incoming", async (req, res, next) => {
             image: `https://customindz-shinobi.s3-ap-southeast-1.amazonaws.com/alerts/${MONITOR}/${uuid}.jpg`,
             url: `http://app.viact.ai/#/report/${MONITOR}/detection/${uuid}`
           });
+
+          console.log(`Made an alert at ${new Date().toString()}!`);
         }
       }
-    } catch (err) {}
+    } catch (err) {
+      console.log("Alert error");
+      console.log(err.message);
+    }
   } catch (err) {
     console.log(err.message);
     res
