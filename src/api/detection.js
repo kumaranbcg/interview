@@ -9,12 +9,7 @@ const { Op } = require("sequelize");
 router.get("/", async (req, res) => {
   try {
     const query = {
-      where: {
-        alert: true,
-        image_url: {
-          [Op.ne]: null
-        }
-      },
+      where: {},
       order: [
         [req.query.orderBy || "createdAt", req.query.direction || "DESC"]
       ],
@@ -50,6 +45,10 @@ router.get("/", async (req, res) => {
           [Op.lte]: new Date(req.query.end_timestamp)
         };
       }
+    }
+
+    if (req.query.alert) {
+      query.where.alert = true;
     }
 
     query.include = [
