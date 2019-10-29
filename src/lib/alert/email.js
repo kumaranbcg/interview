@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const moment = require("moment");
 const Email = require("email-templates");
 // rcnnyolom2detcenternet@gmail.com,gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
 const EMAIL_USER = "viact@hotmail.com";
@@ -30,7 +31,7 @@ module.exports = {
       },
       locals: {
         alert,
-        timestamp: new Date(),
+        timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
         ...rest
       }
     });
