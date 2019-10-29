@@ -42,7 +42,7 @@ router.get("/", async (req, res) => {
       } else {
         query.where.createdAt = {
           ...query.where.createdAt,
-          [Op.lte]: new Date(req.query.end_timestamp)
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
         };
       }
     }
