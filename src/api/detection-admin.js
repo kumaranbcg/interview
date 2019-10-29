@@ -110,7 +110,6 @@ router.post("/incoming", async (req, res, next) => {
     // io.in(req.body.monitor_id).emit("detection", req.body.result || []);
 
     const MONITOR = req.body.monitor_id;
-    const objects = req.body.objects;
 
     io.in(MONITOR).emit("detection", req.body.alert || []);
 
@@ -134,38 +133,15 @@ router.post("/incoming", async (req, res, next) => {
       throw new Error("No Monitor, check the 'monitor' key in your post");
     }
 
-    if (!objects) {
-      throw new Error(
-        "No Detection Body, check the 'objects' key in your post"
-      );
-    }
-
-    // Drawing
-    // const detections = Object.keys(objects).map(key => objects[key]);
-    // const boxes = detections.map(box => {
-    //   const category = box.category;
-    //   const location = JSON.parse(box.location.replace(/'/g, '"'));
-    //   let color = "#3498db";
-    //   if (category === "Person") {
-    //     color = "yellow";
-    //   }
-
-    //   if (category === "Helmet") {
-    //     color = "red";
-    //   }
-    //   return {
-    //     type: "percentage",
-    //     color,
-    //     location
-    //   };
-    // });
-    // if (boxes.length === 0) {
-    //   throw new Error("No Detection in detection body");
-    // }
-
-    // console.log(req.body.alert);
     const noHelmetCount = req.body.alert.filter(type => type === "N").length;
     const isAlertTriggering = noHelmetCount > 0;
+
+    if (!isAlertTriggering) {
+      res.status(200).json({
+        message: "No Alert, Detection skipped"
+      });
+      return;
+    }
 
     // const drawedImage = await canvas.draw(IMAGE, boxes);
     // let params = {

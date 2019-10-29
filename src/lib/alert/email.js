@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const Email = require("email-templates");
-// gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
+// rcnnyolom2detcenternet@gmail.com,gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
 const EMAIL_USER = "viact@hotmail.com";
 const EMAIL_PASSWORD = "GaryNg123";
 const transporter = nodemailer.createTransport({
@@ -30,6 +30,7 @@ module.exports = {
       },
       locals: {
         alert,
+        timestamp: new Date(),
         ...rest
       }
     });
