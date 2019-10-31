@@ -267,6 +267,217 @@ paths:
           description: "Successfully Deleted Vod"
         400:
           description: "err"
+  /monitor:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "user_id"
+        in: "query"
+        description: "user_id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+    post:
+      tags:
+      - "monitor"
+      summary: "Creating Monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: ""
+        required: true
+        schema:
+          $ref: "#/definitions/monitor"
+      responses:
+        200:
+          description: "Successfully Added Monitor"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "Err"
+  /monitor/:id:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "user_id"
+        in: "query"
+        description: "user_id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+    put:
+      tags:
+      - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "Update"
+        required: true
+        schema:
+          $ref: "#/definitions/monitor"
+      responses:
+        200:
+          description: "Successfully Updated"
+        400:
+          description: "err"
+    delete:
+      tags:
+      - "monitor"
+      summary: "Delete"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully Deleted Monitor"
+        400:
+          description: "err"
+  /monitor/:id/detection:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "orderBy"
+        in: "query"
+        description: "orderBy"
+        type: "string"
+      - name: "engine"
+        in: "query"
+        description: "engine"
+        type: "string"
+      - name: "start_timestamp"
+        in: "query"
+        description: "start_timestamp"
+        type: "string"
+      - name: "end_timestamp"
+        in: "query"
+        description: "end_timestamp"
+        type: "string"
+      - name: "alert"
+        in: "query"
+        description: "alert"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+  /monitor/:id/vod:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        type: "string"
+      - name: "offset"
+        in: "query"
+        description: "offset"
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "order"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+  /monitor/:id/latest_detection:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "order"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
   
 definitions:
   alert:
