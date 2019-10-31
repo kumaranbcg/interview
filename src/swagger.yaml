@@ -478,6 +478,152 @@ paths:
             $ref: "#/definitions/monitor"
         400:
           description: "err"
+  /detection:
+    get:
+      tags:
+       - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "alert"
+        in: "query"
+        description: "alert"
+        required: true
+        type: "string"
+      - name: "image_url"
+        in: "query"
+        description: "image_url"
+        required: true
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "order"
+        required: true
+        type: "string"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        type: "string"
+      - name: "offset"
+        in: "query"
+        description: "offset"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/detection"
+        400:
+          description: "err"
+  /detection/engine/:engineName:
+    get:
+      tags:
+       - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/detection"
+        400:
+          description: "err"
+  /detection/:id:
+    get:
+      tags:
+       - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/detection"
+        400:
+          description: "err"
+    put:
+      tags:
+      - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "Update"
+        required: true
+        schema:
+          $ref: "#/definitions/monitor"
+      responses:
+        200:
+          description: "Successfully Updated"
+        400:
+          description: "err"
+    delete:
+      tags:
+      - "detection"
+      summary: ""
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully Deleted Monitor"
+        400:
+          description: "err"
+  /detection/:id/vod:
+    get:
+      tags:
+       - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/detection"
+        400:
+          description: "err"
   
 definitions:
   alert:
