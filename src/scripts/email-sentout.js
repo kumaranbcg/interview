@@ -10,7 +10,8 @@ const alert = {
     name: "Viact Construction"
   },
   monitor_id: "tuspark",
-  output_address: "buildmindht@outlook.com",
+  output_address:
+    "buildmindht@outlook.com,jurge92@icloud.com,zq.donald.chong@gmail.com",
   output_type: "Dingtalk",
   trigger_record: false,
   updatedAt: "2019-09-17T12:22:30.000Z"

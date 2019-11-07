@@ -2,10 +2,10 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 const Email = require("email-templates");
 // rcnnyolom2detcenternet@gmail.com,gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
-const EMAIL_USER = "viact@hotmail.com";
-const EMAIL_PASSWORD = "GaryNg123";
+const EMAIL_USER = "zq.donald.zhong@gmail.com";
+const EMAIL_PASSWORD = "SKrKRcGKeGGpDDD";
 const transporter = nodemailer.createTransport({
-  service: "Hotmail",
+  service: "SendPulse", // no need to set host or port etc.
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASSWORD
@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 const email = new Email({
   message: {
-    from: `Viact Official<${EMAIL_USER}>`
+    from: `Viact Official`
   },
   transport: transporter,
   send: true,
