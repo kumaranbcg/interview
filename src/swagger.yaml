@@ -1,0 +1,720 @@
+swagger: '2.0'
+info:
+  description: "This is the backen documentation for custommindz"
+  version: 1.0.0
+  title: "Customindz"
+  termsOfService: 'http://swagger.io/terms/'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+basePath: /dev
+tags:
+- name: configuration
+  description: configuration
+- name: vod
+  description: vod
+- name: monitor
+  description: monitor
+- name: detection
+  description: detection
+schemes:
+  - https
+  - http
+paths:
+  # /alert:
+  #   get:
+  #     tags:
+  #     - "alert"
+  #     description: "alert"
+  #     produces:
+  #     - "application/xml"
+  #     - "application/json"
+  #     parameters:
+  #     - name: "username"
+  #       in: "query"
+  #       description: "user_id"
+  #       required: true
+  #       type: "string"
+  #     - name: "monitor_id"
+  #       in: "query"
+  #       description: "monitor_id"
+  #       type: "string"
+  #     - name: "limit"
+  #       in: "query"
+  #       description: "limit"
+  #       type: "string"
+  #     - name: "orderBy"
+  #       in: "query"
+  #       description: "order"
+  #       type: "string"
+  #     responses:
+  #       200:
+  #         description: "success"
+  #         schema:
+  #           $ref: "#/definitions/alert"
+  #       400:
+  #         description: "err"
+  # /alert-log:
+  #   get:
+  #     tags:
+  #     - "alert-log"
+  #     description: "alert-log"
+  #     produces:
+  #     - "application/xml"
+  #     - "application/json"
+  #     parameters:
+  #     - name: "username"
+  #       in: "query"
+  #       description: "user_id"
+  #       required: true
+  #       type: "string"
+  #     - name: "limit"
+  #       in: "query"
+  #       description: "limit"
+  #       required: true
+  #       type: "string"
+  #     - name: "orderBy"
+  #       in: "query"
+  #       description: "order"
+  #       required: true
+  #       type: "string"
+  #     responses:
+  #       200:
+  #         description: "success"
+  #         schema:
+  #           $ref: "#/definitions/alert-log"
+  #       400:
+  #         description: "err"
+  /configuration:
+    get:
+      tags:
+      - "configuration"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "engine"
+        in: "query"
+        description: "engine"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/configuration"
+        400:
+          description: "err"
+    post:
+      tags:
+      - "configuration"
+      description: ""
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "engine"
+        in: "query"
+        description: "engine"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+        400:
+          description: "err"
+  /configuration/:id:
+    get:
+      tags:
+       - "configuration"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/configuration"
+        400:
+          description: "err"
+    put:
+      tags:
+      - "configuration"
+      description: ""
+      operationId: "updateUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/configuration"
+      responses:
+        200:
+          description: "Successfully Update"
+        400:
+          description: "err"
+    delete:
+      tags:
+      - "configuration"
+      summary: "Delete a configuration"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Configuration id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully Deleted Configuration"
+        400:
+          description: "err"
+  /vod/:id:
+    get:
+      tags:
+       - "vod"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/vod"
+        400:
+          description: "err"
+    put:
+      tags:
+      - "vod"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "Update"
+        required: true
+        schema:
+          $ref: "#/definitions/vod"
+      responses:
+        200:
+          description: "Successfully Updated"
+        400:
+          description: "err"
+    delete:
+      tags:
+      - "vod"
+      summary: "Delete a vod"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully Deleted Vod"
+        400:
+          description: "err"
+  /monitor:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "user_id"
+        in: "query"
+        description: "user_id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+    post:
+      tags:
+      - "monitor"
+      summary: "Creating Monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: ""
+        required: true
+        schema:
+          $ref: "#/definitions/monitor"
+      responses:
+        200:
+          description: "Successfully Added Monitor"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "Err"
+  /monitor/:id:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "user_id"
+        in: "query"
+        description: "user_id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+    put:
+      tags:
+      - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "Update"
+        required: true
+        schema:
+          $ref: "#/definitions/monitor"
+      responses:
+        200:
+          description: "Successfully Updated"
+        400:
+          description: "err"
+    delete:
+      tags:
+      - "monitor"
+      summary: "Delete"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully Deleted Monitor"
+        400:
+          description: "err"
+  /monitor/:id/detection:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "orderBy"
+        in: "query"
+        description: "orderBy"
+        type: "string"
+      - name: "engine"
+        in: "query"
+        description: "engine"
+        type: "string"
+      - name: "start_timestamp"
+        in: "query"
+        description: "start_timestamp"
+        type: "string"
+      - name: "end_timestamp"
+        in: "query"
+        description: "end_timestamp"
+        type: "string"
+      - name: "alert"
+        in: "query"
+        description: "alert"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+  /monitor/:id/vod:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        type: "string"
+      - name: "offset"
+        in: "query"
+        description: "offset"
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "order"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+  /monitor/:id/latest_detection:
+    get:
+      tags:
+       - "monitor"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "order"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/monitor"
+        400:
+          description: "err"
+  /detection:
+    get:
+      tags:
+       - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "alert"
+        in: "query"
+        description: "alert"
+        required: true
+        type: "string"
+      - name: "image_url"
+        in: "query"
+        description: "image_url"
+        required: true
+        type: "string"
+      - name: "order"
+        in: "query"
+        description: "order"
+        required: true
+        type: "string"
+      - name: "limit"
+        in: "query"
+        description: "limit"
+        type: "string"
+      - name: "offset"
+        in: "query"
+        description: "offset"
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/detection"
+        400:
+          description: "err"
+  /detection/engine/:engineName:
+    get:
+      tags:
+       - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "monitor_id"
+        in: "query"
+        description: "monitor_id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/detection"
+        400:
+          description: "err"
+  /detection/:id:
+    get:
+      tags:
+       - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/detection"
+        400:
+          description: "err"
+    put:
+      tags:
+      - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id"
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "Update"
+        required: true
+        schema:
+          $ref: "#/definitions/monitor"
+      responses:
+        200:
+          description: "Successfully Updated"
+        400:
+          description: "err"
+    delete:
+      tags:
+      - "detection"
+      summary: ""
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully Deleted Monitor"
+        400:
+          description: "err"
+  /detection/:id/vod:
+    get:
+      tags:
+       - "detection"
+      description: ""
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "id"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/detection"
+        400:
+          description: "err"
+  
+definitions:
+  alert:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      engine:
+        type: "string"
+      interval:
+        type: "integer"
+      output_type:
+        type: "string"
+      output_address:
+        type: "string"
+      trigger_record:
+        type: "boolean"
+      alert_type:
+        type: "string"
+  alert-log:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+  configuration:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      config:
+        type: "string"
+      monitor_id:
+        type: "string"
+      engine:
+        type: "string"
+  detection:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      timestamp:
+        type: "string"
+      alert:
+        type: "boolean"
+      result:
+        type: "string"
+      monitor_id:
+        type: "string"
+      engine:
+        type: "string"
+      image_url:
+        type: "string"
+  monitor:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      user_id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      connection_uri:
+        type: "string"
+      play_from_source:
+        type: "boolean"
+      recording:
+        type: "boolean"
+      engines:
+        type: "string"
+      graph:
+        type: "string"
+  vod:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      flv_url:
+        type: "string"
+      thumbnail_url:
+        type: "string"
+      start_timestamp:
+        type: "string"
+      end_timestamp:
+        type: "string"
+        
