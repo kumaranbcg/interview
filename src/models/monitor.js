@@ -52,6 +52,19 @@ const Monitor = sequelize.define(
       set: function(value) {
         this.setDataValue("graph", JSON.stringify(value));
       }
+    },
+    zone: {
+      type: Sequelize.TEXT,
+      get: function() {
+        if (this.getDataValue("zone")) {
+          return JSON.parse(this.getDataValue("zone"));
+        } else {
+          return {};
+        }
+      },
+      set: function(value) {
+        this.setDataValue("zone", JSON.stringify(value));
+      }
     }
   },
   {
