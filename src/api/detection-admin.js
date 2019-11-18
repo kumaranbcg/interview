@@ -9,8 +9,9 @@ const io = require("../io")();
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
 const moment = require("moment");
+const s3 = require("../lib/s3");
 
-const MEDIA_URL = "http://52.221.183.253:9000/viact";
+const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
 
 router.post("/", async (req, res, next) => {
   try {
@@ -138,11 +139,14 @@ router.post("/incoming", async (req, res, next) => {
 
     const uuid = uuidv4();
 
-    await minio.copyObject(
-      "viact",
-      `alerts/${MONITOR}/${uuid}.jpg`,
-      `/viact/frames/${MONITOR}/latest-detection-helmet.jpg`
-    );
+    await s3
+      .copyObject({
+        ACL: "public-read",
+        CopySource: `/viact/frames/${MONITOR}/latest-detection-helmet.jpg`,
+        Bucket: "viact",
+        Key: `alerts/${MONITOR}/${uuid}.jpg`
+      })
+      .promise();
 
     const newDetection = {
       id: uuid,
