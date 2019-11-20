@@ -167,7 +167,8 @@ router.post("/", async (req, res, next) => {
       connection_uri: req.body.connection_uri,
       play_from_source: false,
       graph: [],
-      engines: []
+      engines: [],
+      type: req.body.type || "normal"
     };
 
     await Monitor.create(newMonitor);
