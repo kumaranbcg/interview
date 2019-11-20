@@ -1,79 +1,84 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../lib/db");
-const Monitor = sequelize.define(
-  "monitor",
-  {
-    // attributes
-    id: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      primaryKey: true
-    },
-    user_id: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    connection_uri: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    play_from_source: {
-      type: Sequelize.BOOLEAN
-    },
-    recording: {
-      type: Sequelize.BOOLEAN
-    },
-    type: {
-      type: Sequelize.STRING
-    },
-    engines: {
-      type: Sequelize.TEXT,
-      get: function() {
-        if (this.getDataValue("engines")) {
-          return JSON.parse(this.getDataValue("engines"));
-        } else {
-          return [];
+module.exports = (sequelize, DataTypes) => {
+  const Monitor = sequelize.define(
+    "Monitor",
+    {
+      // attributes
+      id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true
+      },
+      user_id: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      connection_uri: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      play_from_source: {
+        type: DataTypes.BOOLEAN
+      },
+      recording: {
+        type: DataTypes.BOOLEAN
+      },
+      type: {
+        type: DataTypes.STRING
+      },
+      engines: {
+        type: DataTypes.TEXT,
+        get: function() {
+          if (this.getDataValue("engines")) {
+            return JSON.parse(this.getDataValue("engines"));
+          } else {
+            return [];
+          }
+        },
+        set: function(value) {
+          this.setDataValue("engines", JSON.stringify(value));
         }
       },
-      set: function(value) {
-        this.setDataValue("engines", JSON.stringify(value));
-      }
-    },
-    graph: {
-      type: Sequelize.TEXT,
-      get: function() {
-        if (this.getDataValue("graph")) {
-          return JSON.parse(this.getDataValue("graph"));
-        } else {
-          return [];
+      graph: {
+        type: DataTypes.TEXT,
+        get: function() {
+          if (this.getDataValue("graph")) {
+            return JSON.parse(this.getDataValue("graph"));
+          } else {
+            return [];
+          }
+        },
+        set: function(value) {
+          this.setDataValue("graph", JSON.stringify(value));
         }
       },
-      set: function(value) {
-        this.setDataValue("graph", JSON.stringify(value));
+      zone: {
+        type: DataTypes.TEXT,
+        get: function() {
+          if (this.getDataValue("zone")) {
+            return JSON.parse(this.getDataValue("zone"));
+          } else {
+            return {};
+          }
+        },
+        set: function(value) {
+          this.setDataValue("zone", JSON.stringify(value));
+        }
       }
     },
-    zone: {
-      type: Sequelize.TEXT,
-      get: function() {
-        if (this.getDataValue("zone")) {
-          return JSON.parse(this.getDataValue("zone"));
-        } else {
-          return {};
-        }
-      },
-      set: function(value) {
-        this.setDataValue("zone", JSON.stringify(value));
-      }
+    {
+      underscored: true,
+      tableName: "monitors"
+      // options
     }
-  },
-  {
-    underscored: true
-    // options
-  }
-);
+  );
 
-module.exports = Monitor;
+  Monitor.associate = models => {
+    models.Monitor.belongsTo(models.User);
+  };
+
+  return Monitor;
+};

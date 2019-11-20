@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const uuidv4 = require("uuid/v4");
-const Detection = require("../models/detection.js");
-const Monitor = require("../models/monitor");
-const Alert = require("../models/alert");
-const AlertLog = require("../models/alert-log");
+
+const { AlertLog, Alert, Monitor, Detection } = require("../lib/db");
+
 const io = require("../io")();
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");

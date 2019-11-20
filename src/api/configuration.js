@@ -1,8 +1,8 @@
 const express = require("express");
 const shortid = require("shortid");
 const router = express.Router();
-const Configuration = require("../models/configuration");
-const axios = require("axios");
+
+const { Configuration } = require("../lib/db");
 
 router.get("/", async (req, res) => {
   // Get All For User
@@ -49,7 +49,6 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   console.log("Creating Configuration");
   try {
-
     const existingConfig = await Configuration.findOne({
       where: {
         monitor_id: req.body.monitor_id,
@@ -58,16 +57,18 @@ router.post("/", async (req, res, next) => {
     });
 
     if (existingConfig) {
-      await Configuration.update({
-        config:req.body.config
-      }, {
-        where: { id: existingConfig.id }
-      });
+      await Configuration.update(
+        {
+          config: req.body.config
+        },
+        {
+          where: { id: existingConfig.id }
+        }
+      );
       res.status(200).json({
         message: "Successfully Updated Configuration"
       });
-    }
-    else {
+    } else {
       const CONFIGURATION_ID = shortid.generate();
       const newConfiguration = {
         id: CONFIGURATION_ID,
@@ -83,8 +84,6 @@ router.post("/", async (req, res, next) => {
         message: "Successfully Added Configuration"
       });
     }
-
-    
   } catch (err) {
     console.log(err);
     res

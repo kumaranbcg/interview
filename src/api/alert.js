@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const uuidv4 = require("uuid/v4");
-const Alert = require("../models/alert");
-const Monitor = require("../models/monitor");
+const { Alert, Monitor } = require("../lib/db");
 
 router.get("/", async (req, res) => {
   try {

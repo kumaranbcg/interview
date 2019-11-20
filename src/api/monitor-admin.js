@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Monitor = require("../models/monitor");
-const Configuration = require("../models/configuration");
-const Alert = require("../models/alert");
+
+const { Configuration, Alert, Monitor } = require("../lib/db");
 
 const io = require("../io")();
 

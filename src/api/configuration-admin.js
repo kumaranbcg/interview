@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Configuration = require("../models/configuration");
+const { Configuration } = require("../lib/db");
 
 router.get("/", async (req, res) => {
   // Get All For User

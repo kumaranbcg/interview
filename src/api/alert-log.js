@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const AlertLog = require("../models/alert-log.js");
-const Alert = require("../models/alert.js");
-const Monitor = require("../models/monitor");
+const { AlertLog, Alert, Monitor } = require("../lib/db");
 
 router.get("/", async (req, res) => {
   try {

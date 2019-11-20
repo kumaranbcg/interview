@@ -1,39 +1,41 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../lib/db");
-const Monitor = require("./monitor");
-const Vod = sequelize.define(
-  "vod",
-  {
-    // attributes
-    id: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      primaryKey: true
+module.exports = (sequelize, DataTypes) => {
+  const Vod = sequelize.define(
+    "Vod",
+    {
+      // attributes
+      id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true
+      },
+      name: {
+        type: DataTypes.STRING
+      },
+      flv_url: {
+        type: DataTypes.STRING
+      },
+      thumbnail_url: {
+        type: DataTypes.STRING
+      },
+      start_timestamp: {
+        type: DataTypes.DATE
+      },
+      end_timestamp: {
+        type: DataTypes.DATE
+      }
     },
-    name: {
-      type: Sequelize.STRING
-    },
-    flv_url: {
-      type: Sequelize.STRING
-    },
-    thumbnail_url: {
-      type: Sequelize.STRING
-    },
-    start_timestamp: {
-      type: Sequelize.DATE
-    },
-    end_timestamp: {
-      type: Sequelize.DATE
+    {
+      underscored: true,
+      tableName: "vods"
+      // options
     }
-  },
-  {
-    underscored: true
-    // options
-  }
-);
+  );
 
-Vod.belongsTo(Monitor, {
-  foreignKey: "monitor_id"
-});
+  Vod.associate = models => {
+    models.Vod.belongsTo(models.Monitor, {
+      foreignKey: "monitor_id"
+    });
+  };
 
-module.exports = Vod;
+  return Vod;
+};

@@ -1,10 +1,9 @@
 const express = require("express");
 const shortid = require("shortid");
 const router = express.Router();
-const DB = require("../lib/db");
-const Monitor = require("../models/monitor");
-const Vod = require("../models/vod");
-const Detection = require("../models/detection");
+
+const { Vod, Detection, Monitor } = require("../lib/db");
+
 const axios = require("axios");
 const url = require("url");
 const { Op } = require("sequelize");
@@ -12,6 +11,7 @@ const { Op } = require("sequelize");
 router.get("/", async (req, res) => {
   // Get All For User
   try {
+    console.log(Monitor);
     const data = await Monitor.findAll({
       where: {
         user_id: req.user["cognito:username"]
@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
       .status(200)
       .end();
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
     res
       .status(400)
       .send(err)

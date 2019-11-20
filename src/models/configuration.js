@@ -1,32 +1,34 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../lib/db");
-const Configuration = sequelize.define(
-  "configuration",
-  {
-    // attributes
-    id: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      primaryKey: true
-    },
-    config: {
-      type: Sequelize.TEXT,
-      get: function() {
-        return JSON.parse(this.getDataValue("config"));
+module.exports = (sequelize, DataTypes) => {
+  const Configuration = sequelize.define(
+    "Configuration",
+    {
+      // attributes
+      id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true
       },
-      set: function(value) {
-        this.setDataValue("config", JSON.stringify(value));
+      config: {
+        type: DataTypes.TEXT,
+        get: function() {
+          return JSON.parse(this.getDataValue("config"));
+        },
+        set: function(value) {
+          this.setDataValue("config", JSON.stringify(value));
+        }
+      },
+      monitor_id: {
+        type: DataTypes.STRING
+      },
+      engine: {
+        type: DataTypes.STRING
       }
     },
-    monitor_id: {
-      type: Sequelize.STRING
-    },
-    engine: {
-      type: Sequelize.STRING
+    {
+      underscored: true,
+      tableName: "configurations"
     }
-  },
-  {
-    underscored: true
-  }
-);
-module.exports = Configuration;
+  );
+
+  return Configuration;
+};

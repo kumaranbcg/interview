@@ -1,54 +1,55 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../lib/db");
-const Monitor = require("./monitor");
-const Vod = require("./vod");
-const Detection = sequelize.define(
-  "detection",
-  {
-    // attributes
-    id: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      primaryKey: true
-    },
-    timestamp: {
-      type: Sequelize.DATE
-    },
-    alert: {
-      type: Sequelize.BOOLEAN
-    },
-    unread: {
-      type: Sequelize.BOOLEAN
-    },
-    result: {
-      type: Sequelize.TEXT,
-      get: function() {
-        if (this.getDataValue("engines")) {
-          return JSON.parse(this.getDataValue("result"));
-        } else {
-          return [];
+module.exports = (sequelize, DataTypes) => {
+  const Detection = sequelize.define(
+    "Detection",
+    {
+      // attributes
+      id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true
+      },
+      timestamp: {
+        type: DataTypes.DATE
+      },
+      alert: {
+        type: DataTypes.BOOLEAN
+      },
+      unread: {
+        type: DataTypes.BOOLEAN
+      },
+      result: {
+        type: DataTypes.TEXT,
+        get: function() {
+          if (this.getDataValue("engines")) {
+            return JSON.parse(this.getDataValue("result"));
+          } else {
+            return [];
+          }
+        },
+        set: function(value) {
+          this.setDataValue("result", JSON.stringify(value));
         }
       },
-      set: function(value) {
-        this.setDataValue("result", JSON.stringify(value));
+      monitor_id: {
+        type: DataTypes.STRING
+      },
+      engine: {
+        type: DataTypes.STRING
+      },
+      image_url: {
+        type: DataTypes.STRING
       }
     },
-    monitor_id: {
-      type: Sequelize.STRING
-    },
-    engine: {
-      type: Sequelize.STRING
-    },
-    image_url: {
-      type: Sequelize.STRING
+    {
+      underscored: true,
+      tableName: "detections"
+      // options
     }
-  },
-  {
-    underscored: true
-    // options
-  }
-);
+  );
 
-Detection.belongsTo(Monitor);
+  Detection.associate = models => {
+    models.Detection.belongsTo(models.Monitor);
+  };
 
-module.exports = Detection;
+  return Detection;
+};

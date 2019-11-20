@@ -1,23 +1,26 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../lib/db");
-const Alert = require("./alert");
-const AlertLog = sequelize.define(
-  "alert_log",
-  {
-    // attributes
-    id: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      primaryKey: true
+module.exports = (sequelize, DataTypes) => {
+  const AlertLog = sequelize.define(
+    "AlertLog",
+    {
+      // attributes
+      id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true
+      }
+    },
+    {
+      underscored: true,
+      tableName: "alert_logs"
+      // options
     }
-  },
-  {
-    underscored: true
-    // options
-  }
-);
+  );
 
-AlertLog.belongsTo(Alert, {
-  foreignKey: "alert_id"
-});
-module.exports = AlertLog;
+  AlertLog.associate = models => {
+    models.AlertLog.belongsTo(models.Alert, {
+      foreignKey: "alert_id"
+    });
+  };
+
+  return AlertLog;
+};

@@ -1,4 +1,6 @@
 const Sequelize = require("sequelize");
+const fs = require("fs");
+const path = require("path");
 
 let sequelize;
 
@@ -26,4 +28,20 @@ sequelize
     console.error("Unable to connect to the database:", err);
   });
 
-module.exports = sequelize;
+const db = {};
+
+fs.readdirSync(path.join(__dirname, "..", "models")).forEach(file => {
+  var model = sequelize["import"](path.join(__dirname, "..", "models", file));
+  db[model.name] = model;
+});
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+module.exports = db;

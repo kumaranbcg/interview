@@ -1,9 +1,9 @@
 const express = require("express");
 const moment = require("moment");
 const router = express.Router();
-const Detection = require("../models/detection.js");
-const Monitor = require("../models/monitor.js");
-const Vod = require("../models/vod.js");
+
+const { Vod, Detection, Monitor } = require("../lib/db");
+
 const { Op } = require("sequelize");
 
 router.get("/", async (req, res) => {
