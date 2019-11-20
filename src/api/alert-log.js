@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
               model: Monitor,
               required: true,
               where: {
-                user_id: req.body.user["cognito:username"]
+                user_id: req.user["cognito:username"]
               }
             }
           ]

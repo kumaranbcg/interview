@@ -56,11 +56,18 @@ router.get("/", async (req, res) => {
         model: Monitor,
         required: true,
         where: {
-          user_id: req.body.user["cognito:username"]
+          user_id: req.user["cognito:username"]
         }
       }
     ];
     const data = await Detection.findAndCountAll(query);
+
+    if (req.query.countUnread) {
+      query.where.unread = true;
+      const unread = await Detection.findAndCountAll(query);
+      data.unread = unread.count;
+    }
+
     res.status(200).json(data);
   } catch (err) {
     console.log(err);
@@ -207,6 +214,7 @@ router.get("/:id/vod", async (req, res, next) => {
 });
 
 router.put("/:id", async (req, res, next) => {
+  delete req.body.id;
   try {
     await Detection.update(req.body, {
       where: { id: req.params.id }
@@ -216,8 +224,8 @@ router.put("/:id", async (req, res, next) => {
     });
   } catch (err) {
     res
-      .send(err)
       .status(400)
+      .send(err.message)
       .end();
   }
 });

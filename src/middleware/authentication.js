@@ -4,7 +4,7 @@ module.exports = {
   verify: (req, res, next) => {
     if (process.env.NODE_ENV === "local") {
       if (req.headers["x-customindz-key"] === "customindz") {
-        req.body.user = {
+        req.user = {
           "cognito:username": "local"
         };
         next();
@@ -20,7 +20,7 @@ module.exports = {
         cognitoValidate
           .validate(jwt)
           .then(user => {
-            req.body.user = user;
+            req.user = user;
             next();
           })
           .catch(err => {

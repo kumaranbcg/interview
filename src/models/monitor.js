@@ -27,6 +27,9 @@ const Monitor = sequelize.define(
     recording: {
       type: Sequelize.BOOLEAN
     },
+    type: {
+      type: Sequelize.STRING
+    },
     engines: {
       type: Sequelize.TEXT,
       get: function() {

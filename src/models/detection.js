@@ -17,10 +17,17 @@ const Detection = sequelize.define(
     alert: {
       type: Sequelize.BOOLEAN
     },
+    unread: {
+      type: Sequelize.BOOLEAN
+    },
     result: {
       type: Sequelize.TEXT,
       get: function() {
-        return JSON.parse(this.getDataValue("result"));
+        if (this.getDataValue("engines")) {
+          return JSON.parse(this.getDataValue("result"));
+        } else {
+          return [];
+        }
       },
       set: function(value) {
         this.setDataValue("result", JSON.stringify(value));
