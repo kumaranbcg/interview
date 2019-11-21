@@ -48,7 +48,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Detection.associate = models => {
-    models.Detection.belongsTo(models.Monitor);
+    models.Detection.belongsTo(models.Monitor, {
+      as: "monitor"
+    });
   };
 
   return Detection;

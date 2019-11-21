@@ -12,8 +12,10 @@ module.exports = {
       include: [
         {
           model: Monitor,
+          as: "monitor",
           include: {
             model: Detection,
+            as: "detection",
             where: {
               createdAt: {
                 [Op.lte]: new Date(),

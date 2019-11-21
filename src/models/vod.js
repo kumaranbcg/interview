@@ -33,7 +33,8 @@ module.exports = (sequelize, DataTypes) => {
 
   Vod.associate = models => {
     models.Vod.belongsTo(models.Monitor, {
-      foreignKey: "monitor_id"
+      foreignKey: "monitor_id",
+      as: "monitor"
     });
   };
 

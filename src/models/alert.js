@@ -36,7 +36,8 @@ module.exports = (sequelize, DataTypes) => {
 
   Alert.associate = models => {
     models.Alert.belongsTo(models.Monitor, {
-      foreignKey: "monitor_id"
+      foreignKey: "monitor_id",
+      as: "monitor"
     });
   };
 

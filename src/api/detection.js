@@ -54,6 +54,7 @@ router.get("/", async (req, res) => {
     query.include = [
       {
         model: Monitor,
+        as: "monitor",
         required: true,
         where: {
           user_id: req.user["cognito:username"]

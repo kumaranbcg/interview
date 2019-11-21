@@ -174,7 +174,8 @@ router.post("/incoming", async (req, res, next) => {
           include: [
             {
               model: Monitor,
-              required: true
+              required: true,
+              as: "monitor"
             }
           ]
         });

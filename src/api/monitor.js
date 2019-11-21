@@ -11,7 +11,6 @@ const { Op } = require("sequelize");
 router.get("/", async (req, res) => {
   // Get All For User
   try {
-    console.log(Monitor);
     const data = await Monitor.findAll({
       where: {
         user_id: req.user["cognito:username"]

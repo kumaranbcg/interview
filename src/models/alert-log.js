@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
 
   AlertLog.associate = models => {
     models.AlertLog.belongsTo(models.Alert, {
-      foreignKey: "alert_id"
+      foreignKey: "alert_id",
+      as: "alert"
     });
   };
 

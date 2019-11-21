@@ -78,6 +78,9 @@ module.exports = (sequelize, DataTypes) => {
 
   Monitor.associate = models => {
     models.Monitor.belongsTo(models.User);
+    models.Monitor.hasMany(models.Detection, {
+      as: "detection"
+    });
   };
 
   return Monitor;
