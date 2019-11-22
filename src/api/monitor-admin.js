@@ -21,6 +21,26 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    let data = await Monitor.findOne({
+      where: {
+        id: req.params.id
+      }
+    });
+    if (!data) {
+      throw new Error("No Monitor Found");
+    }
+    res.send(data);
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 router.get("/:id/engine/:engine", async (req, res) => {
   try {
     const monitor = await Monitor.findOne({
