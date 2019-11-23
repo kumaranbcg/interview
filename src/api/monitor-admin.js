@@ -41,6 +41,27 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res, next) => {
+  try {
+    delete req.body.id;
+    await Monitor.update(req.body, {
+      where: { id: req.params.id }
+    });
+    res
+      .send({
+        message: "Successfully Update"
+      })
+      .status(200)
+      .end();
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 router.get("/:id/engine/:engine", async (req, res) => {
   try {
     const monitor = await Monitor.findOne({
