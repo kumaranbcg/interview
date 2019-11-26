@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       result: {
         type: DataTypes.TEXT,
         get: function() {
-          if (this.getDataValue("engines")) {
+          if (this.getDataValue("result")) {
             return JSON.parse(this.getDataValue("result"));
           } else {
             return [];
