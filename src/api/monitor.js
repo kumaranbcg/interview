@@ -2,7 +2,7 @@ const express = require("express");
 const shortid = require("shortid");
 const router = express.Router();
 
-const { Vod, Detection, Monitor } = require("../lib/db");
+const { Vod, Detection, Monitor, Puller, PullerServer } = require("../lib/db");
 
 const axios = require("axios");
 const url = require("url");
@@ -34,7 +34,19 @@ router.get("/:id", async (req, res, next) => {
     let data = await Monitor.findOne({
       where: {
         id: req.params.id
-      }
+      },
+      include: [
+        {
+          model: Puller,
+          as: "puller",
+          include: [
+            {
+              model: PullerServer,
+              as: "server"
+            }
+          ]
+        }
+      ]
     });
     if (!data) {
       throw new Error("No Monitor Found");

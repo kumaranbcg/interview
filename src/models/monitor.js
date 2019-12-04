@@ -81,6 +81,9 @@ module.exports = (sequelize, DataTypes) => {
     models.Monitor.hasMany(models.Detection, {
       as: "detection"
     });
+    models.Monitor.hasMany(models.Puller, {
+      as: "puller"
+    });
   };
 
   return Monitor;
