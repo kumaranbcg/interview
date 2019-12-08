@@ -1,4 +1,5 @@
 const express = require("express");
+const authentication = require("../middleware/authentication");
 const shortid = require("shortid");
 const router = express.Router();
 
@@ -244,5 +245,41 @@ router.delete("/:id", async (req, res, next) => {
       .end();
   }
 });
+
+router.get(
+  "/superuser/available",
+  authentication.checkAdmin,
+  async (req, res) => {
+    try {
+      const data = await Monitor.findAll({
+        where: {
+          type: "normal"
+        },
+        include: [
+          {
+            model: Puller,
+            as: "puller",
+            include: [
+              {
+                model: PullerServer,
+                as: "server"
+              }
+            ]
+          }
+        ]
+      });
+      res
+        .send(data)
+        .status(200)
+        .end();
+    } catch (err) {
+      console.log(err);
+      res
+        .send(err)
+        .status(400)
+        .end();
+    }
+  }
+);
 
 module.exports = router;

@@ -8,6 +8,15 @@ const {
   Sequelize: { Op }
 } = require("../lib/db");
 
+router.get(
+  "/checkAdmin",
+  authentication.verify,
+  authentication.checkAdmin,
+  (req, res) => {
+    res.status(200).end();
+  }
+);
+
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({

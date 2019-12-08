@@ -14,6 +14,7 @@ const configurationAdminRouter = require("./configuration-admin");
 const reportRouter = require("./report");
 const ysRouter = require("./ys");
 const pullerRouter = require("./puller");
+const pullerServerRouter = require("./puller-server");
 const authRouter = require("./auth");
 
 // define the home page route
@@ -36,6 +37,7 @@ router.use("/configuration", authentication.verify, configurationRouter);
 router.use("/report", reportRouter);
 router.use("/ys", ysRouter);
 router.use("/puller", authentication.verify, pullerRouter);
+router.use("/puller-server", authentication.verify, pullerServerRouter);
 
 router.use("/admin/monitor", authentication.verifyMachine, monitorAdminRouter);
 router.use(

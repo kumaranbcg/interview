@@ -1,5 +1,6 @@
 const cognitoValidate = require("../lib/validateToken");
 const Token = require("../lib/token");
+const { User } = require("../lib/db");
 module.exports = {
   verify: (req, res, next) => {
     if (process.env.NODE_ENV === "local") {
@@ -67,6 +68,19 @@ module.exports = {
         success: false,
         message: "Auth token is not supplied"
       });
+    }
+  },
+
+  checkAdmin: async (req, res, next) => {
+    const user = await User.findOne({
+      where: {
+        username: req.user["cognito:username"]
+      }
+    });
+    if (user) {
+      next();
+    } else {
+      return res.status(400).end();
     }
   }
 };
