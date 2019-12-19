@@ -31,6 +31,25 @@ router.get("/", async (req, res) => {
       query.order = [[req.query.orderBy]];
     }
 
+
+    if (req.query.start_timestamp) {
+      query.where.createdAt = {
+        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
+      };
+    }
+    if (req.query.end_timestamp) {
+      if (!query.where.createdAt) {
+        query.where.createdAt = {
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      } else {
+        query.where.createdAt = {
+          ...query.where.createdAt,
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      }
+    }
+
     const data = await Alert.findAndCountAll(query);
 
     res
