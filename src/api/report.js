@@ -120,14 +120,35 @@ router.get("/monitor/:id/vod", async (req, res, next) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit) : 10;
     const offset = req.query.offset ? parseInt(req.query.offset) : 0;
-    const data = await Vod.findAndCountAll({
+
+    const query = {
       where: {
         monitor_id: req.params.id
       },
       limit,
       offset,
       order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]]
-    });
+    };
+
+    if (req.query.start_timestamp) {
+      query.where.createdAt = {
+        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
+      };
+    }
+    if (req.query.end_timestamp) {
+      if (!query.where.createdAt) {
+        query.where.createdAt = {
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      } else {
+        query.where.createdAt = {
+          ...query.where.createdAt,
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      }
+    }
+
+    const data = await Vod.findAndCountAll(query);
     res
       .send(data)
       .status(200)
