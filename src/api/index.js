@@ -16,6 +16,7 @@ const ysRouter = require("./ys");
 const pullerRouter = require("./puller");
 const pullerServerRouter = require("./puller-server");
 const authRouter = require("./auth");
+const userRouter = require("./user");
 
 // define the home page route
 router.get("/", function(req, res) {
@@ -46,6 +47,7 @@ router.use(
   detectionAdminRouter
 );
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
+router.use("/admin/user", userRouter);
 
 router.use(
   "/admin/configuration",
