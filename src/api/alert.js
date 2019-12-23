@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const uuidv4 = require("uuid/v4");
 const { Alert, Monitor } = require("../lib/db");
+const { Op } = require("sequelize");
 
 router.get("/", async (req, res) => {
   try {
     let query = {
       offset: 0,
+      where:{},
       include: [
         {
           model: Monitor,
