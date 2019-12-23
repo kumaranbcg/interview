@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const uuidv4 = require("uuid/v4");
-const { Alert, Monitor } = require("../lib/db");
-const { Op } = require("sequelize");
+const { User } = require("../lib/db");
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
+
   try {
     let query = {
       offset: 0,
@@ -52,7 +51,7 @@ router.get("/", async (req, res) => {
       }
     }
 
-    const data = await Alert.findAndCountAll(query);
+    const data = await User.findAll(query);
 
     res
       .send(data)
@@ -67,9 +66,11 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+
 router.get("/:id", async (req, res, next) => {
   try {
-    var data = await Alert.findOne({
+    var data = await User.findOne({
       where: {
         id: req.params.id
       }
@@ -87,7 +88,7 @@ router.post("/", async (req, res, next) => {
   try {
     // Create Log In Our Database
     const id = uuidv4();
-    await Alert.create({
+    await User.create({
       id,
       ...req.body
     });
@@ -96,7 +97,7 @@ router.post("/", async (req, res, next) => {
 
     res.status(200).json({
       id: id,
-      message: "Successfully Added Alert"
+      message: "Successfully Added User"
     });
   } catch (err) {
     console.log(err);
@@ -109,7 +110,7 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    await Alert.update(req.body, {
+    await User.update(req.body, {
       where: { id: req.params.id }
     });
     res.status(200).json({
@@ -125,14 +126,14 @@ router.put("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    await Alert.destroy({
+    await User.destroy({
       where: {
         id: req.params.id
       }
     });
     res
       .json({
-        message: "Successfully Deleted Alert"
+        message: "Successfully Deleted User"
       })
       .status(200)
       .end();
