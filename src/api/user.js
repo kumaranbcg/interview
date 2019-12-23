@@ -86,17 +86,15 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    // Create Log In Our Database
-    const id = uuidv4();
-    await User.create({
-      id,
-      ...req.body
-    });
+    const newUser = {
+      ...req.body,
+      role: "user",
+      password: md5(uuidv4())
+    };
 
-    console.log(req.body);
+    await User.create(newUser);
 
     res.status(200).json({
-      id: id,
       message: "Successfully Added User"
     });
   } catch (err) {
