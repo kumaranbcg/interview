@@ -26,6 +26,19 @@ module.exports = (sequelize, DataTypes) => {
       },
       disabled: {
         type: DataTypes.BOOLEAN
+      },
+      permissions: {
+        type: DataTypes.TEXT,
+        get: function () {
+          if (this.getDataValue("permissions")) {
+            return JSON.parse(this.getDataValue("permissions"));
+          } else {
+            return {};
+          }
+        },
+        set: function (value) {
+          this.setDataValue("permissions", JSON.stringify(value));
+        }
       }
     },
     {

@@ -1,24 +1,16 @@
 const express = require("express");
+const md5 = require("blueimp-md5");
+
 const router = express.Router();
 const { User } = require("../lib/db");
+const ses = require("../lib/ses");
 
 router.get("/", async (req, res, next) => {
 
   try {
     let query = {
       offset: 0,
-      where:{},
-      include: [
-        {
-          model: Monitor,
-          required: true,
-          as: "monitor",
-          where: {
-            user_id: req.user["cognito:username"],
-            ...(req.query.monitor_id ? { id: req.query.monitor_id } : {})
-          }
-        }
-      ]
+      where: {},
     };
 
     if (req.query.limit) {
@@ -86,19 +78,31 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    // Create Log In Our Database
-    const id = uuidv4();
-    await User.create({
-      id,
-      ...req.body
-    });
+    const newUser = {
+      ...req.body,
+      role: "user",
+      password: md5('password123')
+    };
 
-    console.log(req.body);
+    await User.create(newUser);
+
 
     res.status(200).json({
-      id: id,
       message: "Successfully Added User"
     });
+
+    console.log(`Viact.AI : Invited by ${req.user["cognito:username"]}`, `Use this password password123 to login to your account`);
+    
+    ses
+      .send(req.body.email, `Viact.AI : Invited by ${req.user["cognito:username"]}`, `Use this password ${newUser.password} to login to your account`)
+      .then(() => {
+        console.log("Successfully send ses");
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+
   } catch (err) {
     console.log(err);
     res
