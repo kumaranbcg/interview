@@ -4,7 +4,6 @@ const uuidv4 = require("uuid/v4");
 
 const { AlertLog, Alert, Monitor, Detection } = require("../lib/db");
 
-const io = require("../io")();
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
 const moment = require("moment");
@@ -27,7 +26,6 @@ router.post("/", async (req, res, next) => {
     };
 
     await Detection.create(newDetection);
-    io.in(req.body.monitor_id).emit("detection", req.body.result || []);
 
     // if (req.body.alert === true && req.body.engine) {
     //   const alert = await Alert.find({
@@ -106,7 +104,6 @@ router.post("/", async (req, res, next) => {
 router.post("/incoming", async (req, res, next) => {
   try {
     const MONITOR = req.body.monitor_id;
-    io.in(MONITOR).emit("detection", req.body.alert || []);
     // const minimumDetection = await Detection.findOne({
     //   where: {
     //     monitor_id: req.body.monitor_id,

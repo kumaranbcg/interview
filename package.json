@@ -2,10 +2,10 @@
   "name": "customindz-back-end-nodejs-app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "local": "cross-env PORT=5000 node src/index.js",
+    "start": "node src/local.js",
+    "local": "cross-env PORT=5000 node src/local.js",
     "test": "mocha --reporter spec"
   },
   "author": "",
@@ -19,11 +19,9 @@
     "cron": "^1.7.2",
     "email-templates": "^6.0.3",
     "express": "^4.16.4",
-    "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^8.0.1",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
-    "kafka-node": "^4.1.3",
     "minio": "^7.0.12",
     "moment": "^2.24.0",
     "mysql2": "^1.6.5",
@@ -32,7 +30,6 @@
     "request": "^2.88.0",
     "sequelize": "^5.8.6",
     "shortid": "^2.2.14",
-    "socket.io": "^2.2.0",
     "sqlite3": "^4.0.8"
   },
   "devDependencies": {
