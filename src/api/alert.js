@@ -22,6 +22,10 @@ router.get("/", async (req, res) => {
       ]
     };
 
+    if (req.query.monitor_id) {
+      query.monitor_id = req.query.monitor_id;
+    }
+
     if (req.query.limit) {
       query.limit = Number.parseInt(req.query.limit)
       if (req.query.page) {
