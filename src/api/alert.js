@@ -8,7 +8,7 @@ router.get("/", async (req, res) => {
   try {
     let query = {
       offset: 0,
-      where:{},
+      where: {},
       include: [
         {
           model: Monitor,
@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
     };
 
     if (req.query.limit) {
-      query.limit = req.query.limit;
+      query.limit = Number.parseInt(req.query.limit)
       if (req.query.page) {
         query.offset = (Math.min(req.query.page) - 1) * req.query.limit;
       }
