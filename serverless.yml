@@ -1,0 +1,37 @@
+service: serverless-http-viact
+frameWorkVersion: ">=1.1.0 <2.0.0"
+
+package:
+  exclude:
+    - db/**
+    - doc/**
+    - frames/**
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ap-southeast-1
+  stage: ${opt:stage, 'dev'}
+  memorySize: 512
+  apiKeys:
+    - ${self:custom.prefix}-admin-panel
+  environment:
+    NODE_ENV: ${self:provider.stage}
+
+custom:
+  prefix: ${self:provider.stage}-${self:service}
+
+functions:
+  api:
+    handler: src/serverless.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+          private: true
+      - http:
+          path: /{any+}
+          method: ANY
+          cors: true
+          private: true

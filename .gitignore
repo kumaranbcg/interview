@@ -4,3 +4,4 @@ ssd_mobilenet_v2_coco
 ssd_300x300
 frames
 .DS_Store
+.serverless
