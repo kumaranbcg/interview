@@ -76,7 +76,7 @@ router.get('/', async (req, res) => {
           title: "Alerts Today",
           percent: { value: alertAll.count + alert.count / 2, profit: Boolean(alertYesterday.count + alert.count / 2) },
           total: {
-            value: alert.count,
+            value: alertAll.count,
           },
           yesterday: {
             value: alertYesterday.count, profit: false
@@ -110,7 +110,7 @@ router.get('/', async (req, res) => {
             value: alertYesterday.count, profit: false
           },
           average: {
-            value: 4.5, profit: false
+            value: 0, profit: false
           },
           chartColor: "#ffa630"
         },
@@ -125,7 +125,7 @@ router.get('/', async (req, res) => {
             value: alertYesterday.count, profit: false
           },
           average: {
-            value: 4.5, profit: false
+            value: 0, profit: false
           },
           background: "#ffa630",
           color: "#fff",
@@ -144,7 +144,7 @@ router.get('/', async (req, res) => {
             value: alertYesterday.count, profit: false
           },
           average: {
-            value: 4.5, profit: false
+            value: 0, profit: false
           },
           options: [
             {
@@ -172,7 +172,7 @@ router.get('/', async (req, res) => {
             value: alertYesterday.count, profit: false
           },
           average: {
-            value: 4.5, profit: false
+            value: 0, profit: false
           },
           chartColor: "#2b518e"
         },
@@ -185,7 +185,7 @@ router.get('/', async (req, res) => {
             value: alertYesterday.count, profit: false
           },
           average: {
-            value: 4.5, profit: false
+            value: 0, profit: false
           },
           chartColor: "#2b518e"
         }
