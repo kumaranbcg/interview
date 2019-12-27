@@ -17,19 +17,21 @@ const pullerRouter = require("./puller");
 const pullerServerRouter = require("./puller-server");
 const authRouter = require("./auth");
 const userRouter = require("./user");
+const dashboardRouter = require("./dashboard");
 
 // define the home page route
-router.get("/", function(req, res) {
+router.get("/", function (req, res) {
   console.log(req.query);
   res.send("API page" + req.query.name);
 });
 // define the about route
-router.get("/authenticated", authentication.verify, function(req, res) {
+router.get("/authenticated", authentication.verify, function (req, res) {
   res.send("Authenticated!");
 });
 
 router.use("/auth", authRouter);
 router.use("/monitor", authentication.verify, monitorRouter);
+router.use("/dashboard", dashboardRouter);
 router.use("/detection", authentication.verify, detectionRouter);
 router.use("/vod", authentication.verify, vodRouter);
 router.use("/alert", authentication.verify, alertRouter);
