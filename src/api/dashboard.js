@@ -48,16 +48,23 @@ router.get('/', async (req, res) => {
       query.monitor_id = req.query.monitor_id;
     }
 
+    const todayDate = today();
+    const yesterdayDate = yesterday();
+
+    const alertAll = await Alert.findAndCountAll({
+      ...query, where: {
+      }
+    });
 
     const alert = await Alert.findAndCountAll({
       ...query, where: {
-        createdAt: today()
+        createdAt: todayDate
       }
     });
 
     const alertYesterday = await Alert.findAndCountAll({
       ...query, where: {
-        createdAt: yesterday()
+        createdAt: yesterdayDate
       }
     });
 
@@ -67,7 +74,7 @@ router.get('/', async (req, res) => {
       safetyStat: [
         {
           title: "Alerts Today",
-          percent: { value: alertYesterday.count + alert.count / 2, profit: Boolean(alertYesterday.count + alert.count / 2) },
+          percent: { value: alertAll.count + alert.count / 2, profit: Boolean(alertYesterday.count + alert.count / 2) },
           total: {
             value: alert.count,
           },
@@ -95,9 +102,9 @@ router.get('/', async (req, res) => {
         },
         {
           title: "Safety Level",
-          percent: { value: 3.7, profit: false },
+          percent: { value: 0, profit: false },
           total: {
-            value:  alert.count,
+            value: alert.count,
           },
           yesterday: {
             value: alertYesterday.count, profit: false
@@ -109,10 +116,10 @@ router.get('/', async (req, res) => {
         },
         {
           title: "Savings on Monitoring",
-          percent: { value: 3.7, profit: false },
+          percent: { value: 0, profit: false },
 
           total: {
-            value:  alert.count,
+            value: alert.count,
           },
           yesterday: {
             value: alertYesterday.count, profit: false
@@ -128,10 +135,10 @@ router.get('/', async (req, res) => {
       savingsStat: [
         {
           title: "Minutes Monitored",
-          percent: { value: 3.7, profit: false },
+          percent: { value: 0, profit: false },
 
           total: {
-            value:  alert.count,
+            value: alert.count,
           },
           yesterday: {
             value: alertYesterday.count, profit: false
@@ -156,10 +163,10 @@ router.get('/', async (req, res) => {
           chartColor: "#2b518e"
         },
         {
-          title: "Best Day", percent: { value: 3.7, profit: false },
+          title: "Best Day", percent: { value: 0, profit: false },
 
           total: {
-            value:  alert.count,
+            value: alert.count,
           },
           yesterday: {
             value: alertYesterday.count, profit: false
@@ -170,9 +177,9 @@ router.get('/', async (req, res) => {
           chartColor: "#2b518e"
         },
         {
-          title: "Worst Day", percent: { value: 3.7, profit: false },
+          title: "Worst Day", percent: { value: 0, profit: false },
           total: {
-            value:  alert.count,
+            value: alert.count,
           },
           yesterday: {
             value: alertYesterday.count, profit: false
