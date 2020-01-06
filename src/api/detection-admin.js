@@ -103,30 +103,14 @@ router.post("/", async (req, res, next) => {
 
 router.post("/incoming", async (req, res, next) => {
   try {
-    const MONITOR = req.body.monitor_id;
-    // const minimumDetection = await Detection.findOne({
-    //   where: {
-    //     monitor_id: req.body.monitor_id,
-    //     engine: req.body.engine || "helmet",
-    //     createdAt: {
-    //       [Op.gte]: moment()
-    //         .subtract(10, "seconds")
-    //         .toDate()
-    //     }
-    //   }
-    // });
+    const { result, monitor_id, engine = "helmet" } = req.body;
 
-    // if (minimumDetection) {
-    //   throw new Error("Detection abandoned for this request");
-    // }
-    if (!MONITOR) {
+    if (!monitor_id) {
       throw new Error("No Monitor, check the 'monitor' key in your post");
     }
 
-    const noHelmetCount = req.body.alert.filter(type => type === "N").length;
-    const isAlertTriggering = noHelmetCount > 0;
 
-    if (!isAlertTriggering) {
+    if (result !== 'Y') {
       res.status(200).json({
         message: "No Alert, Detection skipped"
       });
@@ -138,19 +122,19 @@ router.post("/incoming", async (req, res, next) => {
     await s3
       .copyObject({
         ACL: "public-read",
-        CopySource: `/viact/frames/${MONITOR}/latest-detection-helmet.jpg`,
+        CopySource: `/viact/frames/${monitor_id}/latest-detection-helmet.jpg`,
         Bucket: "viact",
-        Key: `alerts/${MONITOR}/${uuid}.jpg`
+        Key: `alerts/${monitor_id}/${uuid}.jpg`
       })
       .promise();
 
     const newDetection = {
       id: uuid,
-      monitor_id: req.body.monitor_id,
-      result: req.body.alert,
-      alert: isAlertTriggering,
+      monitor_id,
+      result,
+      alert: result === 'Y',
       timestamp: new Date(),
-      image_url: `${MEDIA_URL}/alerts/${MONITOR}/${uuid}.jpg`,
+      image_url: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
       engine: req.body.engine || "helmet"
     };
     await Detection.create(newDetection);
@@ -164,8 +148,8 @@ router.post("/incoming", async (req, res, next) => {
       if (isAlertTriggering) {
         const alert = await Alert.findOne({
           where: {
-            monitor_id: req.body.monitor_id,
-            engine: req.body.engine || "helmet",
+            monitor_id,
+            engine,
             alert_type: "Trigger"
           },
           include: [
@@ -200,8 +184,8 @@ router.post("/incoming", async (req, res, next) => {
           const alerts = [alert];
 
           alertUtil.do(alerts, {
-            image: `${MEDIA_URL}/alerts/${MONITOR}/${uuid}.jpg`,
-            url: `http://app.viact.ai/#/report/${MONITOR}/detection/${uuid}`
+            image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
+            url: `http://app.viact.ai/#/report/${monitor_id}/detection/${uuid}`
           });
 
           console.log(`Made an alert at ${new Date().toString()}!`);
