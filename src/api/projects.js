@@ -31,14 +31,14 @@ router.get('/:id', async (req, res) => {
   try {
 
     const query = {
-      where: {},
+      where: { id: req.params.id }
     };
-    const data = await Projects.findAndCountAll({
-      ...query, where: {
-      }
-    });
+    const data = await Projects.findOne(query);
 
-    res.send(data).end();
+    if (!data) {
+      throw new Error("No Project Found");
+    }
+    res.send(data);
 
 
   } catch (err) {
