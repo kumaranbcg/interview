@@ -194,10 +194,10 @@ router.post("/incoming", async (req, res, next) => {
       console.log(err.message);
     }
   } catch (err) {
-    console.log(err.message);
+    console.log(err.message || err.name);
     res
       .status(400)
-      .send(err.message)
+      .send(err.message || err.name)
       .end();
   }
 });
