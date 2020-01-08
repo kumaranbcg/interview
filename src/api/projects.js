@@ -8,12 +8,35 @@ router.get('/', async (req, res) => {
   try {
 
     const query = {
-      where: {},
+      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]]
     };
-    const data = await Projects.findAndCountAll({
-      ...query, where: {
+
+    if (req.query.limit) {
+      query.limit = parseInt(req.query.limit);
+      if (req.query.page) {
+        query.offset =
+          (parseInt(req.query.page) - 1) * parseInt(req.query.limit);
       }
-    });
+    }
+
+    if (req.query.start_timestamp) {
+      query.where.createdAt = {
+        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
+      };
+    }
+    if (req.query.end_timestamp) {
+      if (!query.where.createdAt) {
+        query.where.createdAt = {
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      } else {
+        query.where.createdAt = {
+          ...query.where.createdAt,
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      }
+    }
+    const data = await Projects.findAndCountAll(query);
 
     res.send(data).end();
 
@@ -53,8 +76,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const data = await Projects.create({
+      ...req.body,
+      quarter: `${req.body.quarter}`.toUpperCase(),
       id: shortid(),
-      ...req.body
     });
 
     res.send(data).end();
@@ -73,7 +97,10 @@ router.post('/', async (req, res) => {
 router.put("/:id", async (req, res, next) => {
   try {
     delete req.body.id;
-    await Projects.update(req.body, {
+    await Projects.update({
+      ...req.body,
+      quarter: `${req.body.quarter}`.toUpperCase()
+    }, {
       where: { id: req.params.id }
     });
     res
