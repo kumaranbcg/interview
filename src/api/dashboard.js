@@ -1,12 +1,8 @@
 const express = require("express");
-const authentication = require("../middleware/authentication");
-const shortid = require("shortid");
 const router = express.Router();
 
-const { Vod, Detection, Monitor, Puller, PullerServer, Alert } = require("../lib/db");
+const { Alert } = require("../lib/db");
 
-const axios = require("axios");
-const url = require("url");
 const { Op } = require("sequelize");
 
 const today = () => {
@@ -203,6 +199,6 @@ router.get('/', async (req, res) => {
       .send(err)
       .end();
   }
-})
+});
 
 module.exports = router;
