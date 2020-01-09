@@ -3,7 +3,7 @@ const shortid = require("shortid");
 const router = express.Router();
 const { Op } = require("sequelize");
 
-const { Projects } = require("../lib/db");
+const { Projects, Detection } = require("../lib/db");
 
 router.get('/', async (req, res) => {
   try {
@@ -58,6 +58,12 @@ router.get('/:id', async (req, res) => {
       where: { id: req.params.id }
     };
     const data = await Projects.findOne(query);
+    const data = await Projects.findOne(query);
+
+    data.detections = await Detection.findAll({
+      where: { engine: 'helmet-detection' },
+      group: ['monitor_id']
+    });
 
     if (!data) {
       throw new Error("No Project Found");
