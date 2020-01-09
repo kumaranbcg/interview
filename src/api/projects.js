@@ -81,7 +81,13 @@ router.get('/:id', async (req, res) => {
       }
     }
 
-    const detections = await Detection.findAll({
+    const detectionsByDate = await Detection.findAll({
+      ...query,
+      group: ['monitor_id', 'createdAt'],
+      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'], 'createdAt'],
+    });
+
+    const detectionsByMonitor = await Detection.findAll({
       ...query,
       group: ['monitor_id'],
       attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts']],
@@ -90,7 +96,7 @@ router.get('/:id', async (req, res) => {
     if (!data) {
       throw new Error("No Project Found");
     }
-    res.send({ data, detections }).end();
+    res.send({ data, detectionsByMonitor, detectionsByDate }).end();
 
 
   } catch (err) {
