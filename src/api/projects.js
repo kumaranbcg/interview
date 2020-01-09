@@ -2,6 +2,7 @@ const express = require("express");
 const shortid = require("shortid");
 const router = express.Router();
 const { Op } = require("sequelize");
+const Sequelize = require("sequelize");
 
 const { Projects, Detection } = require("../lib/db");
 
@@ -55,20 +56,41 @@ router.get('/:id', async (req, res) => {
   try {
 
     const query = {
+      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
       where: { id: req.params.id }
     };
     const data = await Projects.findOne(query);
-    const data = await Projects.findOne(query);
 
-    data.detections = await Detection.findAll({
-      where: { engine: 'helmet-detection' },
-      group: ['monitor_id']
+    query.where = {};
+
+    if (req.query.start_timestamp) {
+      query.where.createdAt = {
+        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
+      };
+    }
+    if (req.query.end_timestamp) {
+      if (!query.where.createdAt) {
+        query.where.createdAt = {
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      } else {
+        query.where.createdAt = {
+          ...query.where.createdAt,
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      }
+    }
+
+    const detections = await Detection.findAll({
+      ...query,
+      group: ['monitor_id'],
+      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts']],
     });
-
+    console.log()
     if (!data) {
       throw new Error("No Project Found");
     }
-    res.send(data);
+    res.send({ data, detections }).end();
 
 
   } catch (err) {
