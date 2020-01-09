@@ -83,8 +83,8 @@ router.get('/:id', async (req, res) => {
 
     const detectionsByDate = await Detection.findAll({
       ...query,
-      group: ['monitor_id', 'createdAt'],
-      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'], 'createdAt'],
+      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'], [Sequelize.literal(`DATE(created_at)`), 'date']],
+      group: ['monitor_id', 'date'],
     });
 
     const detectionsByMonitor = await Detection.findAll({
