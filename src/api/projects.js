@@ -4,7 +4,7 @@ const router = express.Router();
 const { Op } = require("sequelize");
 const Sequelize = require("sequelize");
 
-const { Projects, Detection } = require("../lib/db");
+const { Projects, Detection, Monitor } = require("../lib/db");
 
 router.get('/', async (req, res) => {
   try {
@@ -56,6 +56,12 @@ router.get('/:id', async (req, res) => {
   try {
 
     const query = {
+      include: [
+        {
+          model: Monitor,
+          as: "monitor"
+        }
+      ],
       order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
       where: { id: req.params.id }
     };
