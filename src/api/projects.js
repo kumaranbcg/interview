@@ -56,12 +56,6 @@ router.get('/:id', async (req, res) => {
   try {
 
     const query = {
-      include: [
-        {
-          model: Monitor,
-          as: "monitor"
-        }
-      ],
       order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
       where: { id: req.params.id }
     };
@@ -96,6 +90,12 @@ router.get('/:id', async (req, res) => {
     const detectionsByMonitor = await Detection.findAll({
       ...query,
       group: ['monitor_id'],
+      include: [
+        {
+          model: Monitor,
+          as: "monitor",
+        }
+      ],
       attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts']],
     });
     console.log()
