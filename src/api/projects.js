@@ -5,7 +5,7 @@ const { Op } = require("sequelize");
 const Sequelize = require("sequelize");
 
 const { Projects, Detection, Monitor } = require("../lib/db");
-const { today } = require("../lib/utils");
+const { today, week } = require("../lib/utils");
 
 router.get('/', async (req, res) => {
   try {
@@ -92,6 +92,18 @@ router.get('/:id', async (req, res) => {
       group: ['monitor_id', 'date'],
     });
 
+    const detectionsWeek = await Detection.findAll({
+      where: {
+        createdAt: week()
+      },
+      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'],
+        [Sequelize.literal(`DATE(created_at)`), 'date'],
+        [Sequelize.literal(`HOUR(created_at)`), 'hour']],
+      group: ['monitor_id', 'date'],
+    });
+
+
+
     const detectionsByDate = await Detection.findAll({
       ...query,
       attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'], [Sequelize.literal(`DATE(created_at)`), 'date']],
@@ -113,7 +125,7 @@ router.get('/:id', async (req, res) => {
     if (!data) {
       throw new Error("No Project Found");
     }
-    res.send({ data, detectionsToday, detectionsByMonitor, detectionsByDate }).end();
+    res.send({ data, detectionsWeek, detectionsToday, detectionsByMonitor, detectionsByDate }).end();
 
 
   } catch (err) {
