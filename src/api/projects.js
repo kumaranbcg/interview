@@ -111,9 +111,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const data = await Projects.create({
+      id: shortid(),
       ...req.body,
       quarter: `${req.body.quarter}`.toUpperCase(),
-      id: shortid(),
     });
 
     res.send(data).end();
