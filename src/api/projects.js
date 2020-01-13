@@ -86,6 +86,22 @@ router.get('/:id', async (req, res) => {
       where: {
         createdAt: today()
       },
+    });
+
+    const detectionsTodayHourly = await Detection.findAll({
+      where: {
+        createdAt: today()
+      },
+      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'],
+        [Sequelize.literal(`DATE(created_at)`), 'date'],
+        [Sequelize.literal(`HOUR(created_at)`), 'hour']],
+      group: ['monitor_id', 'date', 'hour'],
+    });
+
+    const detectionsTodayHourMinute = await Detection.findAll({
+      where: {
+        createdAt: today()
+      },
       attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'],
         [Sequelize.literal(`DATE(created_at)`), 'date'],
         [Sequelize.literal(`MINUTE(created_at)`), 'minute'],
