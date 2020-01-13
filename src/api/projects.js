@@ -90,7 +90,7 @@ router.get('/:id', async (req, res) => {
         [Sequelize.literal(`DATE(created_at)`), 'date'],
         [Sequelize.literal(`MINUTE(created_at)`), 'minute'],
         [Sequelize.literal(`HOUR(created_at)`), 'hour']],
-      group: ['monitor_id', 'date'],
+      group: ['monitor_id', 'date', 'hour'],
     });
 
     const detectionsWeek = await Detection.findAll({
@@ -101,7 +101,7 @@ router.get('/:id', async (req, res) => {
         [Sequelize.literal(`DATE(created_at)`), 'date'],
         [Sequelize.literal(`MINUTE(created_at)`), 'minute'],
         [Sequelize.literal(`HOUR(created_at)`), 'hour']],
-      group: ['monitor_id', 'date'],
+      group: ['monitor_id', 'date', 'hour'],
     });
 
 
