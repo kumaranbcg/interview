@@ -143,7 +143,11 @@ router.get('/:id', async (req, res) => {
     if (!data) {
       throw new Error("No Project Found");
     }
-    res.send({ data, detectionsWeek, detectionsToday, detectionsByMonitor, detectionsByDate }).end();
+    res.send({
+      data, detectionsWeek, detectionsToday,
+      detectionsTodayHourly, detectionsTodayHourMinute, 
+      detectionsByMonitor, detectionsByDate
+    }).end();
 
 
   } catch (err) {
