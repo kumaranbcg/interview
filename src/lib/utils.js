@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 
 exports.today = () => {
   var start = new Date();
-  start.setDate(01)
+  // start.setDate(01)
   start.setHours(0, 0, 0, 0);
 
   var end = new Date();
@@ -32,15 +32,13 @@ exports.week = () => {
   const curr = new Date();
 
   var start = new Date(
-    curr.setDate(curr.getDate() - curr.getDay())
+    curr.setDate(curr.getDate() - 7)
   );
-  var end = new Date(
-    curr.setDate(curr.getDate() - curr.getDay() + 6)
-  );
+  var end = new Date();
+  end.setHours(23, 59, 59, 999);
 
   return {
     [Op.gte]: start,
     [Op.lte]: end
   };
 }
-
