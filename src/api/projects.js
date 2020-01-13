@@ -88,6 +88,7 @@ router.get('/:id', async (req, res) => {
       },
       attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'],
         [Sequelize.literal(`DATE(created_at)`), 'date'],
+        [Sequelize.literal(`MINUTE(created_at)`), 'minute'],
         [Sequelize.literal(`HOUR(created_at)`), 'hour']],
       group: ['monitor_id', 'date'],
     });
@@ -98,6 +99,7 @@ router.get('/:id', async (req, res) => {
       },
       attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'],
         [Sequelize.literal(`DATE(created_at)`), 'date'],
+        [Sequelize.literal(`MINUTE(created_at)`), 'minute'],
         [Sequelize.literal(`HOUR(created_at)`), 'hour']],
       group: ['monitor_id', 'date'],
     });
