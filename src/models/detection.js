@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       unread: {
         type: DataTypes.BOOLEAN
       },
+      truck_capacity: {
+        type: DataTypes.INTEGER
+      },
       result: {
         type: DataTypes.TEXT,
         get: function() {

@@ -10,18 +10,31 @@ module.exports = (sequelize, DataTypes) => {
       },
       project_name: {
         type: DataTypes.STRING,
+        allowNull: false,
+
       },
       quarter: {
         type: DataTypes.STRING,
+        allowNull: false,
+
       },
       capacity: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+
       },
       target: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER, allowNull: false,
+
       },
-      period: {
-        type: DataTypes.STRING
+      period_from: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      period_to: {
+        type: DataTypes.DATE,
+        allowNull: false,
+
       },
     },
     {
