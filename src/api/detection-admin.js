@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const uuidv4 = require("uuid/v4");
 
-const { AlertLog, Alert, Monitor, Detection } = require("../lib/db");
+const { AlertLog, Alert, Monitor, Detection, Projects } = require("../lib/db");
 
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
@@ -14,6 +14,26 @@ const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
 router.post("/", async (req, res, next) => {
   try {
     // Create Monitor In Our Database
+
+    const current_date = moment(new Date()).format('YYYY-MM-DD')
+
+    const query = {
+      where: {
+        [Op.and]: [{
+          period_from: {
+            [Op.lte]: current_date
+          }
+        }, {
+          period_to: {
+            [Op.gte]: current_date
+          }
+        }]
+      }
+    }
+
+
+    const project = await Projects.findOne(query)
+
 
     const newDetection = {
       id: uuidv4(),
@@ -104,6 +124,7 @@ router.post("/", async (req, res, next) => {
 router.post("/incoming", async (req, res, next) => {
   try {
     const { result, monitor_id, engine = "helmet" } = req.body;
+    const current_date = moment(new Date()).format('YYYY-MM-DD')
 
     if (!monitor_id) {
       throw new Error("No Monitor, check the 'monitor' key in your post");
@@ -118,6 +139,35 @@ router.post("/incoming", async (req, res, next) => {
     }
 
     const uuid = uuidv4();
+    const query = {
+      where: {
+        [Op.and]: [{
+          period_from: {
+            [Op.lte]: current_date
+          }
+        }, {
+          period_to: {
+            [Op.gte]: current_date
+          }
+        }]
+      }
+    }
+
+
+    const project = await Projects.findOne(query)
+
+    const newDetection = {
+      id: uuid,
+      monitor_id,
+      result,
+      truck_capacity: project ? project.capacity : 1,
+      alert: result === 'Y',
+      timestamp: new Date(),
+      image_url: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
+      engine: req.body.engine || "helmet"
+    };
+    console.log(newDetection)
+    await Detection.create(newDetection);
 
     await s3
       .copyObject({
@@ -127,17 +177,6 @@ router.post("/incoming", async (req, res, next) => {
         Key: `alerts/${monitor_id}/${uuid}.jpg`
       })
       .promise();
-
-    const newDetection = {
-      id: uuid,
-      monitor_id,
-      result,
-      alert: result === 'Y',
-      timestamp: new Date(),
-      image_url: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-      engine: req.body.engine || "helmet"
-    };
-    await Detection.create(newDetection);
 
     res.status(200).json({
       id: newDetection.id,
