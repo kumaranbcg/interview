@@ -160,8 +160,8 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const data = await Projects.create({
-      id: shortid(),
       ...req.body,
+      id: shortid(),
       quarter: `${req.body.quarter}`.toUpperCase(),
     });
 
