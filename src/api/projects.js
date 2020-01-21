@@ -131,7 +131,6 @@ router.get('/:id', async (req, res) => {
     res.send({
       data, detectionsWeek, detectionsToday,
       detectionsTodayHourly,
-      detectionsWeekHourly,
       detectionsByMonitor, detectionsByDate
     }).end();
 
