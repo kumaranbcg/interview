@@ -5,6 +5,9 @@ const router = express.Router();
 const { User } = require("../lib/db");
 const ses = require("../lib/ses");
 
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
+
 router.get("/", async (req, res, next) => {
 
   try {
@@ -92,7 +95,7 @@ router.post("/", async (req, res, next) => {
     });
 
     console.log(`Viact.AI : Invited by ${req.user["cognito:username"]}`, `Use this password password123 to login to your account`);
-    
+
     ses
       .send(req.body.email, `Viact.AI : Invited by ${req.user["cognito:username"]}`, `Use this password ${newUser.password} to login to your account`)
       .then(() => {
@@ -148,5 +151,34 @@ router.delete("/:id", async (req, res, next) => {
       .end();
   }
 });
+
+router.post('/upload', async (req, res) => {
+  try {
+
+    const params = {
+      Bucket: 'customindz-profiles',
+      Key: req.body.id,
+      Body: req.files[0].data
+    };
+    s3.upload(params, (s3Err, data) => {
+      if (s3Err) throw s3Err
+      console.log()
+      res
+        .json({
+          message: 'File uploaded successfully',
+          data: data.Location
+        })
+        .status(200)
+        .end();
+    });
+
+
+  } catch (err) {
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+})
 
 module.exports = router;
