@@ -52,7 +52,6 @@ router.use(
 );
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
 router.use("/admin/user", authentication.verify, userRouter);
-router.use("/user",  userRouter);
 
 router.use(
   "/admin/configuration",
