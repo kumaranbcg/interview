@@ -5,7 +5,7 @@ const router = express.Router();
 const { User } = require("../lib/db");
 const ses = require("../lib/ses");
 
-const AWS = require('aws-sdk');
+const AWS = require('../lib/aws')
 const s3 = new AWS.S3();
 
 router.get("/", async (req, res, next) => {
@@ -182,3 +182,13 @@ router.post('/upload', async (req, res) => {
 })
 
 module.exports = router;
+
+// const params = {
+//   Bucket: 'customindz-profiles',
+//   Key: 'req.body.id',
+//   Body: ' req.files[0].data'
+// };
+// s3.upload(params, (s3Err, data) => {
+//   if (s3Err) throw s3Err
+//   console.log(data)
+// });
