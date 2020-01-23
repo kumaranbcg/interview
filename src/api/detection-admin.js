@@ -169,6 +169,11 @@ router.post("/incoming", async (req, res, next) => {
     console.log(newDetection)
     await Detection.create(newDetection);
 
+    res.status(200).json({
+      id: newDetection.id,
+      message: "Successfully Added Detection"
+    });
+
     await s3
       .copyObject({
         ACL: "public-read",
@@ -177,11 +182,6 @@ router.post("/incoming", async (req, res, next) => {
         Key: `alerts/${monitor_id}/${uuid}.jpg`
       })
       .promise().catch(console.error);
-
-    res.status(200).json({
-      id: newDetection.id,
-      message: "Successfully Added Detection"
-    });
 
     try {
       const alert = await Alert.findOne({
