@@ -158,7 +158,8 @@ router.post('/upload', async (req, res) => {
     const params = {
       Bucket: 'customindz-profiles',
       Key: req.body.id,
-      Body: req.files[0].data
+      ACL: "public-read",
+      Body: req.files.file.data
     };
     s3.upload(params, (s3Err, data) => {
       if (s3Err) throw s3Err
