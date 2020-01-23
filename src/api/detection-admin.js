@@ -176,7 +176,7 @@ router.post("/incoming", async (req, res, next) => {
         Bucket: "viact",
         Key: `alerts/${monitor_id}/${uuid}.jpg`
       })
-      .promise();
+      .promise().catch(console.error);
 
     res.status(200).json({
       id: newDetection.id,
