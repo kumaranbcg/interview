@@ -7,7 +7,8 @@ const { AlertLog, Alert, Monitor, Detection, Projects } = require("../lib/db");
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
 const moment = require("moment");
-const s3 = require("../lib/s3");
+// const AWS = require("../lib/aws");
+// const s3 = new AWS.S3();
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
 
@@ -174,14 +175,14 @@ router.post("/incoming", async (req, res, next) => {
       message: "Successfully Added Detection"
     });
 
-    await s3
-      .copyObject({
-        ACL: "public-read",
-        CopySource: `/viact/frames/${monitor_id}/latest-detection-helmet.jpg`,
-        Bucket: "viact",
-        Key: `alerts/${monitor_id}/${uuid}.jpg`
-      })
-      .promise().catch(console.error);
+    // await s3
+    //   .copyObject({
+    //     ACL: "public-read",
+    //     CopySource: `/viact/frames/${monitor_id}/latest-detection-helmet.jpg`,
+    //     Bucket: "customindz-detections",
+    //     Key: `alerts/${monitor_id}/${uuid}.jpg`
+    //   })
+    //   .promise().catch(console.error);
 
     try {
       const alert = await Alert.findOne({
