@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authentication = require("../middleware/authentication");
 const monitorRouter = require("./monitor");
+const pathDetectionRouter = require("./path-detection");
 const monitorAdminRouter = require("./monitor-admin");
 const detectionRouter = require("./detection");
 const detectionAdminRouter = require("./detection-admin");
@@ -43,6 +44,7 @@ router.use("/report", reportRouter);
 router.use("/ys", ysRouter);
 router.use("/puller", authentication.verify, pullerRouter);
 router.use("/puller-server", authentication.verify, pullerServerRouter);
+router.use("/path-detection", pathDetectionRouter);
 
 router.use("/admin/monitor", authentication.verifyMachine, monitorAdminRouter);
 router.use(
