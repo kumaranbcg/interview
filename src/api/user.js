@@ -1,57 +1,39 @@
 const express = require("express");
-const md5 = require("blueimp-md5");
 
 const router = express.Router();
-const { User } = require("../lib/db");
-const ses = require("../lib/ses");
 
 const AWS = require('../lib/aws')
 const s3 = new AWS.S3();
+const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
+const USER_POOL = 'ap-southeast-1_vUjO2Mocs';
 
 router.get("/", async (req, res, next) => {
 
   try {
-    let query = {
-      offset: 0,
-      where: {},
+    var params = {
+      UserPoolId: USER_POOL, /* required */
+      // Filter: 'STRING_VALUE',
+      // Limit: 'NUMBER_VALUE',
+      // PaginationToken: 'STRING_VALUE'
     };
+    cognitoidentityserviceprovider.listUsers(params, function (err, data) {
+      if (err) throw err.message
+      const responseData = data.Users.map(user => {
+        const response = {
+          username: user.Username
+        }
+        user.Attributes.forEach(obj => {
+          response[obj.Name.replace('custom:', '')] = obj.Value
+        })
+        return response;
+      });
+      res
+        .send(responseData)
+        .status(200)
+        .end();
+    });
 
-    if (req.query.limit) {
-      query.limit = req.query.limit;
-      if (req.query.page) {
-        query.offset = (Math.min(req.query.page) - 1) * req.query.limit;
-      }
-    }
 
-    if (req.query.orderBy) {
-      query.order = [[req.query.orderBy]];
-    }
-
-
-    if (req.query.start_timestamp) {
-      query.where.createdAt = {
-        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
-      };
-    }
-    if (req.query.end_timestamp) {
-      if (!query.where.createdAt) {
-        query.where.createdAt = {
-          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
-        };
-      } else {
-        query.where.createdAt = {
-          ...query.where.createdAt,
-          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
-        };
-      }
-    }
-
-    const data = await User.findAll(query);
-
-    res
-      .send(data)
-      .status(200)
-      .end();
   } catch (err) {
     console.log(err);
     res
@@ -63,48 +45,49 @@ router.get("/", async (req, res, next) => {
 
 
 
-router.get("/:id", async (req, res, next) => {
-  try {
-    var data = await User.findOne({
-      where: {
-        id: req.params.id
-      }
-    });
-    res.status(200).json(data);
-  } catch (err) {
-    res
-      .send(err)
-      .status(400)
-      .end();
-  }
-});
-
 router.post("/", async (req, res, next) => {
   try {
-    const newUser = {
-      ...req.body,
-      role: "user",
-      password: md5('password123')
+    const { username, firstname, surname, email, phone, role = 'user' } = req.body;
+
+    var params = {
+      UserPoolId: USER_POOL,
+      Username: username, /* required */
+      DesiredDeliveryMediums: [
+        'EMAIL',
+      ],
+      // ForceAliasCreation: true || false,
+      // MessageAction: RESEND | SUPPRESS,
+      TemporaryPassword: 'password',
+      UserAttributes: [
+        {
+          Name: 'email',
+          Value: email
+        },
+        {
+          Name: 'custom:phone',
+          Value: phone
+        },
+        {
+          Name: 'custom:firstname',
+          Value: firstname
+        },
+        {
+          Name: 'custom:surname',
+          Value: surname
+        },
+        {
+          Name: 'custom:role',
+          Value: role
+        },
+      ],
     };
+    cognitoidentityserviceprovider.adminCreateUser(params, function (err, data) {
+      if (err) throw err.message; // an error occurred
 
-    await User.create(newUser);
-
-
-    res.status(200).json({
-      message: "Successfully Added User"
-    });
-
-    console.log(`Viact.AI : Invited by ${req.user["cognito:username"]}`, `Use this password password123 to login to your account`);
-
-    ses
-      .send(req.body.email, `Viact.AI : Invited by ${req.user["cognito:username"]}`, `Use this password ${newUser.password} to login to your account`)
-      .then(() => {
-        console.log("Successfully send ses");
-      })
-      .catch(err => {
-        console.log(err);
+      res.status(200).json({
+        message: "Successfully Added User"
       });
-
+    });
 
   } catch (err) {
     console.log(err);
@@ -116,12 +99,41 @@ router.post("/", async (req, res, next) => {
 });
 
 router.put("/:id", async (req, res, next) => {
+  const { firstname, surname, email, phone, role = 'user' } = req.body;
+
   try {
-    await User.update(req.body, {
-      where: { id: req.params.id }
-    });
-    res.status(200).json({
-      message: "Successfully Updated"
+    var params = {
+      UserAttributes: [ /* required */
+        {
+          Name: 'email',
+          Value: email
+        },
+        {
+          Name: 'custom:phone',
+          Value: phone
+        },
+        {
+          Name: 'custom:firstname',
+          Value: firstname
+        },
+        {
+          Name: 'custom:surname',
+          Value: surname
+        },
+        {
+          Name: 'custom:role',
+          Value: role
+        },
+      ],
+      UserPoolId: USER_POOL,
+      Username: req.params.id,
+    };
+    cognitoidentityserviceprovider.adminUpdateUserAttributes(params, function (err, data) {
+      if (err) throw err.message;
+
+      res.status(200).json({
+        message: "Successfully Updated"
+      });
     });
   } catch (err) {
     res
@@ -133,17 +145,20 @@ router.put("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    await User.destroy({
-      where: {
-        id: req.params.id
-      }
+    var params = {
+      UserPoolId: USER_POOL,
+      Username: req.params.id
+    };
+    cognitoidentityserviceprovider.adminDeleteUser(params, function (err, data) {
+      if (err) throw err.message;
+      res
+        .json({
+          message: "Successfully Deleted User"
+        })
+        .status(200)
+        .end();
     });
-    res
-      .json({
-        message: "Successfully Deleted User"
-      })
-      .status(200)
-      .end();
+
   } catch (err) {
     res
       .status(400)
