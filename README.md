@@ -1,5 +1,7 @@
 # Customindz Backend Documentation
 
+The user authentication is made using cognito and permissions are being managed in mysql
+
 
 ## `src/api` All Api Routes
 
@@ -47,10 +49,6 @@ The Puller Instance (For Monitor)
 ### `src/models/server`
 
 The Puller Server 
-
-### `src/models/user`
-
-The User
 
 ### `src/models/vod`
 
