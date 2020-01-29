@@ -6,6 +6,7 @@ const AWS = require('../lib/aws')
 const s3 = new AWS.S3();
 const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
 const USER_POOL = 'ap-southeast-1_vUjO2Mocs';
+const DEFAULT_PIC = 'https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwjduaSVu6jnAhXEpOkKHdGBCW4QjRx6BAgBEAQ&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fuser-image-png%2F&psig=AOvVaw2_q_xmciS4aHdKUrzYRAD4&ust=1580375362869936'
 
 router.get("/", async (req, res, next) => {
 
@@ -47,7 +48,7 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const { username, firstname, surname, email, phone, role = 'user' } = req.body;
+    const { username, firstname, surname, email, phone, role = 'user', profile_pic = DEFAULT_PIC, permissions, report_frequency, notification } = req.body;
 
     var params = {
       UserPoolId: USER_POOL,
@@ -76,6 +77,22 @@ router.post("/", async (req, res, next) => {
           Value: surname
         },
         {
+          Name: 'custom:profile_pic',
+          Value: profile_pic
+        },
+        {
+          Name: 'custom:permissions',
+          Value: permissions
+        },
+        {
+          Name: 'custom:report_frequency',
+          Value: report_frequency
+        },
+        {
+          Name: 'custom:notification_type',
+          Value: notification
+        },
+        {
           Name: 'custom:role',
           Value: role
         },
@@ -99,7 +116,7 @@ router.post("/", async (req, res, next) => {
 });
 
 router.put("/:id", async (req, res, next) => {
-  const { firstname, surname, email, phone, role = 'user' } = req.body;
+  const { firstname, surname, email, phone, role = 'user', profile_pic = DEFAULT_PIC, permissions, report_frequency, notification } = req.body;
 
   try {
     var params = {
@@ -119,6 +136,22 @@ router.put("/:id", async (req, res, next) => {
         {
           Name: 'custom:surname',
           Value: surname
+        },
+        {
+          Name: 'custom:profile_pic',
+          Value: profile_pic
+        },
+        {
+          Name: 'custom:permissions',
+          Value: permissions
+        },
+        {
+          Name: 'custom:report_frequency',
+          Value: report_frequency
+        },
+        {
+          Name: 'custom:notification_type',
+          Value: notification
         },
         {
           Name: 'custom:role',
