@@ -51,7 +51,7 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const { username, firstname, surname, email, phone, role = 'user', profile_pic = DEFAULT_PIC, permissions, report_frequency, notification } = req.body;
+    const { username, firstname, surname, email, phone, role = 'user', profile_pic = DEFAULT_PIC, permissions, report_frequency, notification_type } = req.body;
 
     var params = {
       UserPoolId: USER_POOL,
@@ -93,7 +93,7 @@ router.post("/", async (req, res, next) => {
         },
         {
           Name: 'custom:notification_type',
-          Value: notification
+          Value: notification_type
         },
         {
           Name: 'custom:role',
@@ -122,7 +122,7 @@ router.post("/", async (req, res, next) => {
 });
 
 router.put("/:id", async (req, res, next) => {
-  const { firstname, surname, email, phone = "0", role = 'user', profile_pic = DEFAULT_PIC, permissions = "[]", report_frequency = "none", notification = "none" } = req.body;
+  const { firstname, surname, email, phone = "0", role = 'user', profile_pic = DEFAULT_PIC, permissions = "[]", report_frequency = "none", notification_type = "none" } = req.body;
 
   try {
     var params = {
@@ -157,7 +157,7 @@ router.put("/:id", async (req, res, next) => {
         },
         {
           Name: 'custom:notification_type',
-          Value: notification
+          Value: notification_type
         },
         {
           Name: 'custom:role',
