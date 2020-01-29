@@ -18,7 +18,10 @@ router.get("/", async (req, res, next) => {
       // PaginationToken: 'STRING_VALUE'
     };
     cognitoidentityserviceprovider.listUsers(params, function (err, data) {
-      if (err) throw new Error(err.message)
+      if (err) return res
+        .status(400)
+        .send(err)
+        .end();
       const responseData = data.Users.map(user => {
         const response = {
           username: user.Username
@@ -99,7 +102,10 @@ router.post("/", async (req, res, next) => {
       ],
     };
     cognitoidentityserviceprovider.adminCreateUser(params, function (err, data) {
-      if (err) throw new Error(err.message); // an error occurred
+      if (err) return res
+        .status(400)
+        .send(err)
+        .end();
 
       res.status(200).json({
         message: "Successfully Added User"
@@ -116,7 +122,7 @@ router.post("/", async (req, res, next) => {
 });
 
 router.put("/:id", async (req, res, next) => {
-  const { firstname, surname, email, phone, role = 'user', profile_pic = DEFAULT_PIC, permissions, report_frequency, notification } = req.body;
+  const { firstname, surname, email, phone = "0", role = 'user', profile_pic = DEFAULT_PIC, permissions = "[]", report_frequency = "none", notification = "none" } = req.body;
 
   try {
     var params = {
@@ -162,7 +168,10 @@ router.put("/:id", async (req, res, next) => {
       Username: req.params.id,
     };
     cognitoidentityserviceprovider.adminUpdateUserAttributes(params, function (err, data) {
-      if (err) throw new Error(err.message)
+      if (err) return res
+        .status(400)
+        .send(err)
+        .end();
 
       res.status(200).json({
         message: "Successfully Updated"
@@ -183,7 +192,10 @@ router.delete("/:id", async (req, res, next) => {
       Username: req.params.id
     };
     cognitoidentityserviceprovider.adminDeleteUser(params, function (err, data) {
-      if (err) throw new Error(err.message);
+      if (err) return res
+        .status(400)
+        .send(err)
+        .end();
       res
         .json({
           message: "Successfully Deleted User"
@@ -210,7 +222,10 @@ router.post('/upload', async (req, res) => {
       Body: req.files.file.data
     };
     s3.upload(params, (s3Err, data) => {
-      if (s3Err) throw s3Err
+      if (s3Err) return res
+        .status(400)
+        .send(err)
+        .end();
       console.log()
       res
         .json({
@@ -231,13 +246,3 @@ router.post('/upload', async (req, res) => {
 })
 
 module.exports = router;
-
-// const params = {
-//   Bucket: 'customindz-profiles',
-//   Key: 'req.body.id',
-//   Body: ' req.files[0].data'
-// };
-// s3.upload(params, (s3Err, data) => {
-//   if (s3Err) throw s3Err
-//   console.log(data)
-// });
