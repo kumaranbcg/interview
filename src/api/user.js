@@ -17,7 +17,7 @@ router.get("/", async (req, res, next) => {
       // PaginationToken: 'STRING_VALUE'
     };
     cognitoidentityserviceprovider.listUsers(params, function (err, data) {
-      if (err) throw err.message
+      if (err) throw new Error(err.message)
       const responseData = data.Users.map(user => {
         const response = {
           username: user.Username
@@ -82,7 +82,7 @@ router.post("/", async (req, res, next) => {
       ],
     };
     cognitoidentityserviceprovider.adminCreateUser(params, function (err, data) {
-      if (err) throw err.message; // an error occurred
+      if (err) throw new Error(err.message); // an error occurred
 
       res.status(200).json({
         message: "Successfully Added User"
@@ -129,7 +129,7 @@ router.put("/:id", async (req, res, next) => {
       Username: req.params.id,
     };
     cognitoidentityserviceprovider.adminUpdateUserAttributes(params, function (err, data) {
-      if (err) throw err.message;
+      if (err) throw new Error(err.message)
 
       res.status(200).json({
         message: "Successfully Updated"
@@ -150,7 +150,7 @@ router.delete("/:id", async (req, res, next) => {
       Username: req.params.id
     };
     cognitoidentityserviceprovider.adminDeleteUser(params, function (err, data) {
-      if (err) throw err.message;
+      if (err) throw new Error(err.message);
       res
         .json({
           message: "Successfully Deleted User"
