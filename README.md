@@ -2,6 +2,15 @@
 
 The user authentication is made using cognito and permissions are being managed in mysql
 
+## POST API Call        
+`/api/admin/user/zoom `
+ this is set zoom level
+`{
+	"selectedLevel": 1
+}`
+## GET API Call
+`/api/admin/detection/zoom`
+this is to get input level coordinates
 
 ## `src/api` All Api Routes
 
