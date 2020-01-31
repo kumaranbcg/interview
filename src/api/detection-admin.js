@@ -1,16 +1,25 @@
 const express = require("express");
 const router = express.Router();
 const uuidv4 = require("uuid/v4");
+const fs = require('fs');
+const path = require('path');
 
 const { AlertLog, Alert, Monitor, Detection, Projects } = require("../lib/db");
 
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
 const moment = require("moment");
+const MONITOR_ZOOM_CONFIG = path.join(__dirname, './../../', 'monitor_level.json');
 // const AWS = require("../lib/aws");
 // const s3 = new AWS.S3();
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
+
+router.get('/zoom', (req, res) => {
+  let rawdata = fs.readFileSync(MONITOR_ZOOM_CONFIG);
+  let data = JSON.parse(rawdata);
+  res.send(data.config[data.selectedLevel])
+})
 
 router.post("/", async (req, res, next) => {
   try {
