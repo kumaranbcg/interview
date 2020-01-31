@@ -15,10 +15,15 @@ const MONITOR_ZOOM_CONFIG = path.join(__dirname, './../../', 'monitor_level.json
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
 
-router.get('/zoom', (req, res) => {
+router.get('/zoom/:id', (req, res) => {
   let rawdata = fs.readFileSync(MONITOR_ZOOM_CONFIG);
   let data = JSON.parse(rawdata);
-  res.send(data.config[data.selectedLevel])
+  if (data.selectedLevel[req.params.id]) {
+    const response = data.config[data.selectedLevel[req.params.id]];
+    res.send(response)
+  } else {
+    res.send({ message: 'Device not present' }).status(400)
+  }
 })
 
 router.post("/", async (req, res, next) => {
