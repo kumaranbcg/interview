@@ -19,7 +19,7 @@ router.post('/zoom', (req, res) => {
   if (data.config[selectedLevel]) {
     data.selectedLevel = selectedLevel;
   }
-  fs.writeFileSync(MONITOR_ZOOM_CONFIG, data);
+  fs.writeFileSync(MONITOR_ZOOM_CONFIG, JSON.stringify(data));
   res.send(data.config[data.selectedLevel])
 })
 
