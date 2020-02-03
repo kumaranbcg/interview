@@ -33,7 +33,10 @@ router.post('/zoom/:id', async (req, res) => {
     console.log(err);
     res
       .status(400)
-      .send(err.message)
+      .send({
+        message: err.message,
+        name: err.name
+      })
       .end();
   }
 });
