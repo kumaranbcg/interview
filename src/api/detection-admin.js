@@ -4,25 +4,37 @@ const uuidv4 = require("uuid/v4");
 const fs = require('fs');
 const path = require('path');
 
-const { AlertLog, Alert, Monitor, Detection, Projects } = require("../lib/db");
+const { AlertLog, Alert, Monitor, Detection, Projects, Devices, ZoomConfig } = require("../lib/db");
 
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
 const moment = require("moment");
-const MONITOR_ZOOM_CONFIG = path.join(__dirname, './../../', 'monitor_level.json');
-// const AWS = require("../lib/aws");
-// const s3 = new AWS.S3();
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
 
-router.get('/zoom/:id', (req, res) => {
-  let rawdata = fs.readFileSync(MONITOR_ZOOM_CONFIG);
-  let data = JSON.parse(rawdata);
-  if (data.selectedLevel[req.params.id]) {
-    const response = data.config[data.selectedLevel[req.params.id]];
-    res.send(response)
+router.get('/zoom/:id', async (req, res) => {
+  const query = {
+    where: {
+      id: req.params.id
+    },
+    include: [
+      {
+        model: ZoomConfig,
+        as: "detectionZone1",
+      },
+      {
+        model: ZoomConfig,
+        as: "detectionZone2",
+      }
+    ]
+  }
+  const data = await Devices.findOne(query)
+  if (data) {
+    res.send(data);
   } else {
-    res.send({ message: 'Device not present' }).status(400)
+    res.status(404).json({
+      message: 'Device not found'
+    })
   }
 })
 
@@ -47,9 +59,6 @@ router.post("/", async (req, res, next) => {
     }
 
 
-    const project = await Projects.findOne(query)
-
-
     const newDetection = {
       id: uuidv4(),
       monitor_id: req.body.monitor_id,
@@ -61,67 +70,6 @@ router.post("/", async (req, res, next) => {
     };
 
     await Detection.create(newDetection);
-
-    // if (req.body.alert === true && req.body.engine) {
-    //   const alert = await Alert.find({
-    //     where: {
-    //       monitor_id: req.body.monitor_id,
-    //       engine: req.body.engine
-    //     },
-    //     include: [
-    //       {
-    //         model: Monitor,
-    //         required: true
-    //       }
-    //     ]
-    //   });
-    //   if (alert.monitor.engines.indexOf(req.body.engine) !== -1) {
-    //     const recentLog = await AlertLog.findOne({
-    //       where: {
-    //         createdAt: {
-    //           [Op.gte]: moment()
-    //             .subtract(alert.interval || 1, "minutes")
-    //             .toDate()
-    //         },
-    //         alert_id: alert.id
-    //       }
-    //     });
-
-    //     if (!recentLog) {
-    //       if (alert.trigger_record === true) {
-    //         await Monitor.update(
-    //           {
-    //             recording: true
-    //           },
-    //           {
-    //             where: {
-    //               id: req.body.monitor_id
-    //             }
-    //           }
-    //         );
-    //         setTimeout(() => {
-    //           Monitor.update(
-    //             {
-    //               recording: false
-    //             },
-    //             {
-    //               where: {
-    //                 id: req.body.monitor_id
-    //               }
-    //             }
-    //           );
-    //         }, 20 * 1000);
-    //       }
-
-    //       await AlertLog.create({
-    //         id: uuidv4(),
-    //         alert_id: alert.id
-    //       });
-
-    //       await alertUtil.alert(alert);
-    //     }
-    //   }
-    // }
 
     res.status(200).json({
       id: newDetection.id,
