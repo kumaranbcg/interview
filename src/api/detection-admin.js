@@ -12,7 +12,7 @@ const moment = require("moment");
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
 
-router.post('/zoom/:id', (req, res) => {
+router.post('/zoom/:id', async (req, res) => {
 
   console.log("Creating Device");
   try {
@@ -39,7 +39,7 @@ router.post('/zoom/:id', (req, res) => {
 });
 
 
-router.put('/zoom/:id', (req, res) => {
+router.put('/zoom/:id', async (req, res) => {
   try {
     delete req.body.id;
     await Devices.update(req.body, {
