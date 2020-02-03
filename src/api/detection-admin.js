@@ -12,6 +12,54 @@ const moment = require("moment");
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
 
+router.post('/zoom/:id', (req, res) => {
+
+  console.log("Creating Device");
+  try {
+
+    const newData = {
+      id: req.params.id,
+      zone1: 1,
+      zone2: 1
+    };
+
+    await Devices.create(newData);
+
+    res.status(200).json({
+      id: newMonitor.id,
+      message: "Successfully Added Device"
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err.message)
+      .end();
+  }
+});
+
+
+router.put('/zoom/:id', (req, res) => {
+  try {
+    delete req.body.id;
+    await Devices.update(req.body, {
+      where: { id: req.params.id }
+    });
+    res
+      .send({
+        message: "Successfully Update"
+      })
+      .status(200)
+      .end();
+  } catch (err) {
+    console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 router.get('/zoom/:id', async (req, res) => {
   const query = {
     where: {

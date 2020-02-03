@@ -12,17 +12,6 @@ const DEFAULT_PIC = 'https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUK
 const MONITOR_ZOOM_CONFIG = path.join(__dirname, './../../', 'monitor_level.json');
 
 
-router.post('/zoom/:id', (req, res) => {
-  const { selectedLevel } = req.body;
-  let rawdata = fs.readFileSync(MONITOR_ZOOM_CONFIG);
-  let data = JSON.parse(rawdata);
-  if (data.config[selectedLevel]) {
-    data.selectedLevel[req.params.id] = selectedLevel;
-  }
-  fs.writeFileSync(MONITOR_ZOOM_CONFIG, JSON.stringify(data));
-  res.send(data.config[data.selectedLevel[req.params.id]])
-})
-
 router.get("/", async (req, res, next) => {
 
   try {
