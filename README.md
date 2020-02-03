@@ -3,14 +3,13 @@
 The user authentication is made using cognito and permissions are being managed in mysql
 
 ## Zoom API   
+Create Device
 `POST` `/api/admin/user/zoom/:id `
-`{
-	"zone1": 1,
-	"zone2": 1
-}`
 
+Get Device 
 `GET` `/api/admin/detection/zoom/1`
 
+Update device zoom levels
 `PUT` `/api/admin/user/zoom/:id `
 `{
 	"zone1": 1,
