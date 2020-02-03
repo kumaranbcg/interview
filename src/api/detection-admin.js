@@ -19,8 +19,8 @@ router.post('/zoom/:id', async (req, res) => {
 
     const newData = {
       id: req.params.id,
-      zone1: 1,
-      zone2: 1
+      zone1: "1",
+      zone2: "1"
     };
 
     await Devices.create(newData);
