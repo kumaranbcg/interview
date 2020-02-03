@@ -26,7 +26,7 @@ router.post('/zoom/:id', async (req, res) => {
     await Devices.create(newData);
 
     res.status(200).json({
-      id: newMonitor.id,
+      id: newData.id,
       message: "Successfully Added Device"
     });
   } catch (err) {
