@@ -32,6 +32,7 @@
     "request": "^2.88.0",
     "sequelize": "^5.8.6",
     "shortid": "^2.2.14",
+    "socket.io": "^2.3.0",
     "sqlite3": "^4.0.8"
   },
   "devDependencies": {

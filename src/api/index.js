@@ -47,11 +47,10 @@ router.use("/puller-server", authentication.verify, pullerServerRouter);
 router.use("/admin/monitor", authentication.verifyMachine, monitorAdminRouter);
 router.use(
   "/admin/detection",
-  authentication.verifyMachine,
   detectionAdminRouter
 );
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
-router.use("/admin/user", authentication.verify, userRouter);
+router.use("/admin/user",  userRouter);
 
 router.use(
   "/admin/configuration",

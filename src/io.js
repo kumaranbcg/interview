@@ -9,24 +9,6 @@ module.exports = server => {
         console.log("Some one joined monitor " + room);
         socket.join(room);
       });
-
-      socket.on("unlisten-monitor", room => {
-        console.log("Some one left monitor " + room);
-        socket.leave(room);
-      });
-
-      socket.on("monitor-frame", data => {
-        if (data.key === "customindz") {
-          console.log("Broadcasting frames");
-          io.in(data.monitor_id).emit("frame", data.frame);
-        }
-      });
-
-      socket.on("kafka", auth => {
-        if (auth.key === "customindz") {
-          socket.join("kafka");
-        }
-      });
     });
   }
 
