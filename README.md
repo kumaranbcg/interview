@@ -217,6 +217,21 @@ def device_data(data):
     print(data)
 ```
 
+### If any errors it will be emitted to this event
+
+`Javascript`
+```js
+socket.on('input-error', (data) => {
+  console.log('received device data', data)
+});
+```
+`Python`
+```py
+@sio.on('input-error')
+def device_data(data):
+    print(data)
+```
+
 
 
 
