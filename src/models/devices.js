@@ -5,12 +5,6 @@ module.exports = (sequelize, DataTypes) => {
       // attributes
       id: {
         type: DataTypes.STRING,
-        allowNull: false,
-        primaryKey: true
-      },
-      order: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
         primaryKey: true
       },
       config: {

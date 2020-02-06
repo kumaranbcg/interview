@@ -2,19 +2,197 @@
 
 The user authentication is made using cognito and permissions are being managed in mysql
 
-## Zoom API   
-Create Device
-`POST` `/api/admin/user/zoom/:id `
+## Zoom Level and Devices using socket
+The jetson nano device will be connected to the server via socket.io
 
-Get Device 
-`GET` `/api/admin/detection/zoom/1`
+### Basic code
+`Javascript`
+```js
+var socket = require('socket.io-client')('http://localhost:3000');
+socket.on('connect', (io) => {
+  socket.emit('get-device', { id: 1 });
+});
 
-Update device zoom levels
-`PUT` `/api/admin/user/zoom/:id `
-`{
-	"zone1": 1,
-	"zone2": 1
-}`
+socket.on('device-data', (data) => {
+  console.log('received device data', data)
+});
+
+socket.on('disconnect', function () {
+  console.log('disconnect')
+});
+```
+`Python`
+```python
+import socketio
+
+sio = socketio.Client()
+
+
+def getdata():
+
+    @sio.event
+    def connect():
+        print('connection established')
+        sio.emit('get-device', '1')
+    
+    @sio.on('device-data')
+    def device_data(data):
+        print(data)
+        
+    @sio.event
+    def disconnect():
+        print('disconnected from server')
+  
+    sio.connect('http://localhost:3000/')
+    sio.wait();
+```
+
+### To create a device 
+
+
+`Javascript`
+```js
+socket.emit('create-device', { config:1 });
+```
+`Python`
+```py
+socket.emit('create-device', { config:1 });
+```
+
+### Jetson will be identified by device id it has stored in code
+
+`Javascript`
+```js
+socket.emit('get-device',{ id:1 });
+```
+`Python`
+```py
+sio.emit('get-device', { id:1 }')
+```
+
+### once the request is passed response is sent in `device-data` event
+
+`Javascript`
+```js
+socket.on('device-data', (data) => {
+  console.log('received device data', data)
+});
+```
+`Python`
+```py
+@sio.on('device-data')
+def device_data(data):
+    print(data)
+```
+
+### To update any zoom data or device data
+
+
+`Javascript`
+this will take the zoom config and update the device config
+```js
+socket.emit('update-device',{ 
+  id:1, 
+  config: 2, 
+  order: 1
+});
+```
+this will create/update zoom on given id
+```js
+socket.emit('change-zoom',{ 
+  id:2,
+  config: {
+      "c1p1x1": "0.10",
+      "c1p1x2": "1",
+      "c1p1x3": "1",
+      "c1p1x4": "0",
+      "c1p1y1": "1",
+      "c1p1y2": "1",
+      "c1p1y3": "0.45",
+      "c1p1y4": "",
+      "c1p2x1": "0.09",
+      "c1p2x2": "1",
+      "c1p2x3": "1",
+      "c1p2x4": "0",
+      "c1p2y1": "1",
+      "c1p2y2": "1",
+      "c1p2y3": "0.45",
+      "c1p2y4": "",
+      "c2p1x1": "0.09",
+      "c2p1x2": "1",
+      "c2p1x3": "1",
+      "c2p1x4": "0",
+      "c2p1y1": "1",
+      "c2p1y2": "1",
+      "c2p1y3": "0.45",
+      "c2p1y4": "",
+      "c2p2x1": "0.09",
+      "c2p2x2": "1",
+      "c2p2x3": "1",
+      "c2p2x4": "0",
+      "c2p2y1": "1",
+      "c2p2y2": "1",
+      "c2p2y3": "0.45",
+      "c2p2y4": ""
+    } 
+  });
+```
+`Python`
+```py
+sio.emit('update-device', {id:1,config:2,order:1})
+```
+
+```py
+sio.emit('change-zoom', 
+{ 
+  id:2,
+  config: {
+      "c1p1x1": "0.10",
+      "c1p1x2": "1",
+      "c1p1x3": "1",
+      "c1p1x4": "0",
+      "c1p1y1": "1",
+      "c1p1y2": "1",
+      "c1p1y3": "0.45",
+      "c1p1y4": "",
+      "c1p2x1": "0.09",
+      "c1p2x2": "1",
+      "c1p2x3": "1",
+      "c1p2x4": "0",
+      "c1p2y1": "1",
+      "c1p2y2": "1",
+      "c1p2y3": "0.45",
+      "c1p2y4": "",
+      "c2p1x1": "0.09",
+      "c2p1x2": "1",
+      "c2p1x3": "1",
+      "c2p1x4": "0",
+      "c2p1y1": "1",
+      "c2p1y2": "1",
+      "c2p1y3": "0.45",
+      "c2p1y4": "",
+      "c2p2x1": "0.09",
+      "c2p2x2": "1",
+      "c2p2x3": "1",
+      "c2p2x4": "0",
+      "c2p2y1": "1",
+      "c2p2y2": "1",
+      "c2p2y3": "0.45",
+      "c2p2y4": ""
+    } 
+  })
+  
+```
+
+
+
+
+
+
+
+
+
+
 
 ## `src/api` All Api Routes
 

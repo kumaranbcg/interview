@@ -1,9 +1,8 @@
 const socketio = require("socket.io");
+const shortid = require("shortid");
 
 const { Devices, ZoomConfig } = require("./lib/db");
 
-
-const configFile = './config.json';
 let io;
 module.exports = server => {
   if (!io && server) {
@@ -23,12 +22,14 @@ module.exports = server => {
       });
 
       socket.on("change-zoom", async data => {
-
-        let output = await ZoomConfig.findOne({
-          where: {
-            id: data.id
-          }
-        })
+        let output;
+        if (data.id) {
+          output = await ZoomConfig.findOne({
+            where: {
+              id: data.id
+            }
+          })
+        }
         if (output) {
           await ZoomConfig.update({
             config: data.config
@@ -49,43 +50,59 @@ module.exports = server => {
       });
 
       socket.on("create-device", async data => {
-        const config = require(configFile)
-        if (data.id) {
-          const newData = {
-            config: JSON.stringify(data.config || config),
-            id: data.id
-          };
-
-          await Devices.create(newData);
-          const query = {
+        if (data.config) {
+          const zoomConfig = await ZoomConfig.findOne({
             where: {
-              id: data.id
-            },
+              id: data.config
+            }
+          })
+          if (!zoomConfig) {
+            socket.emit('input-error', 'config is not available')
           }
+          if (zoomConfig) {
+            const newData = {
+              id: shortid(),
+              config: JSON.stringify(zoomConfig.config)
+            };
 
-          const output = await Devices.findAll(query)
+            const output = await Devices.create(newData);
 
-          socket.emit('device-data', output);
+            socket.emit('device-data', output);
 
+          }
         }
       });
 
       socket.on('update-device', async data => {
         const id = `${data.id}`
         const order = `${data.order}`
-        await Devices.update(data, {
-          where: { id, order }
-        });
+        if (data.config) {
+          const config = await ZoomConfig.findOne({
+            where: {
+              id: data.config
+            }
+          })
+          if (!config) {
+            socket.emit('input-error', 'config is not available')
+          }
+          if (config && id) {
+            await Devices.update({
+              config
+            }, {
+              where: { id, order }
+            });
 
-        const query = {
-          where: {
-            id
-          },
+            const query = {
+              where: {
+                id
+              },
+            }
+            const output = await Devices.findAll(query)
+
+            socket.emit('device-data', output);
+            socket.broadcast.emit('device-data', output);
+          }
         }
-        const output = await Devices.findAll(query)
-
-        socket.emit('device-data', output);
-        socket.broadcast.emit('device-data', output);
       });
 
       socket.on("get-device", async data => {
