@@ -116,10 +116,17 @@ module.exports = server => {
         socket.emit('device-data', output);
       });
 
-      socket.on("get-devices", async () => {
+      socket.on("get-config-list", async () => {
+        const output = await ZoomConfig.findAll({})
+
+        socket.emit('config-list', output);
+      });
+
+
+      socket.on("get-device-list", async () => {
         const output = await Devices.findAll({})
 
-        socket.emit('devices-list', output);
+        socket.emit('device-list', output);
       });
 
     });
