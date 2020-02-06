@@ -59,7 +59,7 @@ module.exports = server => {
           if (!zoomConfig) {
             socket.emit('input-error', 'config is not available')
           }
-          if (zoomConfig) {
+          else {
             const newData = {
               id: shortid(),
               config: JSON.stringify(zoomConfig.config)
@@ -75,7 +75,6 @@ module.exports = server => {
 
       socket.on('update-device', async data => {
         const id = `${data.id}`
-        const order = `${data.order}`
         if (data.config) {
           const config = await ZoomConfig.findOne({
             where: {
@@ -89,7 +88,7 @@ module.exports = server => {
             await Devices.update({
               config
             }, {
-              where: { id, order }
+              where: { id }
             });
 
             const query = {
@@ -97,7 +96,7 @@ module.exports = server => {
                 id
               },
             }
-            const output = await Devices.findAll(query)
+            const output = await Devices.findOne(query)
 
             socket.emit('device-data', output);
             socket.broadcast.emit('device-data', output);
@@ -116,14 +115,15 @@ module.exports = server => {
         socket.emit('device-data', output);
       });
 
-      socket.on("get-config-list", async () => {
+      socket.on("get-config-list", async data => {
         const output = await ZoomConfig.findAll({})
 
         socket.emit('config-list', output);
       });
 
 
-      socket.on("get-device-list", async () => {
+      socket.on("get-device-list", async data => {
+        console.log('get-device-list')
         const output = await Devices.findAll({})
 
         socket.emit('device-list', output);

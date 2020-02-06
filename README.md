@@ -63,7 +63,7 @@ socket.emit('create-device', { config:1 });
 socket.emit('create-device', { config:1 });
 ```
 
-### Jetson will be identified by device id it has stored in code
+### Jetson will be identified by device id it has stored in code and passing to socket
 
 `Javascript`
 ```js
@@ -188,12 +188,34 @@ sio.emit('change-zoom',
   
 ```
 
+### To list all config and device in backend
 
+`Javascript`
+```js
+socket.emit('get-device-list','');
+socket.emit('get-config-list','');
+```
 
+`Python`
+```py
+sio.emit('get-device-list', '')
+sio.emit('get-config-list', '')
+```
 
+### and can be received by 
 
-
-
+`Javascript`
+```js
+socket.on('device-list', (data) => {
+  console.log('received device data', data)
+});
+```
+`Python`
+```py
+@sio.on('config-list')
+def device_data(data):
+    print(data)
+```
 
 
 
