@@ -3,34 +3,23 @@ module.exports = (sequelize, DataTypes) => {
     "ZoomConfig",
     {
       // attributes
-      level: {
+      id: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true
       },
-      p1x1: {
-        type: DataTypes.STRING
-      },
-      p1x2: {
-        type: DataTypes.STRING
-      },
-      p1x3: {
-        type: DataTypes.STRING
-      },
-      p1x4: {
-        type: DataTypes.STRING
-      },
-      p1y1: {
-        type: DataTypes.STRING
-      },
-      p1y2: {
-        type: DataTypes.STRING
-      },
-      p1y3: {
-        type: DataTypes.STRING
-      },
-      p1y4: {
-        type: DataTypes.STRING
+      config: {
+        type: DataTypes.TEXT,
+        get: function () {
+          if (this.getDataValue("config")) {
+            return JSON.parse(this.getDataValue("config"));
+          } else {
+            return {};
+          }
+        },
+        set: function (value) {
+          this.setDataValue("config", JSON.stringify(value));
+        }
       },
     },
     {

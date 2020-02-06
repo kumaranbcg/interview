@@ -4,90 +4,13 @@ const uuidv4 = require("uuid/v4");
 const fs = require('fs');
 const path = require('path');
 
-const { AlertLog, Alert, Monitor, Detection, Projects, Devices, ZoomConfig } = require("../lib/db");
+const { AlertLog, Alert, Monitor, Detection, Projects } = require("../lib/db");
 
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
 const moment = require("moment");
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
-
-router.post('/zoom/:id', async (req, res) => {
-
-  console.log("Creating Device");
-  try {
-
-    const newData = {
-      id: req.params.id,
-      zone1: "1",
-      zone2: "1"
-    };
-
-    await Devices.create(newData);
-
-    res.status(200).json({
-      id: newData.id,
-      message: "Successfully Added Device"
-    });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(400)
-      .send({
-        message: err.message,
-        name: err.name
-      })
-      .end();
-  }
-});
-
-
-router.put('/zoom/:id', async (req, res) => {
-  try {
-    delete req.body.id;
-    await Devices.update(req.body, {
-      where: { id: req.params.id }
-    });
-    res
-      .send({
-        message: "Successfully Update"
-      })
-      .status(200)
-      .end();
-  } catch (err) {
-    console.log(err);
-    res
-      .status(400)
-      .send(err)
-      .end();
-  }
-});
-
-router.get('/zoom/:id', async (req, res) => {
-  const query = {
-    where: {
-      id: req.params.id
-    },
-    include: [
-      {
-        model: ZoomConfig,
-        as: "detectionZone1",
-      },
-      {
-        model: ZoomConfig,
-        as: "detectionZone2",
-      }
-    ]
-  }
-  const data = await Devices.findOne(query)
-  if (data) {
-    res.send(data);
-  } else {
-    res.status(404).json({
-      message: 'Device not found'
-    })
-  }
-})
 
 router.post("/", async (req, res, next) => {
   try {

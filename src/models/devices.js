@@ -8,11 +8,23 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true
       },
-      zone1: {
-        type: DataTypes.STRING
+      order: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true
       },
-      zone2: {
-        type: DataTypes.STRING
+      config: {
+        type: DataTypes.TEXT,
+        get: function () {
+          if (this.getDataValue("config")) {
+            return JSON.parse(this.getDataValue("config"));
+          } else {
+            return {};
+          }
+        },
+        set: function (value) {
+          this.setDataValue("config", JSON.stringify(value));
+        }
       },
     },
     {
@@ -21,19 +33,6 @@ module.exports = (sequelize, DataTypes) => {
       // options
     }
   );
-
-
-  Devices.associate = models => {
-    models.Devices.belongsTo(models.ZoomConfig, {
-      foreignKey: "zone1",
-      as: "detectionZone1"
-    })
-
-    models.Devices.belongsTo(models.ZoomConfig, {
-      foreignKey: "zone2",
-      as: "detectionZone2"
-    })
-  };
 
   return Devices;
 };
