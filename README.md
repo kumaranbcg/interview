@@ -63,11 +63,11 @@ socket.emit('create-device', { config:1 });
 
 `Javascript`
 ```js
-socket.emit('get-device',{ id:1 });
+socket.emit('get-device',{ id:'bcC5qflpK' });
 ```
 `Python`
 ```py
-sio.emit('get-device', { id:1 }')
+sio.emit('get-device', { id:'bcC5qflpK'}')
 ```
 
 ### once the request is passed response is sent in `device-data` event

@@ -110,11 +110,18 @@ module.exports = server => {
           where: {
             id: data.id
           },
-        }
+        };
         const output = await Devices.findAll(query)
 
         socket.emit('device-data', output);
       });
+
+      socket.on("get-devices", async () => {
+        const output = await Devices.findAll({})
+
+        socket.emit('devices-list', output);
+      });
+
     });
   }
 
