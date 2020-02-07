@@ -81,7 +81,7 @@ socket.emit('create-device', { config:1 });
 `Python`
 ```py
 sio.emit('send-meta', {
-    machinary_id: 'machi1',
+    machinary_id: 'machine1',
     device_id: "tower 1",
     camera_id: 'cam ht 1'
   })
