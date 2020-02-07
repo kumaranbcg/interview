@@ -38,6 +38,11 @@ module.exports = server => {
 
       });
 
+      socket.on("get-logs", async data => {
+        const output = await SocketLog.findAll()
+        socket.emit('log-data', output);
+      });
+
       socket.on("change-zoom", async data => {
         let output;
         if (data.id) {
