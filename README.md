@@ -88,6 +88,17 @@ sio.emit('send-meta', {
 ```
 
 
+### to get logs from socket connection log table
+
+`Javascript`
+```js
+  socket.emit('get-logs', '')
+  socket.on('log-data', data=>{
+    console.log(data)
+  })
+
+```
+
 `Javascript`
 ```js
 socket.emit('get-device',{ id:'bcC5qflpK' });
