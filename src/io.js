@@ -9,12 +9,24 @@ module.exports = server => {
     io = socketio(server);
 
     io.on("connection", async socket => {
+      console.log('connected', socket.id)
       await SocketLog.create({
         socket_id: socket.id,
         ip: socket.handshake.address,
         time_in: socket.handshake.time
       });
       console.log(socket.id)
+      socket.on('disconnect', async () => {
+        console.log("LOG: just disconnected: " + socket.id)
+        await SocketLog.update({
+          time_out: new Date().toString()
+        }, {
+          where: {
+            socket_id: socket.id,
+            ip: socket.handshake.address,
+          }
+        });
+      })
 
       socket.on("get-zoom", async data => {
         const output = await ZoomConfig.findOne({
@@ -110,7 +122,11 @@ module.exports = server => {
       });
 
       socket.on("send-meta", async data => {
-        console.log('set-meta')
+        await SocketLog.update(data, {
+          where: {
+            socket_id: socket.id,
+          }
+        });
       })
 
       socket.on("get-device", async data => {

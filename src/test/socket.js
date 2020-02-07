@@ -1,13 +1,6 @@
-var socket = require('socket.io-client')('http://localhost:5000');
+var socket = require('socket.io-client')('http://localhost:3000');
 socket.on('connect', () => {
   console.log(socket.id)
-
-  socket.emit("send-meta", {
-    machinary_id: 'machi1',
-    device_id: "tower 1",
-    camera_id: 'cam ht 1'
-  })
-
   socket.emit('get-device', { id: 1 });
   // socket.emit('change-zoom', {
   //   id: 2,
