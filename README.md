@@ -65,6 +65,29 @@ socket.emit('create-device', { config:1 });
 
 ### Jetson will be identified by device id it has stored in code and passing to socket
 
+
+### To send meta information about machinary, device, and camera details emit an event to (connection-info) like below
+
+`Javascript`
+```js
+  socket.emit('send-meta', {
+    machinary_id: 'machi1',
+    device_id: "tower 1",
+    camera_id: 'cam ht 1'
+  })
+
+```
+
+`Python`
+```py
+sio.emit('send-meta', {
+    machinary_id: 'machi1',
+    device_id: "tower 1",
+    camera_id: 'cam ht 1'
+  })
+```
+
+
 `Javascript`
 ```js
 socket.emit('get-device',{ id:'bcC5qflpK' });

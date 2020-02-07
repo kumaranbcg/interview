@@ -1,15 +1,20 @@
 const socketio = require("socket.io");
 const shortid = require("shortid");
 
-const { Devices, ZoomConfig } = require("./lib/db");
+const { Devices, ZoomConfig, SocketLog } = require("./lib/db");
 
 let io;
 module.exports = server => {
   if (!io && server) {
     io = socketio(server);
 
-    io.on("connection", socket => {
-      console.log(socket.id, socket.handshake.address);
+    io.on("connection", async socket => {
+      await SocketLog.create({
+        socket_id: socket.id,
+        ip: socket.handshake.address,
+        time_in: socket.handshake.time
+      });
+      console.log(socket.id)
 
       socket.on("get-zoom", async data => {
         const output = await ZoomConfig.findOne({
@@ -104,7 +109,12 @@ module.exports = server => {
         }
       });
 
+      socket.on("send-meta", async data => {
+        console.log('set-meta')
+      })
+
       socket.on("get-device", async data => {
+        console.log('get-device')
         const query = {
           where: {
             id: data.id
