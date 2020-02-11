@@ -32,7 +32,7 @@ router.get('/camera-list', async (req, res) => {
 router.get('/alert-distribution', async (req, res) => {
   try {
 
-    const data = await sequelize.query("SELECT engine, COUNT(*) FROM `detections` group by engine;", { type: QueryTypes.SELECT });
+    const data = await sequelize.query("SELECT engine, COUNT(*) as count FROM `detections` group by engine;", { type: QueryTypes.SELECT });
 
     res
       .send(data)
