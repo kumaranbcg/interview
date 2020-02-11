@@ -3,7 +3,7 @@ const shortid = require("shortid");
 const router = express.Router();
 const Sequelize = require("sequelize");
 
-const { Alert,sequelize } = require("../lib/db");
+const { Alert, sequelize } = require("../lib/db");
 const { today, yesterday } = require("../lib/utils");
 
 const { Op, QueryTypes } = require("sequelize");
@@ -32,10 +32,15 @@ router.get('/camera-list', async (req, res) => {
 router.get('/alert-distribution', async (req, res) => {
   try {
 
-    const data = await sequelize.query("SELECT engine, COUNT(*) as count FROM `detections` group by engine;", { type: QueryTypes.SELECT });
+    const total = await sequelize.query("SELECT COUNT(*) as count FROM `detections`", { type: QueryTypes.SELECT });
+    const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detections` group by engine;", { type: QueryTypes.SELECT });
 
+    const output = data.map(obj => {
+      obj.percentage = total[0].count / obj.count * 100;
+      return obj;
+    })
     res
-      .send(data)
+      .send(output)
       .status(200)
       .end();
 
