@@ -45,14 +45,29 @@ router.get('/summary/:id', async (req, res) => {
 
     const { period_from, period_to, target, capacity } = project;
 
-    const detections = await sequelize.query("SELECT * FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
 
+    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
+      replacements: { period_from, period_to, engine },
+      type: QueryTypes.SELECT
+    });
+
+    const totalDetections = detections.count;;
+
+    const totalRemoved = totalDetections * capacity;
+
+    const completedPercentage = totalRemoved / target * 100;
+
     res
       .send({
-        detections,
+        project,
+        trucks: totalDetections,
+        detectionsByDate,
+        totalRemoved,
+        completedPercentage
       })
       .status(200)
       .end();
