@@ -2,6 +2,8 @@ const express = require("express");
 const shortid = require("shortid");
 const router = express.Router();
 const Sequelize = require("sequelize");
+const moment = require('moment');
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const { Alert, sequelize } = require("../lib/db");
 const { today, yesterday } = require("../lib/utils");
@@ -17,6 +19,40 @@ router.get('/camera-list', async (req, res) => {
 
     res
       .send(data)
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
+router.get('/dump-truck/:id', async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const project = await Projects.findOne({
+      where: {
+        id
+      }
+    });
+
+    const { period_from, period_to } = project;
+
+    const detections = await sequelize.query("SELECT * FROM detections where created_at BETWEEN :period_from AND :period_to", {
+      replacements: { period_from, period_to },
+      type: QueryTypes.SELECT
+    });
+
+    res
+      .send({
+        detections,
+      })
       .status(200)
       .end();
 
