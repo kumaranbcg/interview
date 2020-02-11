@@ -31,10 +31,11 @@ router.get('/camera-list', async (req, res) => {
   }
 });
 
-router.get('/dump-truck/:id', async (req, res) => {
+router.get('/summary/:id', async (req, res) => {
   try {
 
     const { id } = req.params;
+    const { engine = 'dump-truck' } = req.query;
 
     const project = await Projects.findOne({
       where: {
@@ -42,10 +43,10 @@ router.get('/dump-truck/:id', async (req, res) => {
       }
     });
 
-    const { period_from, period_to } = project;
+    const { period_from, period_to, target, capacity } = project;
 
-    const detections = await sequelize.query("SELECT * FROM detections where created_at BETWEEN :period_from AND :period_to", {
-      replacements: { period_from, period_to },
+    const detections = await sequelize.query("SELECT * FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
+      replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
 
