@@ -41,11 +41,13 @@ router.get('/summary', async (req, res) => {
 
     const { engine = 'dump-truck' } = req.query;
 
-    const project = await sequelize.query("SELECT * FROM projects where period_from >= CURDATE() AND period_to <= CURDATE()", {
+    let project = await sequelize.query("SELECT * FROM projects where period_from <= CURDATE() AND period_to >= CURDATE()", {
       type: QueryTypes.SELECT
     });
+    
+    project = project[0];
 
-    const { period_from, period_to, target, capacity } = project[0];
+    const { period_from, period_to, target, capacity } = project;
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
       replacements: { period_from, period_to, engine },
