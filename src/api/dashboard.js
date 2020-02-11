@@ -29,4 +29,23 @@ router.get('/camera-list', async (req, res) => {
   }
 });
 
+router.get('/alert-distribution', async (req, res) => {
+  try {
+
+    const data = await sequelize.query("SELECT engine, COUNT(*) FROM `detections` group by engine;", { type: QueryTypes.SELECT });
+
+    res
+      .send(data)
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 module.exports = router;
