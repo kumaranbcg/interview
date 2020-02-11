@@ -44,7 +44,7 @@ router.get('/summary', async (req, res) => {
     let project = await sequelize.query("SELECT * FROM projects where period_from <= CURDATE() AND period_to >= CURDATE()", {
       type: QueryTypes.SELECT
     });
-    
+
     project = project[0];
 
     const { period_from, period_to, target, capacity } = project;
@@ -74,7 +74,7 @@ router.get('/summary', async (req, res) => {
 
     const totalRemoved = trucksTotal * capacity;
 
-    const completedPercentage = totalRemoved / target * 100;
+    const completedPercentage = Number(totalRemoved / target * 100).toFixed(0);
 
     const trucksDailyAverage = trucksTotal / detectionsByDate.length || 1;
 
