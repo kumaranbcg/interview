@@ -14,8 +14,13 @@ const { Projects, Detection, Monitor } = require("../lib/db");
 
 router.get('/camera-list', async (req, res) => {
   try {
+    const { engine = 'dump-truck' } = req.query;
 
-    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id GROUP BY d.monitor_id", { type: QueryTypes.SELECT });
+    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+      {
+        replacements: { engine },
+        type: QueryTypes.SELECT
+      });
 
     res
       .send(data)
