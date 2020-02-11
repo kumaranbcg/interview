@@ -60,6 +60,13 @@ router.get('/summary/:id', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+      {
+        replacements: { engine },
+        type: QueryTypes.SELECT
+      });
+
+
 
     const trucksTotal = detections[0].count;
 
@@ -85,6 +92,7 @@ router.get('/summary/:id', async (req, res) => {
     res
       .send({
         project,
+        cameras,
         remaining,
         estimatedDays,
         trucksTotal,
