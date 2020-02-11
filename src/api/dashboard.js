@@ -55,18 +55,37 @@ router.get('/summary/:id', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const totalDetections = detections.count;;
 
-    const totalRemoved = totalDetections * capacity;
+    const trucksTotal = detections[0].count;
+
+    const totalRemoved = trucksTotal * capacity;
 
     const completedPercentage = totalRemoved / target * 100;
+
+    const trucksDailyAverage = trucksTotal / detectionsByDate.length || 1;
+
+    const dailyAverageRemoved = trucksDailyAverage * capacity;
+
+    const remaining = target - totalRemoved || "0";
+
+    var startedBefore = moment([period_from]);
+    var endsBy = moment([period_to]);
+    var today = moment();
+
+    startedBefore = today.diff(startedBefore, 'days') // 1
+    endsBy = endsBy.diff(today, 'days') // 1
+
+    const estimatedDays = remaining / dailyAverageRemoved;
 
     res
       .send({
         project,
-        trucks: totalDetections,
-        detectionsByDate,
+        remaining,
+        estimatedDays,
+        trucksTotal,
         totalRemoved,
+        trucksDailyAverage,
+        dailyAverageRemoved,
         completedPercentage
       })
       .status(200)
