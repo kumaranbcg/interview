@@ -36,19 +36,16 @@ router.get('/camera-list', async (req, res) => {
   }
 });
 
-router.get('/summary/:id', async (req, res) => {
+router.get('/summary', async (req, res) => {
   try {
 
-    const { id } = req.params;
     const { engine = 'dump-truck' } = req.query;
 
-    const project = await Projects.findOne({
-      where: {
-        id
-      }
+    const project = await sequelize.query("SELECT * FROM projects where period_from >= CURDATE() AND period_to <= CURDATE()", {
+      type: QueryTypes.SELECT
     });
 
-    const { period_from, period_to, target, capacity } = project;
+    const { period_from, period_to, target, capacity } = project[0];
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
       replacements: { period_from, period_to, engine },
@@ -66,6 +63,9 @@ router.get('/summary/:id', async (req, res) => {
         type: QueryTypes.SELECT
       });
 
+    var today = moment();
+    var startedBefore = moment([period_from]);
+    var endsBy = moment([period_to]);
 
 
     const trucksTotal = detections[0].count;
@@ -80,9 +80,6 @@ router.get('/summary/:id', async (req, res) => {
 
     const remaining = target - totalRemoved || "0";
 
-    var startedBefore = moment([period_from]);
-    var endsBy = moment([period_to]);
-    var today = moment();
 
     startedBefore = today.diff(startedBefore, 'days') // 1
     endsBy = endsBy.diff(today, 'days') // 1
