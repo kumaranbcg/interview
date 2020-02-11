@@ -110,6 +110,60 @@ router.get('/summary', async (req, res) => {
   }
 });
 
+
+router.get('/truck-activity', async (req, res) => {
+  try {
+
+    var today = moment();
+
+    const { engine = 'dump-truck', period_from = today.format(DATE_FORMAT), period_to = today.format(DATE_FORMAT) } = req.query;
+
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine", {
+      replacements: { engine },
+      type: QueryTypes.SELECT
+    });
+
+
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND created_at = CURDATE() GROUP by HOUR(created_at)", {
+      replacements: { engine },
+      type: QueryTypes.SELECT
+    });
+
+
+    const detectionsByHourDaily = await sequelize.query("SELECT date, hour, AVG(count) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at),HOUR(created_at)) as summary group by date", {
+      replacements: { period_from, period_to, engine },
+      type: QueryTypes.SELECT
+    });
+
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+      {
+        replacements: { engine },
+        type: QueryTypes.SELECT
+      });
+
+    var today = moment();
+
+    const trucksTotal = detections[0].count;
+
+    res
+      .send({
+        detectionsByHourDaily,
+        detectionsByHourToday,
+        cameras,
+        trucksTotal,
+      })
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 router.get('/alert-distribution', async (req, res) => {
   try {
 
