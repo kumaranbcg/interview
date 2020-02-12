@@ -150,17 +150,20 @@ router.get('/truck-activity', async (req, res) => {
         type: QueryTypes.SELECT
       });
 
-    var today = moment();
+    var today = moment().format(DATE_FORMAT)
 
     const trucksTotal = detections[0].count;
 
+    const perHour = detectionsByHourToday.reduce((acc, curr) => {
+      return acc + curr.count;
+    }, 0) / detectionsByHourToday.length
     res
       .send({
         trucksByHourDaily: detectionsByHourDaily,
         trucksByHourToday: detectionsByHourToday,
         cameras,
         trucksTotal,
-        perHour: 0
+        perHour
       })
       .status(200)
       .end();
