@@ -175,7 +175,7 @@ router.get('/truck-activity', async (req, res) => {
 
 
     const detectionsByHourDaily = await sequelize.query("SELECT date, hour, AVG(count) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at),HOUR(created_at)) as summary group by date", {
-      replacements: { period_from, period_to, engine,monitor_id },
+      replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
@@ -415,6 +415,11 @@ router.get('/progress', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at)", {
+      replacements: { engine },
+      type: QueryTypes.SELECT
+    });
+
     const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
       {
         replacements: { engine },
@@ -450,9 +455,14 @@ router.get('/progress', async (req, res) => {
         completedPercentage: Number(completedPercentage).toFixed(0),
         estimatedDays: Number(estimatedDays).toFixed(0),
 
+        detectionsByHourToday: detectionsByHourToday.map(obj => {
+          obj.percentage = Number((obj.count * capacity / target) * 100).toFixed(0)
+          return obj;
+        }),
+
         cameras,
         detectionsByDate: detectionsByDate.map(obj => {
-          obj.pecentage = Number((obj.count * capacity / target) * 100).toFixed(0)
+          obj.percentage = Number((obj.count * capacity / target) * 100).toFixed(0)
           return obj;
         })
       })
