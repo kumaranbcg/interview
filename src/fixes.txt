@@ -1,0 +1,8 @@
+schema for list of all avaliable detections to be implemented
+additional attributes frontend side requires color attribute string unique 
+
+additional requirement in schema for detection for a monitor
+additional attribute reqired is orderIndex which is used to reorder the detections since inserting the rows in between database collection would be troublesome 
+therefore for each monitor for a user will have detections with orderIndex (auto increment from 0) when inserted to a monitor 
+the order index should have endpoint to update the orderIndex to presist the ordering in the front-end side.
+if a detecton is deleted from a monitor the orderIndex should be maintained(re indexed) for the particular monitor only
