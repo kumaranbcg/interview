@@ -6,7 +6,6 @@ const moment = require('moment');
 const DATE_FORMAT = 'YYYY-MM-DD';
 
 const { Alert, sequelize } = require("../lib/db");
-const { today, yesterday } = require("../lib/utils");
 
 const { Op, QueryTypes } = require("sequelize");
 
@@ -122,21 +121,49 @@ router.get('/summary', async (req, res) => {
 
 router.get('/truck-activity', async (req, res) => {
   try {
+    var today = moment().format(DATE_FORMAT)
+    var yesterday = moment().subtract(1, 'days').format(DATE_FORMAT)
+    var week = moment().subtract(7, 'days').format(DATE_FORMAT)
 
-    var today = moment();
-
-    const { engine = 'dump-truck', period_from = today.format(DATE_FORMAT), period_to = today.format(DATE_FORMAT) } = req.query;
+    const { engine = 'dump-truck', period_from = yesterday, period_to = today } = req.query;
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine", {
       replacements: { engine },
       type: QueryTypes.SELECT
     });
 
+    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()", {
+      replacements: { engine },
+      type: QueryTypes.SELECT
+    });
+
+
+    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1", {
+      replacements: { engine },
+      type: QueryTypes.SELECT
+    });
+
+
+    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()-1 ", {
+      replacements: { engine },
+      type: QueryTypes.SELECT
+    });
 
     const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at)", {
       replacements: { engine },
       type: QueryTypes.SELECT
     });
+
+    const detectionsByHourYesterday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1 GROUP by HOUR(created_at)", {
+      replacements: { engine },
+      type: QueryTypes.SELECT
+    });
+
+    const detectionsByHourWeek = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()-1 GROUP by HOUR(created_at)", {
+      replacements: { engine },
+      type: QueryTypes.SELECT
+    });
+
 
 
     const detectionsByHourDaily = await sequelize.query("SELECT date, hour, AVG(count) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at),HOUR(created_at)) as summary group by date", {
@@ -150,20 +177,39 @@ router.get('/truck-activity', async (req, res) => {
         type: QueryTypes.SELECT
       });
 
-    var today = moment().format(DATE_FORMAT)
+
 
     const trucksTotal = detections[0].count;
+    const trucksTotalToday = detectionsToday[0].count;
+    const trucksTotalYesterday = detectionsYesterDay[0].count;
+    const trucksTotalWeek = detectionsWeek[0].count;
 
     const perHour = detectionsByHourToday.reduce((acc, curr) => {
       return acc + curr.count;
-    }, 0) / detectionsByHourToday.length
+    }, 0) / detectionsByHourToday.length || 0;
+    const perHourYesterday = detectionsByHourYesterday.reduce((acc, curr) => {
+      return acc + curr.count;
+    }, 0) / detectionsByHourYesterday.length || 0;
+    const perHourWeek = detectionsByHourWeek.reduce((acc, curr) => {
+      return acc + curr.count;
+    }, 0) / detectionsByHourWeek.length || 0;
+
     res
       .send({
         trucksByHourDaily: detectionsByHourDaily,
         trucksByHourToday: detectionsByHourToday,
         cameras,
         trucksTotal,
-        perHour
+        trucksTotalToday,
+        trucksTotalYesterday,
+        trucksTotalWeek,
+        trucksTotalYesterdayPercentage: (trucksTotalYesterday / trucksTotalToday * 100).toFixed(0),
+        trucksTotalWeekPercentage: (trucksTotalWeek / trucksTotalToday * 100).toFixed(0),
+        perHourToday: Number(perHour).toFixed(0),
+        perHourYesterday: perHourYesterday,
+        perHourWeek: perHourWeek,
+        perHourYesterdayPercentage: (perHourYesterday / perHour * 100).toFixed(0),
+        perHourWeekPercentage: (perHourWeek / perHour * 100).toFixed(0)
       })
       .status(200)
       .end();
