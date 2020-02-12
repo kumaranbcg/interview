@@ -41,11 +41,21 @@ router.get('/summary', async (req, res) => {
 
     const { engine = 'dump-truck' } = req.query;
 
-    const project = await sequelize.query("SELECT * FROM projects where period_from >= CURDATE() AND period_to <= CURDATE()", {
+    let project = await sequelize.query("SELECT * FROM projects where period_from <= CURDATE() AND period_to >= CURDATE()", {
       type: QueryTypes.SELECT
     });
 
-    const { period_from, period_to, target, capacity } = project[0];
+    project = project[0];
+
+    if (!project) {
+      project = {
+        period_from: moment().format(DATE_FORMAT),
+        period_to: moment().format(DATE_FORMAT),
+        capacity: 1,
+        target: 1
+      }
+    }
+    const { period_from, period_to, target, capacity } = project;
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
       replacements: { period_from, period_to, engine },
@@ -91,18 +101,17 @@ router.get('/summary', async (req, res) => {
         project,
         cameras,
         remaining,
-        estimatedDays,
+        estimatedDays: Number(estimatedDays).toFixed(0),
         trucksTotal,
         totalRemoved,
-        trucksDailyAverage,
+        trucksDailyAverage: Number(trucksDailyAverage).toFixed(0),
         dailyAverageRemoved,
-        completedPercentage
+        completedPercentage: Number(completedPercentage).toFixed(0),
       })
       .status(200)
       .end();
 
   } catch (err) {
-    console.log(err.message);
     res
       .status(400)
       .send(err)
@@ -124,7 +133,7 @@ router.get('/truck-activity', async (req, res) => {
     });
 
 
-    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND created_at = CURDATE() GROUP by HOUR(created_at)", {
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at)", {
       replacements: { engine },
       type: QueryTypes.SELECT
     });
@@ -147,10 +156,11 @@ router.get('/truck-activity', async (req, res) => {
 
     res
       .send({
-        detectionsByHourDaily,
-        detectionsByHourToday,
+        trucksByHourDaily: detectionsByHourDaily,
+        trucksByHourToday: detectionsByHourToday,
         cameras,
         trucksTotal,
+        perHour: 0
       })
       .status(200)
       .end();
