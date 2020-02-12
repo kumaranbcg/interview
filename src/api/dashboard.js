@@ -82,7 +82,7 @@ router.get('/summary', async (req, res) => {
 
     const totalRemoved = trucksTotal * capacity;
 
-    const completedPercentage = totalRemoved / target * 100;
+    const completedPercentage = Number(totalRemoved / target * 100).toFixed(0);
 
     const trucksDailyAverage = trucksTotal / detectionsByDate.length || 1;
 
