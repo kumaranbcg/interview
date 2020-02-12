@@ -30,7 +30,9 @@ router.get('/camera-list', async (req, res) => {
     console.log(err.message);
     res
       .status(400)
-      .send(err)
+      .send({
+        message: err.message
+      })
       .end();
   }
 });
@@ -113,7 +115,9 @@ router.get('/summary', async (req, res) => {
   } catch (err) {
     res
       .status(400)
-      .send(err)
+      .send({
+        message: err.message
+      })
       .end();
   }
 });
@@ -217,7 +221,9 @@ router.get('/truck-activity', async (req, res) => {
     console.log(err.message);
     res
       .status(400)
-      .send(err)
+      .send({
+        message: err.message
+      })
       .end();
   }
 });
@@ -248,7 +254,9 @@ router.get('/alert-distribution', async (req, res) => {
     console.log(err.message);
     res
       .status(400)
-      .send(err)
+      .send({
+        message: err.message
+      })
       .end();
   }
 });
@@ -323,13 +331,13 @@ router.get('/soil-removed', async (req, res) => {
       .send({
         project,
         cameras,
-        
+
         trucksTotalYesterdayPercentage: (trucksTotalYesterday / trucksTotalToday * 100).toFixed(0),
         trucksTotalWeekPercentage: (trucksTotalWeek / trucksTotalToday * 100).toFixed(0),
-      
+
         totalRemoved: trucksTotal * capacity,
         todayRemoved: trucksTotalToday * capacity,
-      
+
         detectionsByDate,
         detectionsByHourToday: detectionsByHourToday.map(obj => {
           obj.removed = obj.count * capacity;
@@ -344,9 +352,100 @@ router.get('/soil-removed', async (req, res) => {
     console.error(err)
     res
       .status(400)
-      .send(err)
+      .send({
+        message: err.message
+      })
       .end();
   }
 })
+
+
+
+router.get('/progress', async (req, res) => {
+  try {
+
+    const { period_from, period_to, engine = 'dump-truck' } = req.query;
+
+    let project = await sequelize.query("SELECT * FROM projects where period_from <= :period_from AND period_to >= :period_to", {
+      replacements: { period_from, period_to },
+      type: QueryTypes.SELECT
+    });
+
+    project = project[0];
+
+    if (!project) {
+      project = {
+        period_from: moment().format(DATE_FORMAT),
+        period_to: moment().format(DATE_FORMAT),
+        capacity: 1,
+        target: 1
+      }
+    }
+    const { target, capacity } = project;
+
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
+      replacements: { period_from, period_to, engine },
+      type: QueryTypes.SELECT
+    });
+
+    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
+      replacements: { period_from, period_to, engine },
+      type: QueryTypes.SELECT
+    });
+
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+      {
+        replacements: { engine },
+        type: QueryTypes.SELECT
+      });
+
+    var today = moment();
+    var startedBefore = moment([period_from]);
+    var endsBy = moment([period_to]);
+
+
+    const trucksTotal = detections[0].count;
+
+    const totalRemoved = trucksTotal * capacity;
+
+    const completedPercentage = Number(totalRemoved / target * 100).toFixed(0);
+
+    const trucksDailyAverage = trucksTotal / detectionsByDate.length || 1;
+
+    const dailyAverageRemoved = trucksDailyAverage * capacity;
+
+    const remaining = target - totalRemoved || "0";
+
+
+    startedBefore = today.diff(startedBefore, 'days') // 1
+    endsBy = endsBy.diff(today, 'days') // 1
+
+    const estimatedDays = remaining / dailyAverageRemoved;
+
+    res
+      .send({
+        project,
+        completedPercentage: Number(completedPercentage).toFixed(0),
+        estimatedDays: Number(estimatedDays).toFixed(0),
+
+        cameras,
+        detectionsByDate: detectionsByDate.map(obj => {
+          obj.pecentage = Number((obj.count * capacity / target) * 100).toFixed(0)
+          return obj;
+        })
+      })
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.error(err)
+    res
+      .status(400)
+      .send({
+        message: err.message
+      })
+      .end();
+  }
+});
 
 module.exports = router;
