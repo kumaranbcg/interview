@@ -128,49 +128,54 @@ router.get('/truck-activity', async (req, res) => {
     var today = moment().format(DATE_FORMAT)
     var yesterday = moment().subtract(1, 'days').format(DATE_FORMAT)
 
-    const { engine = 'dump-truck', period_from = yesterday, period_to = today } = req.query;
+    const { engine = 'dump-truck', period_from = yesterday, period_to = today, monitor_id = '' } = req.query;
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine", {
       replacements: { engine },
       type: QueryTypes.SELECT
     });
 
-    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()", {
-      replacements: { engine },
+    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
 
-    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1", {
-      replacements: { engine },
+    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1 AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
+
+    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id) AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
+
+    const detectionsLastWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-14 AND DATE(created_at) <= CURDATE()-8  AND (:monitor_id='' OR monitor_id=:monitor_id) AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
 
-    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()-1 ", {
-      replacements: { engine },
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at) AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at)", {
-      replacements: { engine },
-      type: QueryTypes.SELECT
-    });
-
-    const detectionsByHourYesterday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1 GROUP by HOUR(created_at)", {
-      replacements: { engine },
+    const detectionsByHourYesterday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1 GROUP by HOUR(created_at) AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
     const detectionsByHourWeek = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()-1 GROUP by HOUR(created_at)", {
-      replacements: { engine },
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
 
 
-    const detectionsByHourDaily = await sequelize.query("SELECT date, hour, AVG(count) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at),HOUR(created_at)) as summary group by date", {
-      replacements: { period_from, period_to, engine },
+    const detectionsByHourDaily = await sequelize.query("SELECT date, hour, AVG(count) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at),HOUR(created_at)) as summary group by date", {
+      replacements: { period_from, period_to, engine,monitor_id },
       type: QueryTypes.SELECT
     });
 
@@ -186,6 +191,7 @@ router.get('/truck-activity', async (req, res) => {
     const trucksTotalToday = detectionsToday[0].count;
     const trucksTotalYesterday = detectionsYesterDay[0].count;
     const trucksTotalWeek = detectionsWeek[0].count;
+    const trucksTotalLastWeek = detectionsLastWeek[0].count;
 
     const perHour = detectionsByHourToday.reduce((acc, curr) => {
       return acc + curr.count;
@@ -206,8 +212,11 @@ router.get('/truck-activity', async (req, res) => {
         trucksTotalToday,
         trucksTotalYesterday,
         trucksTotalWeek,
-        trucksTotalYesterdayPercentage: (trucksTotalYesterday / trucksTotalToday * 100).toFixed(0),
-        trucksTotalWeekPercentage: (trucksTotalWeek / trucksTotalToday * 100).toFixed(0),
+        trucksTotalLastWeek,
+
+        trucksTotalYesterdayPercentage: (trucksTotalYesterday ? (trucksTotalYesterday / trucksTotalToday * 100) : trucksTotalToday).toFixed(0),
+        trucksTotalWeekPercentage: (trucksTotalLastWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalWeek).toFixed(0),
+
         perHourToday: Number(perHour).toFixed(0),
         perHourYesterday: perHourYesterday,
         perHourWeek: perHourWeek,
@@ -264,7 +273,7 @@ router.get('/alert-distribution', async (req, res) => {
 router.get('/soil-removed', async (req, res) => {
   try {
 
-    const { period_from, period_to, engine = 'dump-truck' } = req.query;
+    const { period_from, period_to, monitor_id = '', engine = 'dump-truck' } = req.query;
 
     let project = await sequelize.query("SELECT * FROM projects where period_from <= :period_from AND period_to >= :period_to", {
       replacements: { period_from, period_to },
@@ -281,43 +290,48 @@ router.get('/soil-removed', async (req, res) => {
         target: 1
       }
     }
-    const { target, capacity } = project;
+    const { capacity } = project;
 
-    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()", {
-      replacements: { engine },
+    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1", {
-      replacements: { engine },
-      type: QueryTypes.SELECT
-    });
-
-
-    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()-1 ", {
-      replacements: { engine },
+    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1  AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
 
-    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
-      replacements: { period_from, period_to, engine },
+    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
-      replacements: { period_from, period_to, engine },
+    const detectionsLastWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-14 AND DATE(created_at) <= CURDATE()-8  AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at)", {
-      replacements: { engine },
+
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { period_from, period_to, engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
+
+    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at)", {
+      replacements: { period_from, period_to, engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
+
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by HOUR(created_at)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
     const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
       {
-        replacements: { engine },
+        replacements: { engine, monitor_id },
         type: QueryTypes.SELECT
       });
 
@@ -326,14 +340,22 @@ router.get('/soil-removed', async (req, res) => {
     const trucksTotalToday = detectionsToday[0].count;
     const trucksTotalYesterday = detectionsYesterDay[0].count;
     const trucksTotalWeek = detectionsWeek[0].count;
+    const trucksTotalLastWeek = detectionsLastWeek[0].count;
+
+    console.error(trucksTotalYesterday, trucksTotalToday)
 
     res
       .send({
         project,
         cameras,
 
-        trucksTotalYesterdayPercentage: (trucksTotalYesterday / trucksTotalToday * 100).toFixed(0),
-        trucksTotalWeekPercentage: (trucksTotalWeek / trucksTotalToday * 100).toFixed(0),
+        trucksTotalYesterday,
+        trucksTotalToday,
+        trucksTotalLastWeek,
+        trucksTotalWeek,
+
+        trucksTotalYesterdayPercentage: (trucksTotalYesterday ? (trucksTotalYesterday / trucksTotalToday * 100) : trucksTotalToday).toFixed(0),
+        trucksTotalWeekPercentage: (trucksTotalLastWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalWeek).toFixed(0),
 
         totalRemoved: trucksTotal * capacity,
         todayRemoved: trucksTotalToday * capacity,
