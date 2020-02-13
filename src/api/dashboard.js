@@ -218,8 +218,8 @@ router.get('/truck-activity', async (req, res) => {
         trucksTotalWeekPercentage: (trucksTotalLastWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalWeek).toFixed(0),
 
         perHourToday: Number(perHour).toFixed(0),
-        perHourYesterday: perHourYesterday,
-        perHourWeek: perHourWeek,
+        perHourYesterday: Number(perHourYesterday).toFixed(0),
+        perHourWeek: Number(perHourWeek).toFixed(0),
         perHourYesterdayPercentage: (perHourYesterday / perHour * 100).toFixed(0),
         perHourWeekPercentage: (perHourWeek / perHour * 100).toFixed(0)
       })
