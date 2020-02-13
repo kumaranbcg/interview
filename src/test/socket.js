@@ -5,7 +5,9 @@ socket.on('connect', () => {
   socket.emit('send-meta', {
     camera_id: 'cam ht 1'
   })
-  socket.disconnect()
+  setTimeout(() => {
+    socket.disconnect()
+  }, 5000)
   // socket.emit('get-device', { id: 1 });
   // socket.emit('change-zoom', {
   //   id: 2,

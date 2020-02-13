@@ -2,7 +2,8 @@ const app = require('./app')
 const port = process.env.PORT || 3000;
 
 const server = require("http").createServer(app);
-require("./io")(server);
+const io = require("./io")(server);
+global.io = io; //added
 server.listen(port, () => console.log(`Customindz listening on port ${port}!`));
 
 
