@@ -245,7 +245,7 @@ router.get('/alert-distribution', async (req, res) => {
     const detectionsByMonth = await sequelize.query("SELECT engine as name, COUNT(*) count,MONTH(created_at) as month,YEAR(created_at) as year FROM `detections` group by engine, MONTH(created_at),YEAR(created_at)", { type: QueryTypes.SELECT })
 
     const alertDistribution = data.map(obj => {
-      obj.percentage = total[0].count / obj.count * 100;
+      obj.percentage = Number(total[0].count / obj.count * 100).toFixed(0);
       return obj;
     })
 
