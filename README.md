@@ -271,7 +271,6 @@ def device_data(data):
 
 
 
-
 ## `src/api` All Api Routes
 
 Note: All `src/api/*-admin.js` are exposed as ADMIN usage like from ML Engine or Admin purpose to bypass token validation. 

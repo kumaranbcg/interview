@@ -4,13 +4,21 @@ const uuidv4 = require("uuid/v4");
 const fs = require('fs');
 const path = require('path');
 
-const { AlertLog, Alert, Monitor, Detection, Projects } = require("../lib/db");
+const { AlertLog, Alert, Monitor, Detection, Projects, SocketLog } = require("../lib/db");
 
 const alertUtil = require("../lib/alert");
 const { Op } = require("sequelize");
 const moment = require("moment");
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
+
+router.post('/snapshot', async (req, res) => {
+  res.send({ message: 'Server received the file' })
+});
+
+router.post('/video', async (req, res) => {
+  res.send({ message: 'Server received the file' })
+});
 
 router.post("/", async (req, res, next) => {
   try {
