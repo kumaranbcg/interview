@@ -2,10 +2,14 @@ var socket = require('socket.io-client')('http://localhost:3000');
 socket.on('connect', () => {
   socket.emit('create-device', { id: 1, config: 1 });
   console.log(socket.id)
-  socket.emit('send-meta', {
-    camera_id: 'cam ht 1'
-  })
+
   setTimeout(() => {
+    socket.emit('send-meta', {
+      camera_id: 'jetson_camera_2'
+    })
+  }, 3000)
+  setTimeout(() => {
+
     socket.disconnect()
   }, 5000)
   // socket.emit('get-device', { id: 1 });
