@@ -1,7 +1,7 @@
 var socket = require('socket.io-client')('http://localhost:3000');
 socket.on('connect', () => {
   socket.emit('create-device', { id: 1, config: 1 });
-
+  socket.disconnect()
   console.log(socket.id)
   // socket.emit('get-device', { id: 1 });
   // socket.emit('change-zoom', {

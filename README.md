@@ -61,17 +61,18 @@ def getdata():
     sio.wait();
 ```
 
-### To create a device 
-
-
+### To stop machine Tracking to update machine up time
 `Javascript`
 ```js
-socket.emit('create-device', { config:1 });
+  socket.disconnect()
+
 ```
+
 `Python`
 ```py
-socket.emit('create-device', { config:1 });
+sio.disconnect()
 ```
+
 
 ### Jetson will be identified by device id it has stored in code and passing to socket
 
