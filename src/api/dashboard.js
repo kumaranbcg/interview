@@ -484,7 +484,7 @@ router.get('/dangerzone', async (req, res) => {
 
     const { period_from, period_to, engine = 'danger_zone' } = req.query;
 
-    const socketLogs = await sequelize.query("SELECT s.*,m.name FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id ORDER BY s.created_at DESC",
+    const socketLogs = await sequelize.query("SELECT s.*,m.name FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id  where s.camera_id IS NOT NULL ORDER BY s.created_at DESC",
       {
         // replacements: { engine },
         type: QueryTypes.SELECT

@@ -99,6 +99,7 @@ module.exports = server => {
       });
 
       socket.on("send-meta", async data => {
+        console.log(data)
         await SocketLog.update(data, {
           where: {
             socket_id: socket.id,

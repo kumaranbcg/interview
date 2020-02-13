@@ -73,11 +73,7 @@ def getdata():
 sio.disconnect()
 ```
 
-
-### Jetson will be identified by device id it has stored in code and passing to socket
-
-
-### To send meta information about machinary, device, and camera details emit an event to (connection-info) like below
+### Jetson will be identified by camera id it has stored in code and passing to socket by below method
 
 `Javascript`
 ```js
