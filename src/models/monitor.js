@@ -29,6 +29,18 @@ module.exports = (sequelize, DataTypes) => {
       type: {
         type: DataTypes.STRING
       },
+      device_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      machine_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      ip: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
       engines: {
         type: DataTypes.TEXT,
         get: function() {

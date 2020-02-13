@@ -2,6 +2,16 @@
 
 The user authentication is made using cognito and permissions are being managed in mysql
 
+# Postman Collection
+
+`https://documenter.getpostman.com/view/1901360/SWTK4u6g`
+
+# Camera for Socket/General API
+
+1. Register Camera in `/api/monitor` endpoint
+2. Update machinary or device details with same endpoint
+
+# Socket
 ## Zoom Level and Devices using socket
 The jetson nano device will be connected to the server via socket.io
 
@@ -71,8 +81,6 @@ socket.emit('create-device', { config:1 });
 `Javascript`
 ```js
   socket.emit('send-meta', {
-    machinary_id: 'machine1',
-    device_id: "tower 1",
     camera_id: 'cam ht 1'
   })
 
@@ -81,8 +89,6 @@ socket.emit('create-device', { config:1 });
 `Python`
 ```py
 sio.emit('send-meta', {
-    machinary_id: 'machine1',
-    device_id: "tower 1",
     camera_id: 'cam ht 1'
   })
 ```

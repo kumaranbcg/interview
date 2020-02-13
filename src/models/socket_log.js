@@ -17,18 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       time_out: {
         type: DataTypes.DATE
       },
-      machinary_id: {
-        type: DataTypes.STRING
-      },
       camera_id: {
         type: DataTypes.STRING
       },
-      device_id: {
-        type: DataTypes.STRING
-      },
-      ip: {
-        type: DataTypes.STRING
-      }
     },
     {
       underscored: true,

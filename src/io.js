@@ -1,7 +1,6 @@
 const socketio = require("socket.io");
-const shortid = require("shortid");
 
-const { Devices, ZoomConfig, SocketLog } = require("./lib/db");
+const { ZoomConfig, SocketLog, Monitor } = require("./lib/db");
 
 let io;
 module.exports = server => {
@@ -12,7 +11,6 @@ module.exports = server => {
       console.log('connected', socket.id)
       await SocketLog.create({
         socket_id: socket.id,
-        ip: socket.handshake.address,
         time_in: socket.handshake.time
       });
       console.log(socket.id)
@@ -23,7 +21,6 @@ module.exports = server => {
         }, {
           where: {
             socket_id: socket.id,
-            ip: socket.handshake.address,
           }
         });
       })
@@ -71,30 +68,6 @@ module.exports = server => {
 
       });
 
-      socket.on("create-device", async data => {
-        if (data.config) {
-          const zoomConfig = await ZoomConfig.findOne({
-            where: {
-              id: data.config
-            }
-          })
-          if (!zoomConfig) {
-            socket.emit('input-error', 'config is not available')
-          }
-          else {
-            const newData = {
-              id: shortid(),
-              config: JSON.stringify(zoomConfig.config)
-            };
-
-            const output = await Devices.create(newData);
-
-            socket.emit('device-data', output);
-
-          }
-        }
-      });
-
       socket.on('update-device', async data => {
         const id = `${data.id}`
         if (data.config) {
@@ -107,18 +80,17 @@ module.exports = server => {
             socket.emit('input-error', 'config is not available')
           }
           if (config && id) {
-            await Devices.update({
+            await Monitor.update({
               config
             }, {
               where: { id }
             });
 
-            const query = {
+            const output = await Monitor.findOne({
               where: {
                 id
               },
-            }
-            const output = await Devices.findOne(query)
+            })
 
             socket.emit('device-data', output);
             socket.broadcast.emit('device-data', output);
@@ -141,7 +113,7 @@ module.exports = server => {
             id: data.id
           },
         };
-        const output = await Devices.findAll(query)
+        const output = await Monitor.findOne(query)
 
         socket.emit('device-data', output);
       });
@@ -155,7 +127,7 @@ module.exports = server => {
 
       socket.on("get-device-list", async data => {
         console.log('get-device-list')
-        const output = await Devices.findAll({})
+        const output = await Monitor.findAll({})
 
         socket.emit('device-list', output);
       });

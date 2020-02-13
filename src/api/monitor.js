@@ -3,7 +3,7 @@ const authentication = require("../middleware/authentication");
 const shortid = require("shortid");
 const router = express.Router();
 
-const { Vod, Detection, Monitor, Puller, PullerServer } = require("../lib/db");
+const { Vod, Detection, Monitor, Puller, PullerServer, ZoomConfig } = require("../lib/db");
 
 const axios = require("axios");
 const url = require("url");
@@ -172,6 +172,9 @@ router.post("/", async (req, res, next) => {
     // }
 
     const MONITOR_ID = req.body.id || shortid.generate();
+
+    const config = await ZoomConfig.findAll()
+
     const newMonitor = {
       id: MONITOR_ID,
       user_id: req.user["cognito:username"],
@@ -180,7 +183,8 @@ router.post("/", async (req, res, next) => {
       play_from_source: false,
       graph: [],
       engines: [],
-      type: req.body.type || "normal"
+      type: req.body.type || "normal",
+      config: JSON.stringify(config[0])
     };
 
     await Monitor.create(newMonitor);

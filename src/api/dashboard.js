@@ -1,15 +1,12 @@
 const express = require("express");
-const shortid = require("shortid");
 const router = express.Router();
-const Sequelize = require("sequelize");
 const moment = require('moment');
 const DATE_FORMAT = 'YYYY-MM-DD';
 
-const { Alert, sequelize } = require("../lib/db");
+const { sequelize } = require("../lib/db");
 
-const { Op, QueryTypes } = require("sequelize");
+const { QueryTypes } = require("sequelize");
 
-const { Projects, Detection, Monitor } = require("../lib/db");
 
 router.get('/camera-list', async (req, res) => {
   try {
@@ -135,51 +132,51 @@ router.get('/truck-activity', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
       replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
 
-    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1 AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1 AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
       replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id) AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id) AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
       replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsLastWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-14 AND DATE(created_at) <= CURDATE()-8  AND (:monitor_id='' OR monitor_id=:monitor_id) AND (:monitor_id='' OR monitor_id=:monitor_id)", {
-      replacements: { engine, monitor_id },
-      type: QueryTypes.SELECT
-    });
-
-
-    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at) AND (:monitor_id='' OR monitor_id=:monitor_id)", {
-      replacements: { engine, monitor_id },
-      type: QueryTypes.SELECT
-    });
-
-    const detectionsByHourYesterday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1 GROUP by HOUR(created_at) AND (:monitor_id='' OR monitor_id=:monitor_id)", {
-      replacements: { engine, monitor_id },
-      type: QueryTypes.SELECT
-    });
-
-    const detectionsByHourWeek = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()-1 GROUP by HOUR(created_at)", {
+    const detectionsLastWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-14 AND DATE(created_at) <= CURDATE()-8  AND (:monitor_id='' OR monitor_id=:monitor_id) AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
       replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
 
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at) AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
+      replacements: { engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
 
-    const detectionsByHourDaily = await sequelize.query("SELECT date, hour, AVG(count) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at),HOUR(created_at)) as summary group by date", {
+    const detectionsByHourYesterday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1 GROUP by HOUR(created_at) AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
+      replacements: { engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
+
+    const detectionsByHourWeek = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()-1 GROUP by HOUR(created_at) ORDER BY created_at", {
+      replacements: { engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
+
+
+
+    const detectionsByHourDaily = await sequelize.query("SELECT date, hour, AVG(count) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at),HOUR(created_at)) as summary group by date  ORDER BY date", {
       replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id  ORDER BY monitor_id",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
@@ -292,44 +289,44 @@ router.get('/soil-removed', async (req, res) => {
     }
     const { capacity } = project;
 
-    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
       replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1  AND (:monitor_id='' OR monitor_id=:monitor_id)", {
-      replacements: { engine, monitor_id },
-      type: QueryTypes.SELECT
-    });
-
-
-    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id)", {
-      replacements: { engine, monitor_id },
-      type: QueryTypes.SELECT
-    });
-
-    const detectionsLastWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-14 AND DATE(created_at) <= CURDATE()-8  AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+    const detectionsYesterDay = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()-1  AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
       replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
 
-    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+    const detectionsWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-7 AND DATE(created_at) <= CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
+      replacements: { engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
+
+    const detectionsLastWeek = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) >= CURDATE()-14 AND DATE(created_at) <= CURDATE()-8  AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
+      replacements: { engine, monitor_id },
+      type: QueryTypes.SELECT
+    });
+
+
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
       replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at)", {
+    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at)  ORDER BY created_at", {
       replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by HOUR(created_at)", {
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE()  AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by HOUR(created_at)  ORDER BY created_at", {
       replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
       {
         replacements: { engine, monitor_id },
         type: QueryTypes.SELECT
@@ -405,22 +402,22 @@ router.get('/progress', async (req, res) => {
     }
     const { target, capacity } = project;
 
-    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to ", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
+    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)   ORDER BY created_at", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at)", {
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at)  ORDER BY created_at", {
       replacements: { engine },
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
@@ -465,6 +462,37 @@ router.get('/progress', async (req, res) => {
           obj.percentage = Number((obj.count * capacity / target) * 100).toFixed(0)
           return obj;
         })
+      })
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.error(err)
+    res
+      .status(400)
+      .send({
+        message: err.message
+      })
+      .end();
+  }
+});
+
+
+
+router.get('/dangerzone', async (req, res) => {
+  try {
+
+    const { period_from, period_to, engine = 'danger_zone' } = req.query;
+
+    const socketLogs = await sequelize.query("SELECT s.*,m.name FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id ORDER BY s.created_at DESC",
+      {
+        // replacements: { engine },
+        type: QueryTypes.SELECT
+      });
+
+    res
+      .send({
+        socketLogs
       })
       .status(200)
       .end();
