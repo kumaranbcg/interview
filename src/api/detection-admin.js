@@ -12,14 +12,6 @@ const moment = require("moment");
 
 const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
 
-router.post('/snapshot', async (req, res) => {
-  res.send({ message: 'Server received the file' })
-});
-
-router.post('/video', async (req, res) => {
-  res.send({ message: 'Server received the file' })
-});
-
 router.post("/", async (req, res, next) => {
   try {
     // Create Monitor In Our Database
