@@ -176,6 +176,7 @@ router.post("/", async (req, res, next) => {
     const config = await ZoomConfig.findAll()
 
     const newMonitor = {
+      ...req.body,
       id: MONITOR_ID,
       user_id: req.user["cognito:username"],
       name: req.body.name || "Default Monitor Name",
