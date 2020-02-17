@@ -160,11 +160,18 @@ router.post("/incoming", async (req, res) => {
       console.log(err.message);
     }
   } catch (err) {
-    console.log(err.message || err.name);
-    res
-      .status(400)
-      .send(err.message || err.name)
-      .end();
+    if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
+      res
+        .status(400)
+        .send('Check if the device is registered')
+        .end();
+    } else {
+
+      res
+        .status(400)
+        .send(err.message || err.name)
+        .end();
+    }
   }
 });
 

@@ -483,19 +483,21 @@ router.get('/dangerzone', async (req, res) => {
   try {
 
 
-    const devices = await sequelize.query("SELECT c.id, c.name, 'Y' as active, d.* FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id LEFT JOIN `socket_log` s ON s.socket_id = d.socket_id where device_id IS NOT NULL GROUP BY d.monitor_id  ORDER BY monitor_id,d.created_at DESC",
+    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), engine = 'danger_zone' } = req.query;
+
+    const socketLogs = await sequelize.query("SELECT s.*,m.name, TIMESTAMPDIFF(MINUTE,s.time_in,s.time_out) as active_time_minutes FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id  where s.camera_id IS NOT NULL AND s.created_at BETWEEN :period_from AND :period_to ORDER BY s.created_at DESC",
+      {
+        replacements: { period_from, period_to },
+        type: QueryTypes.SELECT
+      });
+
+
+    const devices = await sequelize.query("SELECT d.monitor_id, c.name, 'Y' as active, d.*, s.* FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id LEFT OUTER JOIN `socket_log` s ON s.socket_id = d.socket_id where device_id IS NOT NULL GROUP BY d.monitor_id  ORDER BY monitor_id ASC,d.created_at DESC",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
       });
 
-    const { period_from, period_to, engine = 'danger_zone' } = req.query;
-
-    const socketLogs = await sequelize.query("SELECT s.*,m.name, TIMESTAMPDIFF(MINUTE,s.time_in,s.time_out) as active_time_minutes FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id  where s.camera_id IS NOT NULL AND created_at BETWEEN :period_from AND :period_to ORDER BY s.created_at DESC",
-      {
-        // replacements: { engine },
-        type: QueryTypes.SELECT
-      });
 
     res
       .send({
