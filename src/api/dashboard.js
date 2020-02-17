@@ -103,7 +103,7 @@ router.get('/summary', async (req, res) => {
         trucksTotal,
         totalRemoved,
         trucksDailyAverage: Number(trucksDailyAverage).toFixed(0),
-        dailyAverageRemoved,
+        dailyAverageRemoved: Number(dailyAverageRemoved).toFixed(0),
         completedPercentage: Number(completedPercentage).toFixed(0),
       })
       .status(200)
