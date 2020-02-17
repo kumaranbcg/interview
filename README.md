@@ -8,8 +8,11 @@ The user authentication is made using cognito and permissions are being managed 
 
 # Camera for Socket/General API
 
-1. Register Camera in `/api/monitor` endpoint
+1. Register Camera in POST call to `/api/monitor` endpoint
 2. Update machinary or device details with same endpoint
+
+# Detection
+ On detection call `/api/admin/detection/incoming/` endpoint with required data with image url, video url and socket id (will be received on connection to backend socket from Jetson device) and camera id and detection type. So the detection will be recorded in backend.
 
 # Socket
 ## Zoom Level and Devices using socket
