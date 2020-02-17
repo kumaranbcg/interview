@@ -68,7 +68,7 @@ router.post("/", async (req, res, next) => {
 
 router.post("/incoming", async (req, res, next) => {
   try {
-    const { result, monitor_id, engine = "helmet" } = req.body;
+    const { result = "Y", monitor_id, engine = "helmet" } = req.body;
     const current_date = moment(new Date()).format('YYYY-MM-DD')
 
     if (!monitor_id) {
@@ -118,15 +118,6 @@ router.post("/incoming", async (req, res, next) => {
       id: newDetection.id,
       message: "Successfully Added Detection"
     });
-
-    // await s3
-    //   .copyObject({
-    //     ACL: "public-read",
-    //     CopySource: `/viact/frames/${monitor_id}/latest-detection-helmet.jpg`,
-    //     Bucket: "customindz-detections",
-    //     Key: `alerts/${monitor_id}/${uuid}.jpg`
-    //   })
-    //   .promise().catch(console.error);
 
     try {
       const alert = await Alert.findOne({
