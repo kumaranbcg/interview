@@ -127,8 +127,8 @@ router.get('/truck-activity', async (req, res) => {
 
     const { engine = 'dump-truck', period_from = yesterday, period_to = today, monitor_id = '' } = req.query;
 
-    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine", {
-      replacements: { engine },
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id)", {
+      replacements: { engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
