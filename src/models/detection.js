@@ -22,14 +22,14 @@ module.exports = (sequelize, DataTypes) => {
       },
       result: {
         type: DataTypes.TEXT,
-        get: function() {
+        get: function () {
           if (this.getDataValue("result")) {
             return JSON.parse(this.getDataValue("result"));
           } else {
             return [];
           }
         },
-        set: function(value) {
+        set: function (value) {
           this.setDataValue("result", JSON.stringify(value));
         }
       },
@@ -40,6 +40,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING
       },
       image_url: {
+        type: DataTypes.STRING
+      },
+      video_url: {
+        type: DataTypes.STRING
+      },
+      socket_id: {
         type: DataTypes.STRING
       }
     },

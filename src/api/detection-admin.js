@@ -58,9 +58,9 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.post("/incoming", async (req, res, next) => {
+router.post("/incoming", async (req, res) => {
   try {
-    const { result = "Y", monitor_id, engine = "helmet" } = req.body;
+    const { result = "Y", timestamp = new Date(), monitor_id, engine = "helmet" } = req.body;
     const current_date = moment(new Date()).format('YYYY-MM-DD')
 
     if (!monitor_id) {
@@ -94,14 +94,13 @@ router.post("/incoming", async (req, res, next) => {
     const project = await Projects.findOne(query)
 
     const newDetection = {
+      ...req.body,
       id: uuid,
       monitor_id,
-      result,
       truck_capacity: project ? project.capacity : 1,
       alert: result === 'Y',
-      timestamp: new Date(),
-      image_url: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-      engine: req.body.engine || "helmet"
+      timestamp,
+      engine
     };
     console.log(newDetection)
     await Detection.create(newDetection);
