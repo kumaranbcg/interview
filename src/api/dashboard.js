@@ -70,7 +70,7 @@ router.get('/summary', async (req, res) => {
     })
 
 
-    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine GROUP by DATE(created_at) ) b ON a.date = b.date WHERE a.date BETWEEN :period_from AND :period_to ORDER BY a.date", {
+    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
@@ -473,9 +473,9 @@ router.get('/dangerzone', async (req, res) => {
       });
 
 
-    const devices = await sequelize.query("SELECT d.monitor_id, c.name, 'Y' as active, d.*, s.* FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id LEFT OUTER JOIN `socket_log` s ON s.socket_id = d.socket_id where device_id IS NOT NULL GROUP BY d.monitor_id  ORDER BY monitor_id ASC,d.created_at DESC",
+    const devices = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config,b.time_in, b.time_out FROM `monitors` a LEFT JOIN (SELECT * FROM `socket_log` ORDER BY created_at DESC) b on a.id= b.camera_id",
       {
-        replacements: { engine },
+        // replacements: { engine },
         type: QueryTypes.SELECT
       });
 
