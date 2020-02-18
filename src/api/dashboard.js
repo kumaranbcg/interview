@@ -171,7 +171,7 @@ router.get('/truck-activity', async (req, res) => {
 
 
 
-    const detectionsByHourDaily = await sequelize.query("SELECT date, hour, AVG(count) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at),HOUR(created_at)) as summary group by date  ORDER BY date", {
+    const detectionsByHourDaily = await sequelize.query("SELECT date, hour, ROUND(AVG(count)) as average, count FROM (SELECT DATE(created_at) as date,HOUR(created_at) as hour,COUNT(*) as count FROM detections where engine=:engine  AND created_at BETWEEN :period_from AND :period_to AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at),HOUR(created_at)) as summary group by date  ORDER BY date", {
       replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
@@ -211,14 +211,14 @@ router.get('/truck-activity', async (req, res) => {
         trucksTotalWeek,
         trucksTotalLastWeek,
 
-        trucksTotalYesterdayPercentage: (trucksTotalYesterday ? (trucksTotalYesterday / trucksTotalToday * 100) : trucksTotalToday).toFixed(0),
-        trucksTotalWeekPercentage: (trucksTotalLastWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalWeek).toFixed(0),
+        trucksTotalYesterdayPercentage: (trucksTotalToday ? (trucksTotalYesterday / trucksTotalToday * 100) : trucksTotalYesterday).toFixed(0),
+        trucksTotalWeekPercentage: (trucksTotalWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalLastWeek).toFixed(0),
 
         perHourToday: Number(perHour).toFixed(0),
         perHourYesterday: Number(perHourYesterday).toFixed(0),
         perHourWeek: Number(perHourWeek).toFixed(0),
-        perHourYesterdayPercentage: (perHourYesterday / perHour * 100).toFixed(0),
-        perHourWeekPercentage: (perHourWeek / perHour * 100).toFixed(0)
+        perHourYesterdayPercentage: (perHour ? perHourYesterday / perHour * 100 : perHourYesterday).toFixed(0),
+        perHourWeekPercentage: (perHour ? perHourWeek / perHour * 100 : perHourWeek).toFixed(0)
       })
       .status(200)
       .end();
