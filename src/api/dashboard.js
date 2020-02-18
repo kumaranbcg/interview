@@ -460,12 +460,42 @@ router.get('/progress', async (req, res) => {
 
 
 
-router.get('/devices', async (req, res) => {
+router.get('/machines', async (req, res) => {
   try {
+    const { engine = 'danger-zone', machine_id } = req.query;
 
-    const devices = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,b.time_in, b.time_out FROM `monitors` a LEFT JOIN (SELECT * FROM `socket_log` ORDER BY created_at DESC) b on a.id= b.camera_id",
+    const machines = await sequelize.query("SELECT *, COUNT(*) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip,b.time_in, b.time_out, (SELECT COUNT(*) FROM `detections` WHERE engine=:engine AND monitor_id = a.id) as count FROM `monitors` a LEFT JOIN (SELECT * FROM `socket_log` ORDER BY created_at DESC) b on a.id= b.camera_id) a GROUP BY a.machine_id;",
       {
-        // replacements: { engine },
+        replacements: { engine },
+        type: QueryTypes.SELECT
+      });
+
+    res
+      .send({
+        machines
+      })
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.error(err)
+    res
+      .status(400)
+      .send({
+        message: err.message
+      })
+      .end();
+  }
+});
+
+
+router.get('/camera-devices', async (req, res) => {
+  try {
+    const { engine = 'danger-zone', machine_id } = req.query;
+
+    const devices = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,b.time_in, b.time_out, (SELECT COUNT(*) FROM `detections` WHERE engine=:engine AND monitor_id = a.id) as count FROM `monitors` a LEFT JOIN (SELECT * FROM `socket_log` ORDER BY created_at DESC) b on a.id= b.camera_id WHERE a.machine_id=:machine_id",
+      {
+        replacements: { engine, machine_id },
         type: QueryTypes.SELECT
       });
 
@@ -529,7 +559,7 @@ router.get('/detections', async (req, res) => {
 
     const detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE engine=:engine AND s.created_at BETWEEN :period_from AND :period_to ORDER BY s.created_at DESC",
       {
-        replacements: { period_from, period_to,engine },
+        replacements: { period_from, period_to, engine },
         type: QueryTypes.SELECT
       });
 
