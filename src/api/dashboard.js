@@ -70,7 +70,7 @@ router.get('/summary', async (req, res) => {
     })
 
 
-    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
+    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine GROUP by DATE(created_at) ) b ON a.date = b.date WHERE a.date BETWEEN :period_from AND :period_to ORDER BY a.date", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
@@ -297,7 +297,7 @@ router.get('/soil-removed', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at)  ORDER BY created_at", {
+    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at) ) b ON a.date = b.date WHERE a.date BETWEEN :period_from AND :period_to ORDER BY a.date", {
       replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
@@ -388,7 +388,7 @@ router.get('/progress', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)   ORDER BY created_at", {
+    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine GROUP by DATE(created_at) ) b ON a.date = b.date WHERE a.date BETWEEN :period_from AND :period_to ORDER BY a.date", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
