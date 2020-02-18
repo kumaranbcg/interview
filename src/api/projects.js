@@ -56,82 +56,15 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
 
-    const query = {
-      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
+    const data = await Projects.findOne({
       where: { id: req.params.id }
-    };
-    const data = await Projects.findOne(query);
-
-    query.where = {};
-
-    if (req.query.start_timestamp) {
-      query.where.createdAt = {
-        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
-      };
-    }
-    if (req.query.end_timestamp) {
-      if (!query.where.createdAt) {
-        query.where.createdAt = {
-          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
-        };
-      } else {
-        query.where.createdAt = {
-          ...query.where.createdAt,
-          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
-        };
-      }
-    }
-
-    const detectionsToday = await Detection.findAll({
-      where: {
-        createdAt: today()
-      },
     });
 
-    const detectionsTodayHourly = await Detection.findAll({
-      where: {
-        createdAt: today()
-      },
-      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'],
-        [Sequelize.literal(`DATE(created_at)`), 'date'],
-        [Sequelize.literal(`HOUR(created_at)`), 'hour']],
-      group: ['monitor_id', 'date', 'hour'],
-    });
-
-    const detectionsWeek = await Detection.findAll({
-      where: {
-        createdAt: week()
-      },
-      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'],
-        [Sequelize.literal(`DATE(created_at)`), 'date']],
-      group: ['monitor_id', 'date'],
-    });
-
-    const detectionsByDate = await Detection.findAll({
-      ...query,
-      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'], [Sequelize.literal(`DATE(created_at)`), 'date']],
-      group: ['monitor_id', 'date'],
-    });
-
-    const detectionsByMonitor = await Detection.findAll({
-      ...query,
-      group: ['monitor_id'],
-      include: [
-        {
-          model: Monitor,
-          as: "monitor",
-        }
-      ],
-      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts']],
-    });
-    console.log()
     if (!data) {
       throw new Error("No Project Found");
     }
     res.send({
-      data, detectionsWeek, detectionsToday,
-      detectionsTodayHourly,
-      detectionsByMonitor, detectionsByDate
+      data
     }).end();
 
 
