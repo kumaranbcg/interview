@@ -117,7 +117,7 @@ router.get('/summary', async (req, res) => {
         completedPercentage: Number(completedPercentage).toFixed(0),
         detectionsByMonth,
         alertDistribution,
-        total
+        total: total[0].count
       })
       .status(200)
       .end();
