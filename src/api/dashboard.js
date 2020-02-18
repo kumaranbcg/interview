@@ -80,9 +80,9 @@ router.get('/summary', async (req, res) => {
 
     const totalRemoved = trucksTotal * capacity;
 
-    const completedPercentage = Number(totalRemoved / target * 100).toFixed(0);
+    const completedPercentage = Number(target ? totalRemoved / target * 100 : totalRemoved).toFixed(0);
 
-    const trucksDailyAverage = trucksTotal / detectionsByDate.length || 1;
+    const trucksDailyAverage = detectionsByDate.length ? trucksTotal / detectionsByDate.length : trucksTotal;
 
     const dailyAverageRemoved = trucksDailyAverage * capacity;
 
@@ -242,7 +242,7 @@ router.get('/alert-distribution', async (req, res) => {
     const detectionsByMonth = await sequelize.query("SELECT engine as name, COUNT(*) count,MONTH(created_at) as month,YEAR(created_at) as year FROM `detections` group by engine, MONTH(created_at),YEAR(created_at)", { type: QueryTypes.SELECT })
 
     const alertDistribution = data.map(obj => {
-      obj.percentage = Number(total[0].count / obj.count * 100).toFixed(0);
+      obj.percentage = Number(obj.count ? total[0].count / obj.count * 100 : 0).toFixed(0);
       return obj;
     })
 
@@ -351,15 +351,15 @@ router.get('/soil-removed', async (req, res) => {
         trucksTotalLastWeek,
         trucksTotalWeek,
 
-        trucksTotalYesterdayPercentage: (trucksTotalYesterday ? (trucksTotalYesterday / trucksTotalToday * 100) : trucksTotalToday).toFixed(0),
-        trucksTotalWeekPercentage: (trucksTotalLastWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalWeek).toFixed(0),
+        trucksTotalYesterdayPercentage: (trucksTotalToday ? (trucksTotalYesterday / trucksTotalToday * 100) : trucksTotalYesterday).toFixed(0),
+        trucksTotalWeekPercentage: (trucksTotalWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalLastWeek).toFixed(0),
 
         totalRemoved: trucksTotal * capacity,
         todayRemoved: trucksTotalToday * capacity,
 
         detectionsByDate,
         detectionsByHourToday: detectionsByHourToday.map(obj => {
-          obj.removed = obj.count * capacity;
+          obj.removed = capacity ? obj.count * capacity : obj.count;
           return obj;
         }),
         trucksToday: detectionsToday[0].count,
@@ -432,7 +432,7 @@ router.get('/progress', async (req, res) => {
 
     const totalRemoved = trucksTotal * capacity;
 
-    const completedPercentage = Number(totalRemoved / target * 100).toFixed(0);
+    const completedPercentage = Number(target ? totalRemoved / target * 100 : totalRemoved).toFixed(0);
 
     const trucksDailyAverage = trucksTotal / detectionsByDate.length || 1;
 
@@ -453,7 +453,7 @@ router.get('/progress', async (req, res) => {
         estimatedDays: Number(estimatedDays).toFixed(0),
 
         detectionsByHourToday: detectionsByHourToday.map(obj => {
-          obj.percentage = Number((obj.count * capacity / target) * 100).toFixed(0)
+          obj.percentage = Number(capacity ? (obj.count * capacity / target) * 100 : obj.count).toFixed(0)
           return obj;
         }),
 
