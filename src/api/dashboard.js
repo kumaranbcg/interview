@@ -60,6 +60,16 @@ router.get('/summary', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
+    const total = await sequelize.query("SELECT COUNT(*) as count FROM `detections`", { type: QueryTypes.SELECT });
+    const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detections` group by engine;", { type: QueryTypes.SELECT });
+    const detectionsByMonth = await sequelize.query("SELECT engine as name, COUNT(*) count,MONTH(created_at) as month,YEAR(created_at) as year FROM `detections` group by engine, MONTH(created_at),YEAR(created_at)", { type: QueryTypes.SELECT })
+
+    const alertDistribution = data.map(obj => {
+      obj.percentage = Number(obj.count ? total[0].count / obj.count * 100 : 0).toFixed(0);
+      return obj;
+    })
+
+
     const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
@@ -105,6 +115,9 @@ router.get('/summary', async (req, res) => {
         trucksDailyAverage: Number(trucksDailyAverage).toFixed(0),
         dailyAverageRemoved: Number(dailyAverageRemoved).toFixed(0),
         completedPercentage: Number(completedPercentage).toFixed(0),
+        detectionsByMonth,
+        alertDistribution,
+        total
       })
       .status(200)
       .end();
@@ -176,82 +189,49 @@ router.get('/truck-activity', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id  ORDER BY monitor_id",
-  {
-    replacements: { engine },
-    type: QueryTypes.SELECT
-  });
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id  ORDER BY monitor_id",
+      {
+        replacements: { engine },
+        type: QueryTypes.SELECT
+      });
 
 
 
-const trucksTotal = detections[0].count;
-const trucksTotalToday = detectionsToday[0].count;
-const trucksTotalYesterday = detectionsYesterDay[0].count;
-const trucksTotalWeek = detectionsWeek[0].count;
-const trucksTotalLastWeek = detectionsLastWeek[0].count;
+    const trucksTotal = detections[0].count;
+    const trucksTotalToday = detectionsToday[0].count;
+    const trucksTotalYesterday = detectionsYesterDay[0].count;
+    const trucksTotalWeek = detectionsWeek[0].count;
+    const trucksTotalLastWeek = detectionsLastWeek[0].count;
 
-const perHour = detectionsByHourToday.reduce((acc, curr) => {
-  return acc + curr.count;
-}, 0) / detectionsByHourToday.length || 0;
-const perHourYesterday = detectionsByHourYesterday.reduce((acc, curr) => {
-  return acc + curr.count;
-}, 0) / detectionsByHourYesterday.length || 0;
-const perHourWeek = detectionsByHourWeek.reduce((acc, curr) => {
-  return acc + curr.count;
-}, 0) / detectionsByHourWeek.length || 0;
-
-res
-  .send({
-    trucksByHourDaily: detectionsByHourDaily,
-    trucksByHourToday: detectionsByHourToday,
-    cameras,
-    trucksTotal,
-    trucksTotalToday,
-    trucksTotalYesterday,
-    trucksTotalWeek,
-    trucksTotalLastWeek,
-
-    trucksTotalYesterdayPercentage: (trucksTotalToday ? (trucksTotalYesterday / trucksTotalToday * 100) : trucksTotalYesterday).toFixed(0),
-    trucksTotalWeekPercentage: (trucksTotalWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalLastWeek).toFixed(0),
-
-    perHourToday: Number(perHour).toFixed(0),
-    perHourYesterday: Number(perHourYesterday).toFixed(0),
-    perHourWeek: Number(perHourWeek).toFixed(0),
-    perHourYesterdayPercentage: (perHour ? perHourYesterday / perHour * 100 : perHourYesterday).toFixed(0),
-    perHourWeekPercentage: (perHour ? perHourWeek / perHour * 100 : perHourWeek).toFixed(0)
-  })
-  .status(200)
-  .end();
-
-  } catch (err) {
-  console.log(err.message);
-  res
-    .status(400)
-    .send({
-      message: err.message
-    })
-    .end();
-}
-});
-
-router.get('/alert-distribution', async (req, res) => {
-  try {
-
-    const total = await sequelize.query("SELECT COUNT(*) as count FROM `detections`", { type: QueryTypes.SELECT });
-    const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detections` group by engine;", { type: QueryTypes.SELECT });
-    const detectionsByMonth = await sequelize.query("SELECT engine as name, COUNT(*) count,MONTH(created_at) as month,YEAR(created_at) as year FROM `detections` group by engine, MONTH(created_at),YEAR(created_at)", { type: QueryTypes.SELECT })
-
-    const alertDistribution = data.map(obj => {
-      obj.percentage = Number(obj.count ? total[0].count / obj.count * 100 : 0).toFixed(0);
-      return obj;
-    })
-
+    const perHour = detectionsByHourToday.reduce((acc, curr) => {
+      return acc + curr.count;
+    }, 0) / detectionsByHourToday.length || 0;
+    const perHourYesterday = detectionsByHourYesterday.reduce((acc, curr) => {
+      return acc + curr.count;
+    }, 0) / detectionsByHourYesterday.length || 0;
+    const perHourWeek = detectionsByHourWeek.reduce((acc, curr) => {
+      return acc + curr.count;
+    }, 0) / detectionsByHourWeek.length || 0;
 
     res
       .send({
-        alertDistribution,
-        detectionsByMonth,
-        total: total[0].count
+        trucksByHourDaily: detectionsByHourDaily,
+        trucksByHourToday: detectionsByHourToday,
+        cameras,
+        trucksTotal,
+        trucksTotalToday,
+        trucksTotalYesterday,
+        trucksTotalWeek,
+        trucksTotalLastWeek,
+
+        trucksTotalYesterdayPercentage: (trucksTotalToday ? (trucksTotalYesterday / trucksTotalToday * 100) : trucksTotalYesterday).toFixed(0),
+        trucksTotalWeekPercentage: (trucksTotalWeek ? (trucksTotalLastWeek / trucksTotalWeek * 100) : trucksTotalLastWeek).toFixed(0),
+
+        perHourToday: Number(perHour).toFixed(0),
+        perHourYesterday: Number(perHourYesterday).toFixed(0),
+        perHourWeek: Number(perHourWeek).toFixed(0),
+        perHourYesterdayPercentage: (perHour ? perHourYesterday / perHour * 100 : perHourYesterday).toFixed(0),
+        perHourWeekPercentage: (perHour ? perHourWeek / perHour * 100 : perHourWeek).toFixed(0)
       })
       .status(200)
       .end();
@@ -266,6 +246,7 @@ router.get('/alert-distribution', async (req, res) => {
       .end();
   }
 });
+
 
 router.get('/soil-removed', async (req, res) => {
   try {
