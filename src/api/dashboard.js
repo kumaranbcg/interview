@@ -523,21 +523,21 @@ router.get('/device-logs', async (req, res) => {
   try {
 
 
-    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), engine = 'danger-zone', monitor_id } = req.query;
+    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), monitor_id = '' } = req.query;
 
-    const socketLogs = await sequelize.query("SELECT * FROM device_logs where camera_id=:monitor_id AND created_at BETWEEN :period_from AND :period_to",
+    const socketLogs = await sequelize.query("SELECT * FROM device_logs where (:monitor_id='' OR camera_id=:monitor_id) AND created_at BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where camera_id=:monitor_id AND created_at BETWEEN :period_from AND :period_to",
+    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where  (:monitor_id='' OR camera_id=:monitor_id) AND created_at BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily where camera_id=:monitor_id AND created_at BETWEEN :period_from AND :period_to",
+    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily where  (:monitor_id='' OR camera_id=:monitor_id)  AND created_at BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
