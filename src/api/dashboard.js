@@ -55,7 +55,7 @@ router.get('/summary', async (req, res) => {
     }
     const { period_from, period_to, target, capacity } = project;
 
-    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to", {
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
@@ -70,7 +70,7 @@ router.get('/summary', async (req, res) => {
     })
 
 
-    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
+    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
@@ -184,7 +184,7 @@ router.get('/truck-activity', async (req, res) => {
 
 
 
-    const detectionsByHourDaily = await sequelize.query("SELECT a.date,coalesce(b.hour,0) as hour,coalesce(b.count,0) as count,coalesce(b.average,0) as average  FROM dates a  LEFT JOIN (SELECT date, hour, ROUND(AVG(count)) as average, count FROM(SELECT DATE(created_at) as date, HOUR(created_at) as hour, COUNT(*) as count FROM detections WHERE engine = :engine AND(:monitor_id = '' OR monitor_id = :monitor_id) GROUP by DATE(created_at), HOUR(created_at)) as summary group by date ORDER BY date) b ON a.date = b.date where a.date BETWEEN :period_from AND :period_to", {
+    const detectionsByHourDaily = await sequelize.query("SELECT a.date,coalesce(b.hour,0) as hour,coalesce(b.count,0) as count,coalesce(b.average,0) as average  FROM dates a  LEFT JOIN (SELECT date, hour, ROUND(AVG(count)) as average, count FROM(SELECT DATE(created_at) as date, HOUR(created_at) as hour, COUNT(*) as count FROM detections WHERE engine = :engine AND(:monitor_id = '' OR monitor_id = :monitor_id) GROUP by DATE(created_at), HOUR(created_at)) as summary group by date ORDER BY date) b ON a.date = b.date where DATE(a.date) BETWEEN :period_from AND :period_to", {
       replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
@@ -292,12 +292,12 @@ router.get('/soil-removed', async (req, res) => {
     });
 
 
-    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
       replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at) ) b ON a.date = b.date WHERE a.date BETWEEN :period_from AND :period_to ORDER BY a.date", {
+    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at) ) b ON a.date = b.date WHERE DATE(a.date) BETWEEN :period_from AND :period_to ORDER BY a.date", {
       replacements: { period_from, period_to, engine, monitor_id },
       type: QueryTypes.SELECT
     });
@@ -383,12 +383,12 @@ router.get('/progress', async (req, res) => {
     }
     const { target, capacity } = project;
 
-    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND created_at BETWEEN :period_from AND :period_to ", {
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to ", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine GROUP by DATE(created_at) ) b ON a.date = b.date WHERE a.date BETWEEN :period_from AND :period_to ORDER BY a.date", {
+    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine GROUP by DATE(created_at) ) b ON a.date = b.date WHERE DATE(a.date) BETWEEN :period_from AND :period_to ORDER BY a.date", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
@@ -525,19 +525,19 @@ router.get('/device-logs', async (req, res) => {
 
     const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), monitor_id = '' } = req.query;
 
-    const socketLogs = await sequelize.query("SELECT * FROM device_logs where (:monitor_id='' OR camera_id=:monitor_id) AND created_at BETWEEN :period_from AND :period_to",
+    const socketLogs = await sequelize.query("SELECT * FROM device_logs where (:monitor_id='' OR camera_id=:monitor_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where  (:monitor_id='' OR camera_id=:monitor_id) AND created_at BETWEEN :period_from AND :period_to",
+    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where  (:monitor_id='' OR camera_id=:monitor_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily where  (:monitor_id='' OR camera_id=:monitor_id)  AND created_at BETWEEN :period_from AND :period_to",
+    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily where  (:monitor_id='' OR camera_id=:monitor_id)  AND DATE(created_at) BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
@@ -571,7 +571,7 @@ router.get('/detections', async (req, res) => {
 
     const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), engine = 'danger-zone', monitor_id } = req.query;
 
-    const detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.monitor_id = :monitor_id AND engine=:engine AND b.created_at BETWEEN :period_from AND :period_to ORDER BY b.created_at DESC",
+    const detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to ORDER BY b.created_at DESC",
       {
         replacements: {
           period_from, period_to,
