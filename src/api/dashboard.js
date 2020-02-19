@@ -523,23 +523,23 @@ router.get('/device-logs', async (req, res) => {
   try {
 
 
-    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), engine = 'danger-zone' } = req.query;
+    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), engine = 'danger-zone', monitor_id } = req.query;
 
-    const socketLogs = await sequelize.query("SELECT s.*,m.name, TIMESTAMPDIFF(MINUTE,s.time_in,s.time_out) as active_time_minutes FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id  where s.camera_id IS NOT NULL AND s.created_at BETWEEN :period_from AND :period_to ORDER BY s.created_at DESC",
+    const socketLogs = await sequelize.query("SELECT * FROM device_logs where camera_id=:monitor_id AND created_at BETWEEN :period_from AND :period_to",
       {
-        replacements: { period_from, period_to },
+        replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsHourly = await sequelize.query("SELECT s.*,m.name, TIMESTAMPDIFF(MINUTE,s.time_in,s.time_out) as active_time_minutes FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id  where s.camera_id IS NOT NULL AND s.created_at BETWEEN :period_from AND :period_to GROUP BY DATE(s.created_at),HOUR(s.created_at) ORDER BY s.created_at DESC",
+    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where camera_id=:monitor_id AND created_at BETWEEN :period_from AND :period_to",
       {
-        replacements: { period_from, period_to },
+        replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsDaily = await sequelize.query("SELECT s.*,m.name, TIMESTAMPDIFF(MINUTE,s.time_in,s.time_out) as active_time_minutes FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id  where s.camera_id IS NOT NULL AND s.created_at BETWEEN :period_from AND :period_to ORDER BY s.created_at DESC",
+    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily where camera_id=:monitor_id AND created_at BETWEEN :period_from AND :period_to",
       {
-        replacements: { period_from, period_to },
+        replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
@@ -548,6 +548,8 @@ router.get('/device-logs', async (req, res) => {
     res
       .send({
         socketLogs,
+        socketLogsHourly,
+        socketLogsDaily
       })
       .status(200)
       .end();
