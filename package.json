@@ -17,6 +17,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "cron": "^1.7.2",
+    "dotenv": "^8.2.0",
     "email-templates": "^6.0.3",
     "express": "^4.16.4",
     "fs-extra": "^8.0.1",
@@ -30,7 +31,8 @@
     "request": "^2.88.0",
     "sequelize": "^5.8.6",
     "shortid": "^2.2.14",
-    "sqlite3": "^4.0.8"
+    "sqlite3": "^4.0.8",
+    "twilio": "^3.39.4"
   },
   "devDependencies": {
     "chai": "^4.2.0",
