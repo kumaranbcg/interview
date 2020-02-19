@@ -8,11 +8,6 @@ module.exports = server => {
     io = socketio(server);
 
     io.on("connection", async socket => {
-      console.log('connected', socket.id)
-      await SocketLog.create({
-        socket_id: socket.id,
-        time_in: socket.handshake.time
-      });
       console.log(socket.id)
       socket.on('disconnect', async () => {
         console.log("LOG: just disconnected: " + socket.id)
@@ -99,12 +94,14 @@ module.exports = server => {
       });
 
       socket.on("send-meta", async data => {
-        console.log(data)
-        await SocketLog.update(data, {
-          where: {
+        if (data.camera_id) {
+          console.log('connected', socket.id, data.camera_id)
+          await SocketLog.create({
             socket_id: socket.id,
-          }
-        });
+            time_in: socket.handshake.time,
+            camera_id: data.camera_id
+          });
+        }
       })
 
       socket.on("get-device", async data => {

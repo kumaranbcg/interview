@@ -493,7 +493,7 @@ router.get('/camera-devices', async (req, res) => {
   try {
     const { engine = 'danger-zone', machine_id } = req.query;
 
-    const devices = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,b.time_in, b.time_out, (SELECT COUNT(*) FROM `detections` WHERE engine=:engine AND monitor_id = a.id) as count FROM `monitors` a LEFT JOIN (SELECT * FROM `socket_log` ORDER BY created_at DESC) b on a.id= b.camera_id WHERE a.machine_id=:machine_id",
+    const devices = await sequelize.query("SELECT * FROM `monitors` a WHERE a.machine_id=:machine_id",
       {
         replacements: { engine, machine_id },
         type: QueryTypes.SELECT
@@ -531,6 +531,18 @@ router.get('/device-logs', async (req, res) => {
         type: QueryTypes.SELECT
       });
 
+    const socketLogsHourly = await sequelize.query("SELECT s.*,m.name, TIMESTAMPDIFF(MINUTE,s.time_in,s.time_out) as active_time_minutes FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id  where s.camera_id IS NOT NULL AND s.created_at BETWEEN :period_from AND :period_to GROUP BY DATE(s.created_at),HOUR(s.created_at) ORDER BY s.created_at DESC",
+      {
+        replacements: { period_from, period_to },
+        type: QueryTypes.SELECT
+      });
+
+    const socketLogsDaily = await sequelize.query("SELECT s.*,m.name, TIMESTAMPDIFF(MINUTE,s.time_in,s.time_out) as active_time_minutes FROM `socket_log` s LEFT JOIN `monitors` m ON s.camera_id=m.id  where s.camera_id IS NOT NULL AND s.created_at BETWEEN :period_from AND :period_to ORDER BY s.created_at DESC",
+      {
+        replacements: { period_from, period_to },
+        type: QueryTypes.SELECT
+      });
+
 
 
     res
@@ -559,7 +571,10 @@ router.get('/detections', async (req, res) => {
 
     const detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.monitor_id = :monitor_id AND engine=:engine AND b.created_at BETWEEN :period_from AND :period_to ORDER BY b.created_at DESC",
       {
-        replacements: { period_from, period_to, engine, monitor_id },
+        replacements: {
+          period_from, period_to,
+          engine, monitor_id
+        },
         type: QueryTypes.SELECT
       });
 
@@ -582,6 +597,7 @@ router.get('/detections', async (req, res) => {
       .end();
   }
 });
+
 
 
 
