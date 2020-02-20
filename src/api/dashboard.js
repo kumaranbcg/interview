@@ -464,7 +464,7 @@ router.get('/machines', async (req, res) => {
   try {
     const { engine = 'danger-zone' } = req.query;
 
-    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip,b.time_in, b.time_out, (SELECT COUNT(*) FROM `detections` WHERE engine=:engine AND monitor_id = a.id) as count FROM `monitors` a LEFT JOIN (SELECT * FROM `socket_log` ORDER BY created_at DESC) b on a.id= b.camera_id) a GROUP BY a.machine_id;",
+    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip,b.time_in, b.time_out, (SELECT COUNT(*) FROM `detections` WHERE engine=:engine AND monitor_id = a.id) as count FROM `monitors` a LEFT JOIN (SELECT * FROM `socket_log` ORDER BY created_at DESC) b on a.id= b.monitor_id) a GROUP BY a.machine_id;",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
@@ -525,19 +525,19 @@ router.get('/device-logs', async (req, res) => {
 
     const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), monitor_id = '' } = req.query;
 
-    const socketLogs = await sequelize.query("SELECT * FROM device_logs where (:monitor_id='' OR camera_id=:monitor_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
+    const socketLogs = await sequelize.query("SELECT * FROM device_logs where (:monitor_id='' OR monitor_id=:monitor_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where  (:monitor_id='' OR camera_id=:monitor_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
+    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where  (:monitor_id='' OR monitor_id=:monitor_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily where  (:monitor_id='' OR camera_id=:monitor_id)  AND DATE(created_at) BETWEEN :period_from AND :period_to",
+    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily where  (:monitor_id='' OR monitor_id=:monitor_id)  AND DATE(created_at) BETWEEN :period_from AND :period_to",
       {
         replacements: { period_from, period_to, monitor_id },
         type: QueryTypes.SELECT

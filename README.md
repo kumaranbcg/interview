@@ -81,7 +81,7 @@ sio.disconnect()
 `Javascript`
 ```js
   socket.emit('send-meta', {
-    camera_id: 'cam ht 1'
+    monitor_id: 'cam ht 1'
   })
 
 ```
@@ -89,7 +89,7 @@ sio.disconnect()
 `Python`
 ```py
 sio.emit('send-meta', {
-    camera_id: 'cam ht 1'
+    monitor_id: 'cam ht 1'
   })
 ```
 
@@ -340,7 +340,7 @@ time_in: "2020-02-13T05:32:06.000Z",
 time_out: "2020-02-13T05:32:11.000Z",
 created_at: "2020-02-13T05:32:06.000Z",
 updated_at: "2020-02-13T05:32:11.000Z",
-camera_id: "jetson_camera_2",
+monitor_id: "jetson_camera_2",
 name: "Default Monitor Name",
 active_time_minutes: 0
 },
@@ -351,7 +351,7 @@ time_in: "2020-02-13T04:55:10.000Z",
 time_out: null,
 created_at: "2020-02-13T04:55:10.000Z",
 updated_at: "2020-02-13T04:55:20.000Z",
-camera_id: "1",
+monitor_id: "1",
 name: null,
 active_time_minutes: null
 }
@@ -375,7 +375,7 @@ video_url: null,
 socket_id: null,
 time_in: null,
 time_out: null,
-camera_id: null
+monitor_id: null
 },
 {
 monitor_id: "HHDT2",
@@ -395,7 +395,7 @@ video_url: null,
 socket_id: null,
 time_in: null,
 time_out: null,
-camera_id: null
+monitor_id: null
 },
 {
 monitor_id: "jetson_camera_2",
@@ -415,7 +415,7 @@ video_url: null,
 socket_id: null,
 time_in: null,
 time_out: null,
-camera_id: null
+monitor_id: null
 },
 {
 monitor_id: "jetson_camera_test",
@@ -435,7 +435,7 @@ video_url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/For
 socket_id: "E-ODpT5obGvo4lS7AAAA",
 time_in: "2020-02-17T07:32:58.000Z",
 time_out: "2020-02-17T07:33:10.000Z",
-camera_id: null
+monitor_id: null
 }
 ]
 }

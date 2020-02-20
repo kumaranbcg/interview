@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       time_out: {
         type: DataTypes.DATE
       },
-      camera_id: {
+      monitor_id: {
         type: DataTypes.STRING
       },
     },

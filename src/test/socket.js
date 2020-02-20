@@ -9,7 +9,7 @@ socket.on('connect', async () => {
 
   setTimeout(async () => {
     socket.emit('send-meta', {
-      camera_id: 'jetson_camera_test'
+      monitor_id: 'jetson_camera_test'
     })
   }, 1000)
 

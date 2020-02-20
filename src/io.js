@@ -94,12 +94,12 @@ module.exports = server => {
       });
 
       socket.on("send-meta", async data => {
-        if (data.camera_id) {
-          console.log('connected', socket.id, data.camera_id)
+        if (data.monitor_id) {
+          console.log('connected', socket.id, data.monitor_id)
           await SocketLog.create({
             socket_id: socket.id,
             time_in: socket.handshake.time,
-            camera_id: data.camera_id
+            monitor_id: data.monitor_id
           });
         }
       })
