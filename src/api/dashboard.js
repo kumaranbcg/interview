@@ -96,7 +96,7 @@ router.get('/summary', async (req, res) => {
 
     const dailyAverageRemoved = trucksDailyAverage * capacity;
 
-    const remaining = target - totalRemoved || "0";
+    const remaining = target - totalRemoved || 0;
 
 
     startedBefore = today.diff(startedBefore, 'days') // 1
@@ -419,7 +419,7 @@ router.get('/progress', async (req, res) => {
 
     const dailyAverageRemoved = trucksDailyAverage * capacity;
 
-    const remaining = target - totalRemoved || "0";
+    const remaining = target - totalRemoved || 0;
 
 
     startedBefore = today.diff(startedBefore, 'days') // 1
