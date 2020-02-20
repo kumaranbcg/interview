@@ -60,6 +60,13 @@ router.get('/summary', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
+
+    const activeDays = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where DATE(created_at) BETWEEN :period_from AND :period_to AND engine=:engine GROUP by DATE(created_at)", {
+      replacements: { period_from: project.period_from, period_to: project.period_to, engine },
+      type: QueryTypes.SELECT
+    });
+
+
     const total = await sequelize.query("SELECT COUNT(*) as count FROM `detections`", { type: QueryTypes.SELECT });
     const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detections` group by engine;", { type: QueryTypes.SELECT });
     const detectionsByMonth = await sequelize.query("SELECT engine as name, COUNT(*) count,MONTH(created_at) as month,YEAR(created_at) as year FROM `detections` group by engine, MONTH(created_at),YEAR(created_at)", { type: QueryTypes.SELECT })
@@ -92,7 +99,7 @@ router.get('/summary', async (req, res) => {
 
     const completedPercentage = Number(target ? totalRemoved / target * 100 : totalRemoved).toFixed(0);
 
-    const trucksDailyAverage = detectionsByDate.length ? trucksTotal / detectionsByDate.length : trucksTotal;
+    const trucksDailyAverage = trucksTotal / activeDays.length;
 
     const dailyAverageRemoved = trucksDailyAverage * capacity;
 
@@ -111,6 +118,7 @@ router.get('/summary', async (req, res) => {
         remaining,
         estimatedDays: Number(estimatedDays).toFixed(0),
         trucksTotal,
+        activeDays: activeDays.length,
         totalRemoved,
         trucksDailyAverage: Number(trucksDailyAverage).toFixed(0),
         dailyAverageRemoved: Number(dailyAverageRemoved).toFixed(0),
@@ -381,12 +389,19 @@ router.get('/progress', async (req, res) => {
         target: 1
       }
     }
+
     const { target, capacity } = project;
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detections where engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to ", {
       replacements: { period_from, period_to, engine },
       type: QueryTypes.SELECT
     });
+
+    const activeDays = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where DATE(created_at) BETWEEN :period_from AND :period_to AND engine=:engine GROUP by DATE(created_at)", {
+      replacements: { period_from: project.period_from, period_to: project.period_to, engine },
+      type: QueryTypes.SELECT
+    });
+
 
     const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detections where engine=:engine GROUP by DATE(created_at) ) b ON a.date = b.date WHERE DATE(a.date) BETWEEN :period_from AND :period_to ORDER BY a.date", {
       replacements: { period_from, period_to, engine },
@@ -415,7 +430,7 @@ router.get('/progress', async (req, res) => {
 
     const completedPercentage = Number(target ? totalRemoved / target * 100 : totalRemoved).toFixed(0);
 
-    const trucksDailyAverage = trucksTotal / detectionsByDate.length || 1;
+    const trucksDailyAverage = trucksTotal / activeDays.length;
 
     const dailyAverageRemoved = trucksDailyAverage * capacity;
 
@@ -429,6 +444,8 @@ router.get('/progress', async (req, res) => {
 
     res
       .send({
+        trucksTotal,
+        activeDays: activeDays.length,
         project,
         completedPercentage: Number(completedPercentage).toFixed(0),
         estimatedDays: Number(estimatedDays).toFixed(0),
