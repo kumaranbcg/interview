@@ -279,7 +279,7 @@ def device_data(data):
 `POST` `/api/monitor`
 ```json
 {
-	"id": "jetson_camera_test",
+	"monitor_id": "jetson_camera_test",
 	"device_id": "Test Device 1",
 	"machine_id": "Test Machine 1",
 	"connection_uri": "sample_connection"

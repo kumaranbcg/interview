@@ -171,7 +171,7 @@ router.post("/", async (req, res, next) => {
     //   );
     // }
 
-    const MONITOR_ID = req.body.id || shortid.generate();
+    const MONITOR_ID = req.body.monitor_id || req.body.id || shortid.generate();
 
     const config = await ZoomConfig.findAll()
 
