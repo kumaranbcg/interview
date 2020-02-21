@@ -1,8 +1,10 @@
 const express = require("express");
 const shortid = require("shortid");
 const router = express.Router();
+const { Op } = require("sequelize");
+const Sequelize = require("sequelize");
 
-const { Projects } = require("../lib/db");
+const { Projects, Detection } = require("../lib/db");
 
 router.get('/', async (req, res) => {
   try {
@@ -54,14 +56,47 @@ router.get('/:id', async (req, res) => {
   try {
 
     const query = {
+      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
       where: { id: req.params.id }
     };
     const data = await Projects.findOne(query);
 
+    query.where = {};
+
+    if (req.query.start_timestamp) {
+      query.where.createdAt = {
+        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
+      };
+    }
+    if (req.query.end_timestamp) {
+      if (!query.where.createdAt) {
+        query.where.createdAt = {
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      } else {
+        query.where.createdAt = {
+          ...query.where.createdAt,
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      }
+    }
+
+    const detectionsByDate = await Detection.findAll({
+      ...query,
+      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts'], [Sequelize.literal(`DATE(created_at)`), 'date']],
+      group: ['monitor_id', 'date'],
+    });
+
+    const detectionsByMonitor = await Detection.findAll({
+      ...query,
+      group: ['monitor_id'],
+      attributes: ['monitor_id', [Sequelize.fn('COUNT', 'monitor_id'), 'alerts']],
+    });
+    console.log()
     if (!data) {
       throw new Error("No Project Found");
     }
-    res.send(data);
+    res.send({ data, detectionsByMonitor, detectionsByDate }).end();
 
 
   } catch (err) {
@@ -76,9 +111,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const data = await Projects.create({
+      id: shortid(),
       ...req.body,
       quarter: `${req.body.quarter}`.toUpperCase(),
-      id: shortid(),
     });
 
     res.send(data).end();
