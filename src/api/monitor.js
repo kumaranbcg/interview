@@ -175,6 +175,8 @@ router.post("/", async (req, res, next) => {
 
     const config = await ZoomConfig.findAll()
 
+    console.log(config)
+
     const newMonitor = {
       ...req.body,
       id: MONITOR_ID,
@@ -185,7 +187,7 @@ router.post("/", async (req, res, next) => {
       graph: [],
       engines: [],
       type: req.body.type || "normal",
-      config: JSON.stringify(config[0])
+      config: JSON.stringify(config[0] && config[0].config || "")
     };
 
     await Monitor.create(newMonitor);

@@ -4,7 +4,7 @@ const axios = require('axios').default;
 socket.on('connect', async () => {
   console.log('connected')
   // Initialize Monitor ID 
-  const monitor_id = 'jetson_camera_test123'
+  const monitor_id = 'jetson_camera_izaac'
   // Take Socket ID and store for passing in detection
   const socket_id = socket.id;
 
@@ -28,7 +28,7 @@ socket.on('connect', async () => {
       "video_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
       "image_url": "https://media.gettyimages.com/photos/high-angle-view-of-people-on-street-picture-id973190966?s=2048x2048"
     });
-  }, process.env.TIMEOUT || 60000)
+  }, process.env.TIMEOUT || 10000)
 
 });
 
