@@ -178,7 +178,7 @@ router.post("/", async (req, res, next) => {
     const newMonitor = {
       ...req.body,
       id: MONITOR_ID,
-      user_id: req.user["cognito:username"],
+      user_id: 'admin',
       name: req.body.name || "Default Monitor Name",
       connection_uri: req.body.connection_uri,
       play_from_source: false,
