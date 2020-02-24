@@ -60,19 +60,11 @@ router.post("/", async (req, res, next) => {
 
 router.post("/incoming", async (req, res) => {
   try {
-    const { result = "Y", timestamp = new Date(), monitor_id, engine = "helmet" } = req.body;
+    const { alert = "Y", timestamp = new Date(), monitor_id, engine = "helmet" } = req.body;
     const current_date = moment(new Date()).format('YYYY-MM-DD')
 
     if (!monitor_id) {
       throw new Error("No Monitor, check the 'monitor' key in your post");
-    }
-
-
-    if (result !== 'Y') {
-      res.status(200).json({
-        message: "No Alert, Detection skipped"
-      });
-      return;
     }
 
     const uuid = uuidv4();
@@ -98,11 +90,10 @@ router.post("/incoming", async (req, res) => {
       id: uuid,
       monitor_id,
       truck_capacity: project ? project.capacity : 1,
-      alert: result === 'Y',
+      alert: alert === 'Y',
       timestamp,
       engine
     };
-    console.log(newDetection)
     await Detection.create(newDetection);
 
     res.status(200).json({
@@ -110,54 +101,58 @@ router.post("/incoming", async (req, res) => {
       message: "Successfully Added Detection"
     });
 
-    try {
-      const alert = await Alert.findOne({
-        where: {
-          monitor_id,
-          engine,
-          alert_type: "Trigger"
-        },
-        include: [
-          {
-            model: Monitor,
-            required: true,
-            as: "monitor"
-          }
-        ]
-      });
+    if (newDetection.alert) {
+      console.log('alert detected')
 
-      if (!alert) {
-        return;
-      }
-
-      const recentLog = await AlertLog.findOne({
-        where: {
-          createdAt: {
-            [Op.gte]: moment()
-              .subtract(1, "minutes")
-              .toDate()
+      try {
+        const alert = await Alert.findOne({
+          where: {
+            monitor_id,
+            engine,
+            alert_type: "Trigger"
           },
-          alert_id: alert.id
+          include: [
+            {
+              model: Monitor,
+              required: true,
+              as: "monitor"
+            }
+          ]
+        });
+
+        if (!alert) {
+          return;
         }
-      });
-      if (!recentLog) {
-        await AlertLog.create({
-          id: uuidv4(),
-          alert_id: alert.id
+
+        const recentLog = await AlertLog.findOne({
+          where: {
+            createdAt: {
+              [Op.gte]: moment()
+                .subtract(1, "minutes")
+                .toDate()
+            },
+            alert_id: alert.id
+          }
         });
+        if (!recentLog) {
+          await AlertLog.create({
+            id: uuidv4(),
+            alert_id: alert.id
+          });
 
-        const alerts = [alert];
+          const alerts = [alert];
 
-        alertUtil.do(alerts, {
-          image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-          url: `http://app.viact.ai/#/report/${monitor_id}/detection/${uuid}`
-        });
+          alertUtil.do(alerts, {
+            image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
+            url: `http://app.viact.ai/#/report/${monitor_id}/detection/${uuid}`
+          });
 
-        console.log(`Made an alert at ${new Date().toString()}!`);
+          console.log(`Made an alert at ${new Date().toString()}!`);
+        }
+      } catch (err) {
+        console.log("Alert error");
+        console.log(err.message);
       }
-    } catch (err) {
-      console.log("Alert error");
-      console.log(err.message);
     }
   } catch (err) {
     if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {

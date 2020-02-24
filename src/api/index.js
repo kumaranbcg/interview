@@ -17,7 +17,8 @@ const pullerRouter = require("./puller");
 const pullerServerRouter = require("./puller-server");
 const authRouter = require("./auth");
 const userRouter = require("./user");
-const dashboardRouter = require("./dashboard");
+const dangerzoneRouter = require("./dangerzone");
+const dumptruckRouter = require("./dumptruck");
 const projectsRouter = require("./projects");
 
 // define the home page route
@@ -31,8 +32,9 @@ router.get("/authenticated", authentication.verify, function (req, res) {
 });
 
 router.use("/auth", authRouter);
-router.use("/monitor", authentication.verify, monitorRouter);
-router.use("/dashboard", dashboardRouter);
+router.use("/monitor", authentication.verifyMachine, monitorRouter);
+router.use("/dashboard", dangerzoneRouter);
+router.use("/dashboard", dumptruckRouter);
 router.use("/projects", projectsRouter);
 router.use("/detection", authentication.verify, detectionRouter);
 router.use("/vod", authentication.verify, vodRouter);
