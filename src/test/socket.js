@@ -4,7 +4,7 @@ const axios = require('axios').default;
 socket.on('connect', async () => {
   console.log('connected')
   // Initialize Monitor ID 
-  const monitor_id = 'ulIU-2YKS'
+  const monitor_id = 'AHt7TLfXU'
   // Take Socket ID and store for passing in detection
   const socket_id = socket.id;
 
