@@ -137,8 +137,7 @@ this will take the zoom config and update the device config
 ```js
 socket.emit('update-device',{ 
   id:1, 
-  config: 2, 
-  order: 1
+  config: 2
 });
 ```
 this will create/update zoom on given id
@@ -183,7 +182,7 @@ socket.emit('change-zoom',{
 ```
 `Python`
 ```py
-sio.emit('update-device', {id:1,config:2,order:1})
+sio.emit('update-device', { id:1, config:2 })
 ```
 
 ```py
