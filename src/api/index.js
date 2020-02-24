@@ -32,7 +32,7 @@ router.get("/authenticated", authentication.verify, function (req, res) {
 });
 
 router.use("/auth", authRouter);
-router.use("/monitor", monitorRouter);
+router.use("/monitor", authentication.verifyMachine, monitorRouter);
 router.use("/dashboard", dangerzoneRouter);
 router.use("/dashboard", dumptruckRouter);
 router.use("/projects", projectsRouter);
