@@ -19,8 +19,7 @@ The user authentication is made using cognito and permissions are being managed 
 The jetson nano device will be connected to the server via socket.io
 
 First config needs to created  (change-zoom)
-then device needs to be registered by mentioning config id in payload (create-device)
-after which the device needs to configure an id in code and start observing for event by sending request to (get-device) and receiving it in (device-data)
+configure camera id in code and start observing for event by sending request to (get-device) and receiving it in (device-data)
 
 ### Basic code
 `Javascript`
