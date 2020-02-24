@@ -4,9 +4,26 @@ const axios = require('axios').default;
 socket.on('connect', async () => {
   console.log('connected')
   // Initialize Monitor ID 
-  const monitor_id = 'jetson_camera_izaac'
+  const monitor_id = 'ulIU-2YKS'
   // Take Socket ID and store for passing in detection
   const socket_id = socket.id;
+
+  socket.emit('get-device', {
+    monitor_id
+  })
+
+  socket.emit('get-device', {
+    id: monitor_id
+  })
+
+  socket.emit('get-zoom', {
+    id: 1
+  })
+
+  socket.emit('get-zoom', {
+    conifg_id: 1
+  })
+
 
   setTimeout(async () => {
     socket.emit('send-meta', {

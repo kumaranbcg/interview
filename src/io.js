@@ -23,7 +23,7 @@ module.exports = server => {
       socket.on("get-zoom", async data => {
         const output = await ZoomConfig.findOne({
           where: {
-            id: data.id
+            id: data.config_id || data.id
           }
         })
         socket.emit('zoom-data', output);
@@ -37,10 +37,11 @@ module.exports = server => {
 
       socket.on("change-zoom", async data => {
         let output;
-        if (data.id) {
+        const id = data.config_id || data.id;
+        if (id) {
           output = await ZoomConfig.findOne({
             where: {
-              id: data.id
+              id
             }
           })
         }
@@ -48,11 +49,11 @@ module.exports = server => {
           await ZoomConfig.update({
             config: data.config
           }, {
-            where: { id: data.id }
+            where: { id }
           })
           output = await ZoomConfig.findOne({
             where: {
-              id: data.id
+              id
             }
           })
           socket.emit('zoom-data', output);
@@ -64,7 +65,7 @@ module.exports = server => {
       });
 
       socket.on('update-device', async data => {
-        const id = `${data.id}`
+        const id = `${data.monitor_id || data.id}`
         if (data.config) {
           const config = await ZoomConfig.findOne({
             where: {
@@ -108,7 +109,7 @@ module.exports = server => {
         console.log('get-device')
         const query = {
           where: {
-            id: data.id
+            id: data.monitor_id || data.id
           },
         };
         const output = await Monitor.findOne(query)

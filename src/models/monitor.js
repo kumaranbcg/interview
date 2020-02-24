@@ -41,6 +41,19 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true
       },
+      config: {
+        type: DataTypes.TEXT,
+        get: function() {
+          if (this.getDataValue("engines")) {
+            return JSON.parse(this.getDataValue("engines"));
+          } else {
+            return [];
+          }
+        },
+        set: function(value) {
+          this.setDataValue("engines", JSON.stringify(value));
+        }
+      },
       engines: {
         type: DataTypes.TEXT,
         get: function() {

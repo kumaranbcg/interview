@@ -190,6 +190,8 @@ router.post("/", async (req, res, next) => {
       config: JSON.stringify(config[0] && config[0].config || "")
     };
 
+    console.log(newMonitor)
+
     await Monitor.create(newMonitor);
 
     res.status(200).json({
