@@ -21,7 +21,7 @@ socket.on('connect', async () => {
   })
 
   socket.emit('get-zoom', {
-    conifg_id: 1
+    config_id: 1
   })
 
 
@@ -45,7 +45,7 @@ socket.on('connect', async () => {
       "video_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
       "image_url": "https://media.gettyimages.com/photos/high-angle-view-of-people-on-street-picture-id973190966?s=2048x2048"
     });
-  }, process.env.TIMEOUT || 10000)
+  }, process.env.TIMEOUT || 60000)
 
 });
 

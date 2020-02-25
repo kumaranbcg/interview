@@ -41,55 +41,61 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true
       },
+      time_in: {
+        type: DataTypes.DATE
+      },
+      time_out: {
+        type: DataTypes.DATE
+      },
       config: {
         type: DataTypes.TEXT,
-        get: function() {
+        get: function () {
           if (this.getDataValue("engines")) {
             return JSON.parse(this.getDataValue("engines"));
           } else {
             return [];
           }
         },
-        set: function(value) {
+        set: function (value) {
           this.setDataValue("engines", JSON.stringify(value));
         }
       },
       engines: {
         type: DataTypes.TEXT,
-        get: function() {
+        get: function () {
           if (this.getDataValue("engines")) {
             return JSON.parse(this.getDataValue("engines"));
           } else {
             return [];
           }
         },
-        set: function(value) {
+        set: function (value) {
           this.setDataValue("engines", JSON.stringify(value));
         }
       },
       graph: {
         type: DataTypes.TEXT,
-        get: function() {
+        get: function () {
           if (this.getDataValue("graph")) {
             return JSON.parse(this.getDataValue("graph"));
           } else {
             return [];
           }
         },
-        set: function(value) {
+        set: function (value) {
           this.setDataValue("graph", JSON.stringify(value));
         }
       },
       zone: {
         type: DataTypes.TEXT,
-        get: function() {
+        get: function () {
           if (this.getDataValue("zone")) {
             return JSON.parse(this.getDataValue("zone"));
           } else {
             return {};
           }
         },
-        set: function(value) {
+        set: function (value) {
           this.setDataValue("zone", JSON.stringify(value));
         }
       }

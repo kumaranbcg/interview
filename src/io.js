@@ -8,16 +8,25 @@ module.exports = server => {
     io = socketio(server);
 
     io.on("connection", async socket => {
+      let monitor_id;
       console.log(socket.id)
       socket.on('disconnect', async () => {
         console.log("LOG: just disconnected: " + socket.id)
+        const time_out = new Date().toString();
         await SocketLog.update({
-          time_out: new Date().toString()
+          time_out
         }, {
           where: {
             socket_id: socket.id,
           }
         });
+        if (monitor_id) {
+          await Monitor.update({
+            time_out
+          }, {
+            where: { id: monitor_id }
+          });
+        }
       })
 
       socket.on("get-zoom", async data => {
@@ -96,12 +105,20 @@ module.exports = server => {
 
       socket.on("send-meta", async data => {
         if (data.monitor_id) {
+          monitor_id = data.monitor_id || data.id;;
           console.log('connected', socket.id, data.monitor_id)
           await SocketLog.create({
             socket_id: socket.id,
             time_in: socket.handshake.time,
-            monitor_id: data.monitor_id
+            monitor_id
           });
+          await Monitor.update({
+            time_in: socket.handshake.time,
+            time_out: null
+          }, {
+            where: { id: monitor_id }
+          });
+
         }
       })
 
@@ -109,7 +126,7 @@ module.exports = server => {
         console.log('get-device')
         const query = {
           where: {
-            id: data.monitor_id || data.id
+            id: data.monitor_id || data.id || monitor_id
           },
         };
         const output = await Monitor.findOne(query)
