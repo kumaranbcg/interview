@@ -420,12 +420,18 @@ sio.emit('change-zoom',
 ```js
 socket.emit('get-device-list','');
 socket.emit('get-config-list','');
+
+# get zoom json string for given config is
+
+socket.emit('get-zoom', { id: '1' });
 ```
 
 `Python`
 ```py
-sio.emit('get-device-list', '')
-sio.emit('get-config-list', '')
+sio.on('device-list', '')
+sio.on('config-list', '')
+
+socket.on('zoom-data', ()=> {})
 ```
 
 ### and can be received by 
