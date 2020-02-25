@@ -46,19 +46,22 @@ module.exports = {
       .catch(function(error) {
         console.log("Post Error : " + error);
       });
-    let phoneNumber = "+852" + alert.output_address;
+    //let phoneNumber = "+852" + alert.output_address;
     let message =
       detectionType +
       " alert detected at " +
       alert.created_at +
       ". Login to Viact for details: " +
       (shortenUrl ? shortenUrl : url);
-    return client.messages
-      .create({
-        body: message,
-        from: "+13526334065",
-        to: phoneNumber
-      })
-      .then(message => console.log(message.sid));
+    alert.output_address.split(",").forEach(number => {
+      client.messages
+        .create({
+          body: message,
+          from: "+13526334065",
+          to: phoneNumber
+        })
+        .then(message => console.log(message.sid));
+    });
+    return;
   }
 };

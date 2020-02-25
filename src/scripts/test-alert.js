@@ -10,7 +10,7 @@ alert.do(
       // output_address:
       //   "gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com",
       // output_address: "buildmindht@outlook.com",
-      output_address:["zq.donald.chong@gmail.com", "Jurge92@outlook.com"],
+      output_address:"zq.donald.chong@gmail.com,donaldz0728@gmail.com,34400765@qq.com",
       trigger_record: false,
       alert_type: "Trigger",
       created_at: "2020-02-17 12:00",
