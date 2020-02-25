@@ -6,6 +6,11 @@ const { Vod, Detection, Monitor } = require("../lib/db");
 
 const { Op } = require("sequelize");
 
+router.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 router.get("/", async (req, res) => {
   try {
     const query = {
