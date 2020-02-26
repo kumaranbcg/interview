@@ -67,6 +67,33 @@ router.get('/camera-devices', async (req, res) => {
 });
 
 
+
+router.get('/zoom-config', async (req, res) => {
+  try {
+    const zoomConfigs = await sequelize.query("SELECT * FROM `zoom_config`",
+      {
+        // replacements: {},
+        type: QueryTypes.SELECT
+      });
+
+    res
+      .send({
+        zoomConfigs
+      })
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.error(err)
+    res
+      .status(400)
+      .send({
+        message: err.message
+      })
+      .end();
+  }
+});
+
 router.get('/device-logs', async (req, res) => {
   try {
 
