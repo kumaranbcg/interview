@@ -75,7 +75,7 @@ module.exports = server => {
 
       socket.on('update-device', async data => {
         const id = `${data.monitor_id || data.id}`
-        if (data.config) {
+        if (data.config && id) {
           const config = await ZoomConfig.findOne({
             where: {
               id: data.config
