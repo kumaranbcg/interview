@@ -47,19 +47,6 @@ module.exports = (sequelize, DataTypes) => {
       time_out: {
         type: DataTypes.DATE
       },
-      config: {
-        type: DataTypes.TEXT,
-        get: function () {
-          if (this.getDataValue("config")) {
-            return JSON.parse(this.getDataValue("config"));
-          } else {
-            return [];
-          }
-        },
-        set: function (value) {
-          this.setDataValue("config", JSON.stringify(value));
-        }
-      },
       engines: {
         type: DataTypes.TEXT,
         get: function () {
@@ -98,7 +85,20 @@ module.exports = (sequelize, DataTypes) => {
         set: function (value) {
           this.setDataValue("zone", JSON.stringify(value));
         }
-      }
+      },
+      config: {
+        type: DataTypes.TEXT,
+        get: function () {
+          if (this.getDataValue("config")) {
+            return JSON.parse(this.getDataValue("config"));
+          } else {
+            return {};
+          }
+        },
+        set: function (value) {
+          this.setDataValue("config", JSON.stringify(value));
+        }
+      },
     },
     {
       underscored: true,
