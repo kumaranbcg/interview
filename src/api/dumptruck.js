@@ -106,7 +106,7 @@ router.get('/progress', async (req, res) => {
     startedBefore = today.diff(startedBefore, 'days') // 1
     endsBy = endsBy.diff(today, 'days') // 1
 
-    const estimatedDays = remaining / dailyAverageRemoved || 0;
+    const estimatedDays = remaining / dailyAverageRemoved;
 
     res
       .send({
@@ -114,7 +114,7 @@ router.get('/progress', async (req, res) => {
         activeDays: activeDays.length,
         project,
         completedPercentage: Number(completedPercentage).toFixed(0),
-        estimatedDays: Number(estimatedDays).toFixed(0),
+        estimatedDays: Number(estimatedDays > -1 ? estimatedDays : 0).toFixed(0),
 
         detectionsByHourToday: detectionsByHourToday.map(obj => {
           obj.percentage = Number(capacity ? (obj.count * capacity / target) * 100 : obj.count).toFixed(0)
@@ -217,14 +217,14 @@ router.get('/summary', async (req, res) => {
     startedBefore = today.diff(startedBefore, 'days') // 1
     endsBy = endsBy.diff(today, 'days') // 1
 
-    const estimatedDays = remaining / dailyAverageRemoved || 0;
+    const estimatedDays = remaining / dailyAverageRemoved;
 
     res
       .send({
         project,
         cameras,
         remaining,
-        estimatedDays: Number(estimatedDays).toFixed(0),
+        estimatedDays: Number(estimatedDays > -1 ? estimatedDays : 0).toFixed(0),
         trucksTotal,
         activeDays: activeDays.length,
         totalRemoved,
