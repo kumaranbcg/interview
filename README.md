@@ -26,7 +26,7 @@ configure camera id in code and start observing for event by sending request to 
 ```js
 var socket = require('socket.io-client')('http://localhost:3000');
 socket.on('connect', (io) => {
-  socket.emit('get-device', { id: 1 });
+  socket.emit('get-device', '1');
 });
 
 socket.on('device-data', (data) => {
@@ -294,11 +294,11 @@ sio.emit('send-meta', {
 
 `Javascript`
 ```js
-socket.emit('get-device',{ id:'bcC5qflpK' });
+socket.emit('get-device','bcC5qflpK');
 ```
 `Python`
 ```py
-sio.emit('get-device', { id:'bcC5qflpK'}')
+sio.emit('get-device','bcC5qflpK')
 ```
 
 ### once the request is passed response is sent in `device-data` event

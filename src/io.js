@@ -1,6 +1,7 @@
 const socketio = require("socket.io");
 
 const { ZoomConfig, SocketLog, Monitor } = require("./lib/db");
+const { sequelize } = require("./lib/db");
 
 let io;
 module.exports = server => {
@@ -76,29 +77,22 @@ module.exports = server => {
       socket.on('update-device', async data => {
         const id = `${data.monitor_id || data.id}`
         if (data.config && id) {
-          const config = await ZoomConfig.findOne({
-            where: {
-              id: data.config
-            }
-          })
-          if (!config) {
-            socket.emit('input-error', 'config is not available')
-          }
           if (config && id) {
             await Monitor.update({
-              config
+              config: data.config
             }, {
               where: { id }
             });
 
-            const output = await Monitor.findOne({
-              where: {
-                id
-              },
-            })
 
-            socket.emit('device-data', output);
-            socket.broadcast.emit('device-data', output);
+            const output = await sequelize.query("SELECT a.id, a.name, a.connection_uri, a.config as config_id, b.config FROM `monitors` a LEFT JOIN `zoom_config` b ON a.config = b.id WHERE a.id=:id ",
+              {
+                replacements: { id },
+                type: QueryTypes.SELECT
+              });
+
+            socket.emit('device-data', output[0]);
+            socket.broadcast.emit('device-data', output[0]);
           }
         }
       });
@@ -122,16 +116,15 @@ module.exports = server => {
         }
       })
 
-      socket.on("get-device", async data => {
+      socket.on("get-device", async id => {
         console.log('get-device')
-        const query = {
-          where: {
-            id: data.monitor_id || data.id || monitor_id
-          },
-        };
-        const output = await Monitor.findOne(query)
 
-        socket.emit('device-data', output);
+        const output = await sequelize.query("SELECT a.id, a.name, a.connection_uri, a.config as config_id, b.config FROM `monitors` a LEFT JOIN `zoom_config` b ON a.config = b.id WHERE a.id=:id ",
+          {
+            replacements: { id },
+            type: QueryTypes.SELECT
+          });
+        socket.emit('device-data', output[0]);
       });
 
       socket.on("get-config-list", async data => {

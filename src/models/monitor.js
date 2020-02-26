@@ -87,17 +87,8 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       config: {
-        type: DataTypes.TEXT,
-        get: function () {
-          if (this.getDataValue("config")) {
-            return JSON.parse(this.getDataValue("config"));
-          } else {
-            return {};
-          }
-        },
-        set: function (value) {
-          this.setDataValue("config", JSON.stringify(value));
-        }
+        type: DataTypes.STRING,
+        allowNull: false
       },
     },
     {
