@@ -187,7 +187,7 @@ router.post("/", async (req, res, next) => {
       graph: [],
       engines: [],
       type: req.body.type || "normal",
-      config: config[0] && config[0].config || ""
+      config: config[0] && config[0].config
     };
 
     console.log(newMonitor)

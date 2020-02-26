@@ -12,6 +12,11 @@ socket.on('connect', async () => {
     monitor_id
   })
 
+  socket.emit('update-device', {
+    monitor_id,
+    config: 1
+  })
+
   socket.emit('get-device', {
     id: monitor_id
   })

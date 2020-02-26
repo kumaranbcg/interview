@@ -50,14 +50,14 @@ module.exports = (sequelize, DataTypes) => {
       config: {
         type: DataTypes.TEXT,
         get: function () {
-          if (this.getDataValue("engines")) {
-            return JSON.parse(this.getDataValue("engines"));
+          if (this.getDataValue("config")) {
+            return JSON.parse(this.getDataValue("config"));
           } else {
             return [];
           }
         },
         set: function (value) {
-          this.setDataValue("engines", JSON.stringify(value));
+          this.setDataValue("config", JSON.stringify(value));
         }
       },
       engines: {
