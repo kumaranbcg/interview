@@ -2,6 +2,7 @@ const socketio = require("socket.io");
 
 const { ZoomConfig, SocketLog, Monitor } = require("./lib/db");
 const { sequelize } = require("./lib/db");
+const { QueryTypes } = require("sequelize");
 
 let io;
 module.exports = server => {
@@ -77,23 +78,21 @@ module.exports = server => {
       socket.on('update-device', async data => {
         const id = `${data.monitor_id || data.id}`
         if (data.config && id) {
-          if (config && id) {
-            await Monitor.update({
-              config: data.config
-            }, {
-              where: { id }
+          await Monitor.update({
+            config: data.config
+          }, {
+            where: { id }
+          });
+
+
+          const output = await sequelize.query("SELECT a.id, a.name, a.connection_uri, a.config as config_id, b.config FROM `monitors` a LEFT JOIN `zoom_config` b ON a.config = b.id WHERE a.id=:id ",
+            {
+              replacements: { id },
+              type: QueryTypes.SELECT
             });
 
-
-            const output = await sequelize.query("SELECT a.id, a.name, a.connection_uri, a.config as config_id, b.config FROM `monitors` a LEFT JOIN `zoom_config` b ON a.config = b.id WHERE a.id=:id ",
-              {
-                replacements: { id },
-                type: QueryTypes.SELECT
-              });
-
-            socket.emit('device-data', output[0]);
-            socket.broadcast.emit('device-data', output[0]);
-          }
+          socket.emit('device-data', output[0]);
+          socket.broadcast.emit('device-data', output[0]);
         }
       });
 

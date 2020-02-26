@@ -1,4 +1,4 @@
-const URL = 'http://3.20.122.193';
+const URL = 'http://localhost:3000';
 var socket = require('socket.io-client')(URL);
 const axios = require('axios').default;
 socket.on('connect', async () => {
@@ -6,6 +6,8 @@ socket.on('connect', async () => {
   // Initialize Monitor ID 
   const monitor_id = 'AHt7TLfXU'
   // Take Socket ID and store for passing in detection
+
+  socket.emit('get-device', monitor_id)
 
   socket.emit('update-device', {
     monitor_id,
