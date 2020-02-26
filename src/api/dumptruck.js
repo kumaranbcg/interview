@@ -106,7 +106,7 @@ router.get('/progress', async (req, res) => {
     startedBefore = today.diff(startedBefore, 'days') // 1
     endsBy = endsBy.diff(today, 'days') // 1
 
-    const estimatedDays = remaining / dailyAverageRemoved;
+    const estimatedDays = remaining / dailyAverageRemoved || 0;
 
     res
       .send({
@@ -217,7 +217,7 @@ router.get('/summary', async (req, res) => {
     startedBefore = today.diff(startedBefore, 'days') // 1
     endsBy = endsBy.diff(today, 'days') // 1
 
-    const estimatedDays = remaining / dailyAverageRemoved;
+    const estimatedDays = remaining / dailyAverageRemoved || 0;
 
     res
       .send({
