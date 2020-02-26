@@ -185,7 +185,6 @@ async function uploadFlv(id, videoTimestamp) {
     thumbnail_url: `records/${id}/${videoTimestamp}.jpg`,
     timestamp: parseInt(videoTimestamp)
   };
-  console.log(JSON.stringify(vod));
   await axios.post("https://api.customindz.com/api/admin/vod", vod, {
     headers: {
       "x-customindz-key": "customindz"
