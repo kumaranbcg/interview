@@ -88,7 +88,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       config: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
     },
     {
