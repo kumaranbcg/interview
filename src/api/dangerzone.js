@@ -231,7 +231,7 @@ router.get('/alert-distribution', async (req, res) => {
 
     Object.keys(output_hourly).forEach(key => {
       result2.push({
-        date: key,
+        hour: key,
         ...output_hourly[key]
       })
     })
