@@ -112,7 +112,7 @@ router.get('/device-logs', async (req, res) => {
         type: QueryTypes.SELECT
       });
 
-    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily where  (:machine_id='' OR machine_id=:machine_id) AND (:monitor_id='' OR monitor_id=:monitor_id)  AND DATE(created_at) BETWEEN :period_from AND :period_to",
+    const socketLogsDaily = await sequelize.query("SELECT *  FROM `dates` a LEFT  JOIN `device_logs_daily` b ON a.date = b.date",
       {
         replacements: { period_from, period_to, monitor_id, machine_id },
         type: QueryTypes.SELECT
