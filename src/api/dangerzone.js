@@ -193,7 +193,7 @@ router.get('/alert-distribution', async (req, res) => {
 
 
 
-    const detectionsHourly = await sequelize.query("SELECT * FROM detections_hourly WHERE (:machine_id='' OR machine_id=:machine_id) AND (:monitor_id='' OR monitor_id=:monitor_id) AND date BETWEEN :period_from AND :period_to ORDER BY date DESC",
+    const detectionsHourly = await sequelize.query("SELECT * FROM detections_hourly WHERE (:machine_id='' OR machine_id=:machine_id) AND (:monitor_id='' OR monitor_id=:monitor_id) AND date = CURDATE()",
       {
         replacements: {
           period_from, period_to,
@@ -203,10 +203,43 @@ router.get('/alert-distribution', async (req, res) => {
       });
 
 
+    const output = {};
+    detectionsDaily.forEach(obj => {
+      if (!output[obj.date]) {
+        output[obj.date] = {}
+      }
+      output[obj.date][obj.monitor_id] = obj.count;
+    })
+
+    const output_hourly = {}
+    detectionsHourly.forEach(obj => {
+      if (!output_hourly[`${obj.hour}:00`]) {
+        output_hourly[`${obj.hour}:00`] = {}
+      }
+      output_hourly[`${obj.hour}:00`][obj.monitor_id] = obj.count;
+    })
+
+    const result1 = []
+    const result2 = []
+
+    Object.keys(output).forEach(key => {
+      result1.push({
+        date: key,
+        ...output[key]
+      })
+    })
+
+    Object.keys(output_hourly).forEach(key => {
+      result2.push({
+        date: key,
+        ...output_hourly[key]
+      })
+    })
+
     res
       .send({
-        detectionsDaily,
-        detectionsHourly
+        detectionsDaily: result1,
+        detectionsHourly: result2
       })
       .status(200)
       .end();
