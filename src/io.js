@@ -67,7 +67,7 @@ module.exports = server => {
           await Monitor.update({
             time_out
           }, {
-            where: { monitor_id }
+            where: { id: monitor_id }
           });
           setTimeout(() => {
             socket.emit('ping', '');
