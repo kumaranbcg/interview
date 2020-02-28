@@ -60,19 +60,17 @@ module.exports = server => {
 
       socket.on("pong", async () => {
         console.error('pong');
-
-        if (monitor_id) {
+        const time_out = new Date().toString();
+        await Monitor.update({
+          time_out
+        }, {
+          where: {
+            socket_id: socket.id,
+          }
+        });
+        setTimeout(() => {
           socket.emit('ping', '');
-          const time_out = new Date().toString();
-          await Monitor.update({
-            time_out
-          }, {
-            where: { id: monitor_id }
-          });
-          setTimeout(() => {
-            socket.emit('ping', '');
-          }, 5000);
-        }
+        }, 5000);
 
       });
 
