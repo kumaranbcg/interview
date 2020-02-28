@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true
       },
+      socket_id: {
+        type: DataTypes.STRING
+      },
       time_in: {
         type: DataTypes.DATE
       },

@@ -175,6 +175,40 @@ router.get('/detections', async (req, res) => {
 });
 
 
+router.get('/snapshot/:monitor_id', async (req, res) => {
+  try {
+
+
+    const { monitor_id } = req.params;
+
+    const detections = await sequelize.query("SELECT * FROM `detections` WHERE monitor_id = :monitor_id and image_url IS NOT NULL ORDER BY created_at DESC LIMIT 1",
+      {
+        replacements: {
+          monitor_id
+        },
+        type: QueryTypes.SELECT
+      });
+
+
+    res
+      .send({
+        detections,
+      })
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.error(err)
+    res
+      .status(400)
+      .send({
+        message: err.message
+      })
+      .end();
+  }
+});
+
+
 router.get('/alert-distribution', async (req, res) => {
   try {
 

@@ -29,6 +29,10 @@ socket.on('connect', (io) => {
   socket.emit('get-device', '1');
 });
 
+socket.on('ping', (data) => {
+  socket.emit('pong');
+});
+
 socket.on('device-data', (data) => {
   console.log('received device data', data)
 });

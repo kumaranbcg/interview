@@ -11,7 +11,12 @@ module.exports = server => {
 
     io.on("connection", async socket => {
       let monitor_id;
-      console.log(socket.id)
+      console.log(socket.id);
+
+      setTimeout(() => {
+        socket.emit('ping', '');
+      }, 5000);
+
       socket.on('disconnect', async () => {
         console.log("LOG: just disconnected: " + socket.id)
         const time_out = new Date().toString();
@@ -30,6 +35,46 @@ module.exports = server => {
           });
         }
       })
+
+      socket.on("send-meta", async data => {
+
+        if (data.monitor_id) {
+
+          monitor_id = data.monitor_id || data.id;;
+          console.log('connected', socket.id, data.monitor_id)
+          await SocketLog.create({
+            socket_id: socket.id,
+            time_in: socket.handshake.time,
+            monitor_id
+          });
+          await Monitor.update({
+            socket_id: socket.id,
+            time_in: socket.handshake.time,
+            time_out: null
+          }, {
+            where: { id: monitor_id }
+          });
+
+        }
+      })
+
+      socket.on("pong", async () => {
+        console.error('pong');
+        socket.emit('ping', '');
+
+        if (monitor_id) {
+          const time_out = new Date().toString();
+          await Monitor.update({
+            time_out
+          }, {
+            where: { monitor_id }
+          });
+          setTimeout(() => {
+            socket.emit('ping', '');
+          }, 5000);
+        }
+
+      });
 
       socket.on("get-zoom", async data => {
         const output = await ZoomConfig.findOne({
@@ -95,25 +140,6 @@ module.exports = server => {
           socket.broadcast.emit('device-data', output[0]);
         }
       });
-
-      socket.on("send-meta", async data => {
-        if (data.monitor_id) {
-          monitor_id = data.monitor_id || data.id;;
-          console.log('connected', socket.id, data.monitor_id)
-          await SocketLog.create({
-            socket_id: socket.id,
-            time_in: socket.handshake.time,
-            monitor_id
-          });
-          await Monitor.update({
-            time_in: socket.handshake.time,
-            time_out: null
-          }, {
-            where: { id: monitor_id }
-          });
-
-        }
-      })
 
       socket.on("get-device", async id => {
         console.log('get-device')
