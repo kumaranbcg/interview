@@ -58,6 +58,10 @@ def getdata():
     @sio.on('device-data')
     def device_data(data):
         print(data)
+
+    @sio.on('ping')
+    def device_data(data):
+        sio.emit('pong', '');
         
     @sio.event
     def disconnect():
