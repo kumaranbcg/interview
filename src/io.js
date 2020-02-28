@@ -12,6 +12,8 @@ module.exports = server => {
 
     io.on("connection", async socket => {
       let monitor_id;
+      socket.emit('ping', '');
+
       socket.on('disconnect', async () => {
         console.log("LOG: just disconnected: " + socket.id)
         const time_out = moment().toDate();
@@ -52,6 +54,22 @@ module.exports = server => {
 
         }
       })
+
+      // socket.on("pong", async () => {
+      //   console.error('pong');
+      //   if (monitor_id) {
+      //     const time_out = moment().toDate();
+      //     await Monitor.update({
+      //       time_out
+      //     }, {
+      //       where: { id: monitor_id }
+      //     });
+      //     setTimeout(() => {
+      //       socket.emit('ping', '');
+      //     }, 5000);
+      //   }
+
+      // });
 
       socket.on("get-zoom", async data => {
         const output = await ZoomConfig.findOne({
