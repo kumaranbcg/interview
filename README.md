@@ -60,7 +60,7 @@ def getdata():
         print(data)
 
     @sio.on('ping')
-    def device_data(data):
+    def ping(data):
         sio.emit('pong', '');
         
     @sio.event
