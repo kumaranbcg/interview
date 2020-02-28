@@ -60,9 +60,9 @@ module.exports = server => {
 
       socket.on("pong", async () => {
         console.error('pong');
-        socket.emit('ping', '');
 
         if (monitor_id) {
+          socket.emit('ping', '');
           const time_out = new Date().toString();
           await Monitor.update({
             time_out
