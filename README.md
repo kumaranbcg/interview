@@ -77,6 +77,17 @@ def getdata():
 ### New Device and Zoom Config
 First create camera then we will use the camera id in our python/nodejs code running in Jetson. Write a socket code to connect to backend API server. Once connected send an emit event `get-device` event to server and you will receive a device data response in `device-data`. This device data will contain current zoom level required for Jetson. Once connnected successfully call `send-meta` with your camera id information. This will be used to identify your device for the particular socket session.
 
+## Ping Pong
+To identify if the server is still connected with device server will send ping requests to every connected devices every 5 seconds once.
+On receiving ping device should respond with pong.
+
+```js
+socket.on('ping', (data) => {
+  socket.emit('pong');
+});
+```
+
+
 ### Disconnecting
 When connected to a server Jetson machinary time will get start tracking. So it is important to properly use .disconnect function to disconnect from server.
 
