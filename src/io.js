@@ -3,6 +3,7 @@ const socketio = require("socket.io");
 const { ZoomConfig, SocketLog, Monitor } = require("./lib/db");
 const { sequelize } = require("./lib/db");
 const { QueryTypes } = require("sequelize");
+const moment = require('moment')
 
 let io;
 module.exports = server => {
@@ -19,7 +20,7 @@ module.exports = server => {
 
       socket.on('disconnect', async () => {
         console.log("LOG: just disconnected: " + socket.id)
-        const time_out = new Date().toString();
+        const time_out = moment().toDate();
         await SocketLog.update({
           time_out
         }, {
@@ -61,7 +62,8 @@ module.exports = server => {
       socket.on("pong", async () => {
         console.log('pong');
         if (monitor_id) {
-          const time_out = new Date();
+          const time_out = moment().toDate();
+
           await Monitor.update({
             time_out
           }, {
