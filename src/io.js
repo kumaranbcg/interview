@@ -69,7 +69,7 @@ module.exports = server => {
           }
         });
         setTimeout(() => {
-          socket.emit('ping', '');
+          socket.emit('ping', time_out);
         }, 5000);
 
       });
