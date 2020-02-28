@@ -190,12 +190,20 @@ router.get('/snapshot/:monitor_id', async (req, res) => {
       });
 
 
-    res
-      .send({
-        detections,
-      })
-      .status(200)
-      .end();
+    if (detections[0]) {
+      res
+        .send(detections[0])
+        .status(200)
+        .end();
+
+    } else {
+      res
+        .status(400)
+        .send({
+          message: 'No snapshot available'
+        })
+        .end();
+    }
 
   } catch (err) {
     console.error(err)
