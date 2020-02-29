@@ -48,8 +48,6 @@ router.post("/", async (req, res, next) => {
       ...req.body
     });
 
-    console.log(res);
-
     res.status(200).json({
       message: "Successfully Added Company"
     });
