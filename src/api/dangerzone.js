@@ -12,7 +12,7 @@ router.get('/machines', async (req, res) => {
   try {
     const { engine = 'danger-zone' } = req.query;
 
-    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detections` WHERE engine=:engine AND monitor_id = a.id) as count FROM `monitors` a) a GROUP BY a.machine_id ORDER BY time_in ASC, time_out DESC",
+    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detections` WHERE alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a) a GROUP BY a.machine_id ORDER BY time_in ASC, time_out DESC",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
@@ -146,7 +146,7 @@ router.get('/detections', async (req, res) => {
 
     const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), engine = 'danger-zone', monitor_id } = req.query;
 
-    const detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to ORDER BY b.created_at DESC",
+    const detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to ORDER BY b.created_at DESC",
       {
         replacements: {
           period_from, period_to,
@@ -181,7 +181,7 @@ router.get('/snapshot/:monitor_id', async (req, res) => {
 
     const { monitor_id } = req.params;
 
-    const detections = await sequelize.query("SELECT * FROM `detections` WHERE monitor_id = :monitor_id and image_url IS NOT NULL ORDER BY created_at DESC LIMIT 1",
+    const detections = await sequelize.query("SELECT * FROM `detections` WHERE image_url IS NOT NULL AND monitor_id = :monitor_id and image_url IS NOT NULL ORDER BY created_at DESC LIMIT 1",
       {
         replacements: {
           monitor_id

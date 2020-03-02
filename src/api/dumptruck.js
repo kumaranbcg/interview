@@ -12,7 +12,7 @@ router.get('/camera-list', async (req, res) => {
   try {
     const { engine = 'dump-truck' } = req.query;
 
-    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine GROUP BY d.monitor_id",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
@@ -79,7 +79,7 @@ router.get('/progress', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
@@ -175,9 +175,9 @@ router.get('/summary', async (req, res) => {
     });
 
 
-    const total = await sequelize.query("SELECT COUNT(*) as count FROM `detections`", { type: QueryTypes.SELECT });
-    const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detections` group by engine;", { type: QueryTypes.SELECT });
-    const detectionsByMonth = await sequelize.query("SELECT engine as name, COUNT(*) count,MONTH(created_at) as month,YEAR(created_at) as year FROM `detections` group by engine, MONTH(created_at),YEAR(created_at)", { type: QueryTypes.SELECT })
+    const total = await sequelize.query("SELECT COUNT(*) as count FROM `detections` WHERE  alert = '1'", { type: QueryTypes.SELECT });
+    const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detections` WHERE  alert = '1' group by engine;", { type: QueryTypes.SELECT });
+    const detectionsByMonth = await sequelize.query("SELECT engine as name, COUNT(*) count,MONTH(created_at) as month,YEAR(created_at) as year FROM `detections` WHERE  alert = '1' group by engine, MONTH(created_at),YEAR(created_at)", { type: QueryTypes.SELECT })
 
     const alertDistribution = data.map(obj => {
       obj.percentage = Number(obj.count ? total[0].count / obj.count * 100 : 0).toFixed(0);
@@ -190,7 +190,7 @@ router.get('/summary', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine GROUP BY d.monitor_id",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
@@ -305,7 +305,7 @@ router.get('/truck-activity', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id  ORDER BY monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine GROUP BY d.monitor_id  ORDER BY monitor_id",
       {
         replacements: { engine },
         type: QueryTypes.SELECT
@@ -423,7 +423,7 @@ router.get('/soil-removed', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
       {
         replacements: { engine, monitor_id },
         type: QueryTypes.SELECT
