@@ -10,7 +10,8 @@ router.get("/detection/:id", async (req, res, next) => {
   try {
     var data = await Detection.findOne({
       where: {
-        id: req.params.id
+        id: req.params.id,
+        alert: true,
       }
     });
     res.status(200).json(data);
@@ -26,7 +27,8 @@ router.get("/detection/:id/vod", async (req, res, next) => {
   try {
     var detection = await Detection.findOne({
       where: {
-        id: req.params.id
+        id: req.params.id,
+        alert: true,
       }
     });
 
@@ -101,9 +103,8 @@ router.get("/monitor/:id/detection", async (req, res, next) => {
         };
       }
     }
-    if (req.query.alert) {
-      query.where.alert = true;
-    }
+    query.where.alert = true;
+
 
     const data = await Detection.findAll(query);
     res.status(200).json(data);

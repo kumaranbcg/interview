@@ -9,7 +9,9 @@ const { Op } = require("sequelize");
 router.get("/", async (req, res) => {
   try {
     const query = {
-      where: {},
+      where: {
+        alert: true
+      },
       order: [
         [req.query.orderBy || "createdAt", req.query.direction || "DESC"]
       ],
@@ -47,9 +49,7 @@ router.get("/", async (req, res) => {
       }
     }
 
-    if (req.query.alert) {
-      query.where.alert = true;
-    }
+    query.where.alert = true;
 
     query.include = [
       {
@@ -93,6 +93,7 @@ router.get("/engine/:engineName", async (req, res) => {
     const data = await Detection.findAll({
       limit,
       where: {
+        alert: true,
         monitor_id: req.query.monitor_id
       },
       order: [["createdAt", "DESC"]]
@@ -169,7 +170,8 @@ router.get("/:id", async (req, res, next) => {
   try {
     var data = await Detection.findOne({
       where: {
-        id: req.params.id
+        id: req.params.id,
+        alert: true
       }
     });
     res.status(200).json(data);
@@ -185,7 +187,8 @@ router.get("/:id/vod", async (req, res, next) => {
   try {
     var detection = await Detection.findOne({
       where: {
-        id: req.params.id
+        id: req.params.id,
+        alert: true,
       }
     });
 

@@ -99,9 +99,8 @@ router.get("/:id/detection", async (req, res, next) => {
         };
       }
     }
-    if (req.query.alert) {
-      query.where.alert = true;
-    }
+    query.where.alert = true;
+
 
     const data = await Detection.findAll(query);
     res.status(200).json(data);
@@ -144,7 +143,8 @@ router.get("/:id/latest_detection", async (req, res, next) => {
   try {
     var data = await Detection.findAll({
       where: {
-        monitor_id: req.params.id
+        monitor_id: req.params.id,
+        alert: true,
       },
       limit: req.query.number || 1,
       order: [["timestamp", "DESC"]]
