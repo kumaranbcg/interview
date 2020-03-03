@@ -39,19 +39,25 @@ module.exports = server => {
 
           monitor_id = data.monitor_id || data.id;;
           console.log('connected', socket.id, data.monitor_id)
-          await SocketLog.create({
-            socket_id: socket.id,
-            time_in: socket.handshake.time,
-            monitor_id
-          });
-          await Monitor.update({
-            socket_id: socket.id,
-            time_in: socket.handshake.time,
-            time_out: null
-          }, {
-            where: { id: monitor_id }
-          });
-
+          const socket = await Monitor.findOne({
+            where: {
+              socket_id: socket.id
+            }
+          })
+          if (!socket) {
+            await SocketLog.create({
+              socket_id: socket.id,
+              time_in: socket.handshake.time,
+              monitor_id
+            });
+            await Monitor.update({
+              socket_id: socket.id,
+              time_in: socket.handshake.time,
+              time_out: null
+            }, {
+              where: { id: monitor_id }
+            });
+          }
         }
       })
 
