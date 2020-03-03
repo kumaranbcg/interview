@@ -111,7 +111,7 @@ router.get('/progress', async (req, res) => {
 
     const completedPercentage = Number(target ? totalRemoved / target * 100 : totalRemoved).toFixed(0);
 
-    const trucksDailyAverage = trucksTotal / activeDays.length;
+    const trucksDailyAverage = activeDays.length ? trucksTotal / activeDays.length : 0;
 
     const dailyAverageRemoved = trucksDailyAverage * capacity;
 
@@ -225,7 +225,7 @@ router.get('/summary', async (req, res) => {
 
     const completedPercentage = Number(target ? totalRemoved / target * 100 : totalRemoved).toFixed(0);
 
-    const trucksDailyAverage = trucksTotal / activeDays.length;
+    const trucksDailyAverage = activeDays.length ? trucksTotal / activeDays.length : 0;
 
     const dailyAverageRemoved = trucksDailyAverage * capacity;
 
