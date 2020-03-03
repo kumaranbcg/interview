@@ -8,13 +8,15 @@ if (process.env.NODE_ENV === "local") {
   sequelize = new Sequelize({
     dialect: "sqlite",
     storage: "./db/customindz.sqlite",
-    logging: false
+    logging: false,
+    timezone: '+08:00'
   });
 } else {
   sequelize = new Sequelize("customindz", "customindz", "Customindz2019", {
     dialect: "mysql",
     host: "customindz.cfvqlp7ufmv9.ap-east-1.rds.amazonaws.com",
-    logging: false
+    logging: false,
+    timezone: '+08:00'
   });
 }
 
