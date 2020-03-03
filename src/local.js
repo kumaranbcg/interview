@@ -4,7 +4,7 @@ const port = process.env.PORT || 3000;
 const server = require("http").createServer(app);
 const io = require("./io")(server);
 global.io = io; //added
-server.listen(port, () => console.log(`Customindz listening on port ${port}!`));
+server.listen(port, () => console.log(`Customindz listening on port ${port}! ${new Date()}`));
 
 
 if (process.env.NODE_ENV === "local") {
