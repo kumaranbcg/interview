@@ -48,7 +48,7 @@ module.exports = server => {
             await SocketLog.update({
               time_out: socket.handshake.time
             }, {
-              where: { monitor_id }
+              where: { monitor_id, time_out: null }
             });
 
             await SocketLog.create({
