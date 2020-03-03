@@ -35,7 +35,7 @@ module.exports = server => {
 
       socket.on("send-meta", async data => {
 
-        if (data.monitor_id) {
+        if (data.monitor_id && !monitor_id) {
 
           monitor_id = data.monitor_id || data.id;;
           console.log('connected', socket.id, data.monitor_id)
