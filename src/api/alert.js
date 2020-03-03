@@ -5,6 +5,7 @@ const { Alert, Monitor } = require("../lib/db");
 const { Op } = require("sequelize");
 
 router.get("/", async (req, res) => {
+  console.log("getting alert")
   try {
     let query = {
       offset: 0,

@@ -1,6 +1,6 @@
 const dingtalk = require("./dingtalk");
 const email = require("./email");
-
+const sms = require("./sms")
 module.exports = {
   do: (alerts, { image, url }) => {
     alerts.forEach(alert => {
@@ -21,6 +21,13 @@ module.exports = {
           template: "alert",
           alert,
           image,
+          url
+        });
+      }
+
+      if (alert.output_type === "SMS") {
+        sms.send({
+          alert,
           url
         });
       }
