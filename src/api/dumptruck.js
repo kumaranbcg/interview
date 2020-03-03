@@ -12,9 +12,24 @@ router.get('/camera-list', async (req, res) => {
   try {
     const { engine = 'dump-truck' } = req.query;
 
-    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine GROUP BY d.monitor_id",
+    let project = await sequelize.query("SELECT * FROM projects where period_from <= CURDATE() AND period_to >= CURDATE()", {
+      type: QueryTypes.SELECT
+    });
+
+    project = project[0];
+
+    if (!project) {
+      project = {
+        period_from: moment().format(DATE_FORMAT),
+        period_to: moment().format(DATE_FORMAT),
+        capacity: 1,
+        target: 1
+      }
+    }
+
+    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to  GROUP BY d.monitor_id",
       {
-        replacements: { engine },
+        replacements: { period_from: project.period_from, period_to: project.period_to, engine },
         type: QueryTypes.SELECT
       });
 
@@ -175,7 +190,10 @@ router.get('/summary', async (req, res) => {
     });
 
 
-    const total = await sequelize.query("SELECT COUNT(*) as count FROM `detections` WHERE  alert = '1'", { type: QueryTypes.SELECT });
+    const total = await sequelize.query("SELECT COUNT(*) as count FROM `detections` WHERE  alert = '1' AND DATE(created_at) BETWEEN :period_from AND :period_to", {
+      replacements: { period_from: project.period_from, period_to: project.period_to },
+      type: QueryTypes.SELECT
+    });
     const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detections` WHERE  alert = '1' group by engine;", { type: QueryTypes.SELECT });
     const detectionsByMonth = await sequelize.query("SELECT engine as name, COUNT(*) count,MONTH(created_at) as month,YEAR(created_at) as year FROM `detections` WHERE  alert = '1' group by engine, MONTH(created_at),YEAR(created_at)", { type: QueryTypes.SELECT })
 
