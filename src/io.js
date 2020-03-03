@@ -39,12 +39,12 @@ module.exports = server => {
 
           monitor_id = data.monitor_id || data.id;;
           console.log('connected', socket.id, data.monitor_id)
-          const socket = await Monitor.findOne({
+          const socketLog = await Monitor.findOne({
             where: {
               socket_id: socket.id
             }
           })
-          if (!socket) {
+          if (!socketLog) {
             await SocketLog.create({
               socket_id: socket.id,
               time_in: socket.handshake.time,

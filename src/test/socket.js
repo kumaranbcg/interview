@@ -1,4 +1,4 @@
-const URL = 'http://localhost:3000';
+const URL = 'http://3.20.122.193';
 var socket = require('socket.io-client')(URL);
 const axios = require('axios').default;
 socket.on('connect', async () => {
