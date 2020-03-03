@@ -198,7 +198,7 @@ router.get('/snapshot/:monitor_id', async (req, res) => {
 
     } else {
       res
-        .status(400)
+        .status(404)
         .send({
           message: 'No snapshot available'
         })
