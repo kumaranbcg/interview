@@ -45,6 +45,12 @@ module.exports = server => {
             }
           })
           if (!socketLog) {
+            await SocketLog.update({
+              time_out: socket.handshake.time
+            }, {
+              where: { monitor_id }
+            });
+
             await SocketLog.create({
               socket_id: socket.id,
               time_in: socket.handshake.time,
