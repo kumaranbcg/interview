@@ -27,7 +27,7 @@ router.get('/camera-list', async (req, res) => {
       }
     }
 
-    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to  GROUP BY d.monitor_id",
+    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detections` d ON c.id=d.monitor_id where d.alert = '1' AND engine=:engine AND DATE(d.created_at) BETWEEN :period_from AND :period_to  GROUP BY d.monitor_id",
       {
         replacements: { period_from: project.period_from, period_to: project.period_to, engine },
         type: QueryTypes.SELECT
