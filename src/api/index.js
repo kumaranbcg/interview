@@ -20,6 +20,7 @@ const userRouter = require("./user");
 const dangerzoneRouter = require("./dangerzone");
 const dumptruckRouter = require("./dumptruck");
 const projectsRouter = require("./projects");
+const companysRouter = require("./company");
 
 // define the home page route
 router.get("/", function (req, res) {
@@ -59,6 +60,9 @@ router.use(
   authentication.verifyMachine,
   configurationAdminRouter
 );
+
+
+router.use("/company", authentication.verify, companysRouter);
 
 router.post("/local", authentication.verifyMachine, (req, res) => {
   res.status(200).end();
