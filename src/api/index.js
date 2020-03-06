@@ -21,6 +21,8 @@ const dangerzoneRouter = require("./dangerzone");
 const dumptruckRouter = require("./dumptruck");
 const projectsRouter = require("./projects");
 const companysRouter = require("./company");
+const notification_sent_logsRouter = require("./notification-alert-logs");
+
 
 // define the home page route
 router.get("/", function (req, res) {
@@ -35,12 +37,13 @@ router.get("/authenticated", authentication.verify, function (req, res) {
 router.use("/auth", authRouter);
 router.use("/monitor", authentication.verifyMachine, monitorRouter);
 router.use("/dashboard", dangerzoneRouter);
+router.use("/notification-sent-logs",notification_sent_logsRouter);
 router.use("/dashboard", dumptruckRouter);
 router.use("/projects", projectsRouter);
 router.use("/detection", authentication.verify, detectionRouter);
 router.use("/vod", authentication.verify, vodRouter);
 router.use("/alert", authentication.verify, alertRouter);
-router.use("/alert-log", authentication.verify, alertLogRouter);
+router.use("/alert-log",  alertLogRouter);
 router.use("/configuration", authentication.verify, configurationRouter);
 router.use("/report", reportRouter);
 router.use("/ys", ysRouter);
@@ -53,7 +56,7 @@ router.use(
   detectionAdminRouter
 );
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
-router.use("/admin/user",  userRouter);
+router.use("/admin/user", userRouter);
 
 router.use(
   "/admin/configuration",
