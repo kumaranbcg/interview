@@ -101,58 +101,56 @@ router.post("/incoming", async (req, res) => {
       message: "Successfully Added Detection"
     });
 
-    if (newDetection.alert) {
-      console.log('alert detected')
+    console.log('alert detected')
 
-      try {
-        const alert = await Alert.findOne({
-          where: {
-            monitor_id,
-            engine,
-            alert_type: "Trigger"
-          },
-          include: [
-            {
-              model: Monitor,
-              required: true,
-              as: "monitor"
-            }
-          ]
-        });
-
-        if (!alert) {
-          return;
-        }
-
-        const recentLog = await AlertLog.findOne({
-          where: {
-            createdAt: {
-              [Op.gte]: moment()
-                .subtract(1, "minutes")
-                .toDate()
-            },
-            alert_id: alert.id
+    try {
+      const alert = await Alert.findOne({
+        where: {
+          monitor_id,
+          engine,
+          alert_type: "Trigger"
+        },
+        include: [
+          {
+            model: Monitor,
+            required: true,
+            as: "monitor"
           }
-        });
-        if (!recentLog) {
-          await AlertLog.create({
-            id: uuidv4(),
-            alert_id: alert.id
-          });
+        ]
+      });
 
-          const alerts = [alert];
-
-          alertUtil.do(alerts, {
-            image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-            url: `http://app.viact.ai/#/report/${monitor_id}/detection/${uuid}`
-          });
-
-          console.log(`Made an alert at ${new Date().toString()}!`);
-        }
-      } catch (err) {
-        console.log("Alert error");
-        console.log(err.message);
+      if (!alert) {
+        return;
       }
+
+      const recentLog = await AlertLog.findOne({
+        where: {
+          createdAt: {
+            [Op.gte]: moment()
+              .subtract(1, "minutes")
+              .toDate()
+          },
+          alert_id: alert.id
+        }
+      });
+      if (!recentLog) {
+        await AlertLog.create({
+          id: uuidv4(),
+          alert_id: alert.id
+        });
+
+        const alerts = [alert];
+
+        alertUtil.do(alerts, {
+          image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
+          url: `http://app.viact.ai/#/report/${monitor_id}/detection/${uuid}`
+        });
+
+        console.log(`Made an alert at ${new Date().toString()}!`);
+      }
+    } catch (err) {
+      console.log("Alert error");
+      console.log(err.message);
     }
   } catch (err) {
     if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
