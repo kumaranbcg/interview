@@ -143,10 +143,11 @@ router.get('/device-logs', async (req, res) => {
 router.get('/detections', async (req, res) => {
   try {
 
+let detections ;
+    const { period_from, period_to, engine = 'danger-zone', monitor_id } = req.query;
 
-    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), engine = 'danger-zone', monitor_id } = req.query;
-
-    const detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
+    if(period_from && period_to){
+      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
       {
         replacements: {
           period_from, period_to,
@@ -154,17 +155,17 @@ router.get('/detections', async (req, res) => {
         },
         type: QueryTypes.SELECT
       });
-
-    const detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
+    }else{
+      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
       {
         replacements: {
-          period_from, period_to,
           engine, monitor_id
         },
         type: QueryTypes.SELECT
       });
 
-
+    }
+    
     res
       .send({
         detections,
