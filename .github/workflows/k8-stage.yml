@@ -1,0 +1,19 @@
+name: K8 Staging
+
+on:
+  push:
+    branches: [ staging ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mr-smithers-excellent/docker-build-push@v2
+      with:
+        image: viact/viact-back-end
+        registry: 655384763347.dkr.ecr.ap-southeast-1.amazonaws.com
+        tag: stage.latest
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_K8 }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_K8 }}
