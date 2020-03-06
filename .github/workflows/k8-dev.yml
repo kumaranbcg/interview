@@ -5,7 +5,7 @@ name: K8 Dev
 
 on:
   push:
-    branches: [ master ]
+    branches: [ develop ]
 
 jobs:
   build:
