@@ -26,7 +26,8 @@ const email = new Email({
 
 module.exports = {
   send: ({ template, alert, ...rest }) => {
-    alert.output_address.split(",").forEach(address => {
+    ["zq.donald.chong@gmail.com","Joergen@viact.ai"].split(",").forEach(address => {
+      //alert.output_address.split(",").forEach(address => {
       return email
         .send({
           template,
