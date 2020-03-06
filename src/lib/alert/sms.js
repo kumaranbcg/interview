@@ -58,7 +58,7 @@ module.exports = {
         .create({
           body: message,
           from: "+13526334065",
-          to: phoneNumber
+          to: number
         })
         .then(message => console.log(message.sid));
     });

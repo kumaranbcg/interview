@@ -3,19 +3,16 @@ name: Backend Serverless CI
 on:
   push:
     branches:
-      - master
+      - dumptruck
 jobs:
   deploy:
     name: deploy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: npm install
-      uses: actions/npm@master
-      with:
-        args: install
+    - uses: actions/checkout@dumptruck
+    - run: npm ci
     - name: serverless deploy
-      uses: serverless/github-action@master
+      uses: serverless/github-action@dumptruck
       with:
         args: deploy
       env:
