@@ -53,8 +53,7 @@ module.exports = {
       alert.created_at +
       ". Login to Viact for details: " +
       (shortenUrl ? shortenUrl : url);
-    //alert.output_address.split(",").forEach(number => {
-      ["+85259231994"].split(",").forEach(number => {
+    alert.output_address.split(",").forEach(number => {
       client.messages
         .create({
           body: message,

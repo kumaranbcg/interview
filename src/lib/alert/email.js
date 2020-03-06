@@ -2,6 +2,7 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 const Email = require("email-templates");
 const path = require("path");
+// rcnnyolom2detcenternet@gmail.com,gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
 // const EMAIL_USER = "info@viact.ai";
 // const EMAIL_PASSWORD = "SKrKRcGKeGGpDDD";
 const EMAIL_USER = "viact";
@@ -25,8 +26,7 @@ const email = new Email({
 
 module.exports = {
   send: ({ template, alert, ...rest }) => {
-    ["zq.donald.chong@gmail.com","Joergen@viact.ai"].split(",").forEach(address => {
-    //alert.output_address.split(",").forEach(address => {
+    alert.output_address.split(",").forEach(address => {
       return email
         .send({
           template,
