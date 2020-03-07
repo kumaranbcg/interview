@@ -78,10 +78,10 @@ router.put("/:id", async (req, res, next) => {
       }
     })
     if (!notification) {
-      return res.status(400).json({
+      throw {
         success: false,
         message: "Notification doesn't exists"
-      })
+      }
     }
     await NotificationSentLog.update(req.body, {
       where: { id: req.params.id }
@@ -105,10 +105,10 @@ router.delete("/:id", async (req, res, next) => {
       }
     })
     if (!notification) {
-      return res.status(400).json({
+      throw {
         success: false,
         message: "Notification doesn't exists"
-      })
+      }
     }
     await NotificationSentLog.destroy({
       where: {
@@ -139,10 +139,10 @@ router.post("/", async (req, res) => {
         }
       });
       if (!alert) {
-        return res.status(400).json({
+        throw {
           success: false,
           message: "Alert doestn't exists"
-        })
+        }
       }
     }
     if (body.user_id) {
@@ -152,10 +152,10 @@ router.post("/", async (req, res) => {
         }
       });
       if (!user) {
-        return res.status(400).json({
+        throw {
           success: false,
           message: "User doestn't exists"
-        })
+        }
       }
     }
     if (body.detection_id) {
@@ -165,10 +165,10 @@ router.post("/", async (req, res) => {
         }
       });
       if (!detection) {
-        return res.status(400).json({
+        throw {
           success: false,
           message: "Detection doestn't exists"
-        })
+        }
       }
     }
     const notificationSentLog = await NotificationSentLog.create(req.body)
