@@ -21,6 +21,7 @@ const dangerzoneRouter = require("./dangerzone");
 const dumptruckRouter = require("./dumptruck");
 const projectsRouter = require("./projects");
 const companysRouter = require("./company");
+const notificationSentLogRouter = require("./notification-sent-log");
 
 // define the home page route
 router.get("/", function (req, res) {
@@ -67,5 +68,7 @@ router.use("/company", authentication.verify, companysRouter);
 router.post("/local", authentication.verifyMachine, (req, res) => {
   res.status(200).end();
 });
+
+router.use("/notification-sent-log", authentication.verify, notificationSentLogRouter);
 
 module.exports = router;

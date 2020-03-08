@@ -2,6 +2,7 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 const Email = require("email-templates");
 const path = require("path");
+const notificationSendLog = require("../notificationSendLog");
 // rcnnyolom2detcenternet@gmail.com,gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
 // const EMAIL_USER = "info@viact.ai";
 // const EMAIL_PASSWORD = "SKrKRcGKeGGpDDD";
@@ -43,6 +44,16 @@ module.exports = {
         })
         .then(console.log)
         .catch(console.error);
+    });
+
+    // save notification sent log
+    notificationSendLog.saveLog({
+      alert_id: alert.id,
+      detection_id: "", //TODO
+      user_id: "", //TODO
+      output_type: alert.output_type,
+      output_address: alert.output_address,
+      // output_detail: message, // for email pass this parameter
     });
   }
 };
