@@ -21,10 +21,8 @@ style(type='text/css').
     justify-content:space-between;
     align-items:center;
     margin:5px 0;
-  }
-
-  .card-info-line > div {
-    width: 200px;
+    font-size: 1em;
+    justify-content: space-between;
   }
 
   .card-image {
@@ -58,7 +56,7 @@ style(type='text/css').
   .card-title Alert Detail
   .card-info-line 
     div Alert At
-    b #{timestamp}
+    b #{alert.createdAt}
   .card-info-line 
     div Monitor Name
     b #{alert.monitor.name}
