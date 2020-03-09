@@ -39,10 +39,11 @@ module.exports = {
     }
   },
   verifyMachine: (req, res, next) => {
+    let token = req.headers["authorization"];
+
     if (req.headers["x-customindz-key"] === "customindz") {
       next();
     } else if (token && token.startsWith("Bearer ")) {
-      let token = req.headers["authorization"];
       let jwt;
       // Remove Bearer from string
       jwt = token.slice(7, token.length);
