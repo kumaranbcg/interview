@@ -11,16 +11,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       underscored: true,
-      tableName: "alert_logs"
+      tableName: "detections"
       // options
     }
   );
 
   AlertLog.associate = models => {
-    models.AlertLog.belongsTo(models.Alert, {
-      foreignKey: "alert_id",
-      as: "alert"
-    });
   };
 
   return AlertLog;

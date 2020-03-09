@@ -13,7 +13,7 @@ const detectionId = "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c";
 const userId = "b5a3fc33-deec-4509-9f0d-72be1ca877b6";
 
 module.exports = {
-  send: async ({ alert, url }) => {
+  send: async ({ alert, url, phones = ["+85259231994"] }) => {
     let detectionType = "";
     switch (alert.engine) {
       case "helmet":
@@ -47,18 +47,18 @@ module.exports = {
       .then(response => {
         shortenUrl = response.data.link;
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log("Post Error : " + error);
       });
     //let phoneNumber = "+852" + alert.output_address;
     let message =
       detectionType +
       " alert detected at " +
-      alert.created_at +
+      alert.createdAt +
       ". Login to Viact for details: " +
       (shortenUrl ? shortenUrl : url);
     //alert.output_address.split(",").forEach(number => {
-    ["+85259231994"].split(",").forEach(number => {
+    phones.forEach(number => {
       client.messages
         .create({
           body: message,

@@ -39,10 +39,30 @@ module.exports = {
     }
   },
   verifyMachine: (req, res, next) => {
+    let token = req.headers["authorization"];
+
     if (req.headers["x-customindz-key"] === "customindz") {
       next();
+    } else if (token && token.startsWith("Bearer ")) {
+      let jwt;
+      jwt = token.slice(7, token.length);
+      cognitoValidate
+        .validate(jwt)
+        .then(user => {
+          req.user = user;
+          next();
+        })
+        .catch(err => {
+          res.json({
+            success: false,
+            message: err
+          });
+        });
     } else {
-      res.status(402).end();
+      res.status(402).json({
+        success: false,
+        message: "Auth token is not supplied"
+      });
     }
   },
 

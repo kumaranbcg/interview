@@ -16,16 +16,20 @@ style(type='text/css').
   }
 
   .card-info-line {
+    display:-webkit-flex;
     display:flex;
     flex-direction:row;
     justify-content:space-between;
     align-items:center;
     margin:5px 0;
+    font-size: 1em;
+    justify-content: space-between;
   }
 
-  .card-info-line > div {
-    width: 200px;
+  .card-info-line > div{
+    width:150px;
   }
+  
 
   .card-image {
     width:100%;
@@ -51,26 +55,20 @@ style(type='text/css').
     margin: 15px auto;
   }
 
-.email-title New Alert #{name}
+
+.email-title Alert for #{alert.monitor.name}
+
 .card 
   .card-title Alert Detail
   .card-info-line 
     div Alert At
-    b #{timestamp}
+    b #{alert.createdAt}
   .card-info-line 
     div Monitor Name
     b #{alert.monitor.name}
-  .card-info-line 
-    div Engine
-    b Helmet Detection
   .card-info-line
     div Event
-    b Without helmet
-
-.card 
-  .card-title Detected Image
-  .center 
-    img(src=`${image}`).card-image
+    b #{alert.detectionType}
 
 .center 
   a(href=`${url}`) 
