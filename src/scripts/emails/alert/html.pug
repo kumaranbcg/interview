@@ -62,15 +62,10 @@ style(type='text/css').
     b #{alert.monitor.name}
   .card-info-line 
     div Engine
-    b Helmet Detection
+    b #{alert.engine}
   .card-info-line
     div Event
-    b Without helmet
-
-.card 
-  .card-title Detected Image
-  .center 
-    img(src=`${image}`).card-image
+    b #{alert.detectionType}
 
 .center 
   a(href=`${url}`) 
