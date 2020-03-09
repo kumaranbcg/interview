@@ -120,7 +120,7 @@ router.post("/incoming", async (req, res) => {
         });
         alertsResult = await alertUtil.do({
           image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-          url: `http://hhdt1.viact.ai/#/report/${monitor_id}/detection/${uuid}`
+          url: `http://hhdt1.viact.ai/#/user/alert-detail/${uuid}`
         }, alert);
 
         console.log(`Made an alert at ${new Date().toString()}!`);
