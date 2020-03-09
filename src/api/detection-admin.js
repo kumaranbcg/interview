@@ -124,9 +124,11 @@ router.post("/incoming", async (req, res) => {
             url = 'http://hhdt1.viact.ai/#/user/dashboard/dump-truck/1/truck-activities';
             break;
           case 'danger-zone':
-            url = 'http://hhdt1.viact.ai/#/user/dashboard/danger-zone-2'
+            url = 'http://hhdt1.viact.ai/#/user/dashboard/danger-zone-2';
+            break;
           default:
-            url = 'http://hhdt1.viact.ai/#/user/dashboard/'
+            url = 'http://hhdt1.viact.ai/#/user/dashboard/';
+            break;
         }
         alertsResult = await alertUtil.do({
           image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
