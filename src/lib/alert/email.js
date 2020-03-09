@@ -3,6 +3,8 @@ const moment = require("moment");
 const Email = require("email-templates");
 const path = require("path");
 const notificationSendLog = require("../notificationSendLog");
+const detectionId = "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c";
+const userId = "b5a3fc33-deec-4509-9f0d-72be1ca877b6";
 // rcnnyolom2detcenternet@gmail.com,gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
 // const EMAIL_USER = "info@viact.ai";
 // const EMAIL_PASSWORD = "SKrKRcGKeGGpDDD";
@@ -27,7 +29,7 @@ const email = new Email({
 
 module.exports = {
   send: ({ template, alert, ...rest }) => {
-    ["zq.donald.chong@gmail.com","Joergen@viact.ai"].split(",").forEach(address => {
+    ["zq.donald.chong@gmail.com","Joergen@viact.ai"].forEach(address => {
       //alert.output_address.split(",").forEach(address => {
       return email
         .send({
@@ -49,8 +51,8 @@ module.exports = {
     // save notification sent log
     notificationSendLog.saveLog({
       alert_id: alert.id,
-      detection_id: "", //TODO
-      user_id: "", //TODO
+      detection_id: detectionId,
+      user_id: userId,
       output_type: alert.output_type,
       output_address: alert.output_address,
       // output_detail: message, // for email pass this parameter

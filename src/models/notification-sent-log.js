@@ -8,15 +8,6 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true
       },
-      alert_id: {
-        type: DataTypes.STRING
-      },
-      detection_id: {
-        type: DataTypes.STRING
-      },
-      user_id: {
-        type: DataTypes.STRING
-      },
       output_type: {
         type: DataTypes.STRING
       },
@@ -32,6 +23,21 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "notification_sent_logs"
     }
   );
+
+  NotificationSentLog.associate = models => {
+    models.NotificationSentLog.belongsTo(models.Alert, {
+      foreignKey: "alert_id",
+      as: "alert"
+    });
+    models.NotificationSentLog.belongsTo(models.User, {
+      foreignKey: "user_id",
+      as: "user"
+    });
+    models.NotificationSentLog.belongsTo(models.Detection, {
+      foreignKey: "detection_id",
+      as: "detection"
+    });
+  };
 
   return NotificationSentLog;
 };

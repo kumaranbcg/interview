@@ -7,7 +7,10 @@ const axios = require("axios");
 const accountSid = "AC3374d3a92b109427519a0eb01435806f";
 const authToken = "6f05338cdc990f3ee3de7b0e23a27eff";
 const client = require("twilio")(accountSid, authToken);
+
 const notificationSendLog = require("../notificationSendLog");
+const detectionId = "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c";
+const userId = "b5a3fc33-deec-4509-9f0d-72be1ca877b6";
 
 module.exports = {
   send: async ({ alert, url }) => {
@@ -68,8 +71,8 @@ module.exports = {
     // save notification sent log
     await notificationSendLog.saveLog({
       alert_id: alert.id,
-      detection_id: "", //TODO
-      user_id: "", //TODO
+      detection_id: detectionId,
+      user_id: userId,
       output_type: alert.output_type,
       output_address: alert.output_address,
       output_detail: message,
