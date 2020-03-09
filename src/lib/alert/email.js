@@ -26,6 +26,22 @@ const email = new Email({
 
 module.exports = {
   send: ({ template, alert, addresses = ["zq.donald.chong@gmail.com", "Joergen@viact.ai"], ...rest }) => {
+    switch (alert.engine) {
+      case "helmet":
+        alert.detectionType = "Helmet Detection";
+        break;
+      case "face-detection":
+        alert.detectionType = "Face Detection";
+        break;
+      case "danger-zone":
+        alert.detectionType = "Danger Zone";
+        break;
+      case "dump-truck":
+        alert.detectionType = "Dump truck";
+        break;
+      default:
+        alert.detectionType = "Unkown";
+    }
     addresses.forEach(address => {
       //alert.output_address.split(",").forEach(address => {
       return email

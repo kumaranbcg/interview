@@ -45,19 +45,19 @@ module.exports = {
       next();
     } else if (token && token.startsWith("Bearer ")) {
       let jwt;
-      // Remove Bearer from string
       jwt = token.slice(7, token.length);
-      try {
-        Token.validate(jwt);
-        const user = Token.decode(jwt);
-        req.user = user;
-        next();
-      } catch (err) {
-        res.status(401).json({
-          success: false,
-          message: err
+      cognitoValidate
+        .validate(jwt)
+        .then(user => {
+          req.user = user;
+          next();
+        })
+        .catch(err => {
+          res.json({
+            success: false,
+            message: err
+          });
         });
-      }
     } else {
       res.status(402).json({
         success: false,
