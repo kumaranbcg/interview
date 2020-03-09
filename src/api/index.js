@@ -69,6 +69,6 @@ router.post("/local", authentication.verifyMachine, (req, res) => {
   res.status(200).end();
 });
 
-router.use("/notification-sent-log", notificationSentLogRouter);
+router.use("/notification-sent-log", authentication.verify, notificationSentLogRouter);
 
 module.exports = router;
