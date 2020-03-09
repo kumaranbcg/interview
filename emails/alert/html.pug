@@ -16,6 +16,7 @@ style(type='text/css').
   }
 
   .card-info-line {
+    display:-webkit-flex;
     display:flex;
     flex-direction:row;
     justify-content:space-between;
@@ -24,6 +25,11 @@ style(type='text/css').
     font-size: 1em;
     justify-content: space-between;
   }
+
+  .card-info-line > div{
+    width:150px;
+  }
+  
 
   .card-image {
     width:100%;
