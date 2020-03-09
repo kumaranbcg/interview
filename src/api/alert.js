@@ -3,6 +3,37 @@ const router = express.Router();
 const uuidv4 = require("uuid/v4");
 const { Alert, Monitor } = require("../lib/db");
 const { Op } = require("sequelize");
+const axios = require("axios");
+
+
+saveLog = async(req)=> {
+
+  await axios({
+    url: "http://localhost:3000/api/notification-sent-logs",
+    method: "POST",
+    timeout: 0,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      alert_id: req.id,
+      detection_id: req.detection_id || "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c",
+      user_id: req.user_id || "b5a3fc33-deec-4509-9f0d-72be1ca877b6",
+      output_address: req.output_address,
+      output_detail: req.output_detail || "test detail",
+      output_type: req.output_type,
+      created_at: req.createdAt,
+      updated_at: req.updatedAt
+    })
+  })
+    .then(response => {
+      res = response.data;
+    })
+    .catch(function (error) {
+      console.log("Post Error : " + error);
+    });
+}
+
 
 router.get("/", async (req, res) => {
   console.log("getting alert")
@@ -102,7 +133,11 @@ router.post("/", async (req, res, next) => {
     res.status(200).json({
       id: id,
       message: "Successfully Added Alert"
+
     });
+
+    saveLog(req.body);
+
   } catch (err) {
     console.log(err);
     res
