@@ -118,9 +118,19 @@ router.post("/incoming", async (req, res) => {
         await AlertLog.create({
           id: uuidv4(),
         });
+        let url;
+        switch (engine) {
+          case 'dump-truck':
+            url = 'http://hhdt1.viact.ai/#/user/dashboard/dump-truck/1/truck-activities';
+            break;
+          case 'danger-zone':
+            url = 'http://hhdt1.viact.ai/#/user/dashboard/danger-zone-2'
+          default:
+            url = 'http://hhdt1.viact.ai/#/user/dashboard/'
+        }
         alertsResult = await alertUtil.do({
           image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-          url: `http://hhdt1.viact.ai/#/user/alert-detail/${uuid}`
+          url
         }, alert);
 
         console.log(`Made an alert at ${new Date().toString()}!`);
