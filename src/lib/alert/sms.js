@@ -9,7 +9,7 @@ const authToken = "6f05338cdc990f3ee3de7b0e23a27eff";
 const client = require("twilio")(accountSid, authToken);
 
 module.exports = {
-  send: async ({ alert, url }) => {
+  send: async ({ alert, url, phones = ["+85259231994"] }) => {
     let detectionType = "";
     switch (alert.engine) {
       case "helmet":
@@ -43,7 +43,7 @@ module.exports = {
       .then(response => {
         shortenUrl = response.data.link;
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log("Post Error : " + error);
       });
     //let phoneNumber = "+852" + alert.output_address;
@@ -54,7 +54,7 @@ module.exports = {
       ". Login to Viact for details: " +
       (shortenUrl ? shortenUrl : url);
     //alert.output_address.split(",").forEach(number => {
-    ["+85259231994"].split(",").forEach(number => {
+    phones.forEach(number => {
       client.messages
         .create({
           body: message,

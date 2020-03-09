@@ -4,13 +4,9 @@ const router = express.Router();
 
 const fs = require('fs');
 const path = require('path');
-const AWS = require('../lib/aws')
-const s3 = new AWS.S3();
-const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-const USER_POOL = 'ap-southeast-1_vUjO2Mocs';
-const DEFAULT_PIC = 'https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwjduaSVu6jnAhXEpOkKHdGBCW4QjRx6BAgBEAQ&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fuser-image-png%2F&psig=AOvVaw2_q_xmciS4aHdKUrzYRAD4&ust=1580375362869936'
-const MONITOR_ZOOM_CONFIG = path.join(__dirname, './../../', 'monitor_level.json');
+const { USER_POOL, cognitoidentityserviceprovider } = require('../lib/cognito')
 
+const DEFAULT_PIC = 'https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwjduaSVu6jnAhXEpOkKHdGBCW4QjRx6BAgBEAQ&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fuser-image-png%2F&psig=AOvVaw2_q_xmciS4aHdKUrzYRAD4&ust=1580375362869936'
 
 router.get("/", async (req, res, next) => {
 
