@@ -5,6 +5,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { USER_POOL, cognitoidentityserviceprovider } = require('../lib/cognito')
+const s3 = require('../lib/upload');
 
 const DEFAULT_PIC = 'https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwjduaSVu6jnAhXEpOkKHdGBCW4QjRx6BAgBEAQ&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fuser-image-png%2F&psig=AOvVaw2_q_xmciS4aHdKUrzYRAD4&ust=1580375362869936'
 
@@ -216,18 +217,19 @@ router.post('/upload', async (req, res) => {
   try {
 
     const params = {
-      Bucket: 'customindz-profiles',
+      Bucket: 'customindz-shinobi',
       Key: req.body.id,
       ACL: "public-read",
       Body: req.files.file.data
     };
     s3.upload(params, (s3Err, data) => {
-      if (s3Err) return res
-        .status(400)
-        .send(err)
-        .end();
-      console.log()
-      res
+      if (s3Err) {
+        console.log(s3Err)
+        return res.status(400)
+          .send(s3Err.message)
+          .end();
+      }
+      return res
         .json({
           message: 'File uploaded successfully',
           data: data.Location
@@ -240,7 +242,9 @@ router.post('/upload', async (req, res) => {
   } catch (err) {
     res
       .status(400)
-      .send(err)
+      .send({
+        message: err.message
+      })
       .end();
   }
 })
