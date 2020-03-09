@@ -95,11 +95,7 @@ router.post("/incoming", async (req, res) => {
       engine
     };
     await Detection.create(newDetection);
-
-    res.status(200).json({
-      id: newDetection.id,
-      message: "Successfully Added Detection"
-    });
+    let alertsResult = {};
 
     if (newDetection.alert) {
 
@@ -122,7 +118,7 @@ router.post("/incoming", async (req, res) => {
         await AlertLog.create({
           id: uuidv4(),
         });
-        alertUtil.do({
+        alertsResult = await alertUtil.do({
           image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
           url: `http://app.viact.ai/#/report/${monitor_id}/detection/${uuid}`
         }, alert);
@@ -133,6 +129,14 @@ router.post("/incoming", async (req, res) => {
         console.log(err.message);
       }
     }
+
+
+    res.status(200).json({
+      id: newDetection.id,
+      ...alertsResult,
+      message: "Successfully Added Detection"
+    });
+
   } catch (err) {
     if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
       res
