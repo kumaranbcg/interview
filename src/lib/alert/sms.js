@@ -50,7 +50,7 @@ module.exports = {
     let message =
       detectionType +
       " alert detected at " +
-      alert.created_at +
+      alert.createdAt +
       ". Login to Viact for details: " +
       (shortenUrl ? shortenUrl : url);
     //alert.output_address.split(",").forEach(number => {
