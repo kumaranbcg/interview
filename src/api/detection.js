@@ -56,9 +56,9 @@ router.get("/", async (req, res) => {
         model: Monitor,
         as: "monitor",
         required: true,
-        where: {
-          user_id: req.user["cognito:username"]
-        }
+        // where: {
+        //   user_id: req.user["cognito:username"]
+        // }
       }
     ];
     const data = await Detection.findAndCountAll(query);
