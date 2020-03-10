@@ -9,7 +9,7 @@ const { Op } = require("sequelize");
 const moment = require("moment");
 const s3 = require("../lib/s3");
 
-const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact";
+const MEDIA_URL = "https://sgp1.digitaloceanspaces.com/viact20";
 
 router.post("/", async (req, res, next) => {
   try {
@@ -122,8 +122,8 @@ router.post("/incoming", async (req, res, next) => {
     await s3
       .copyObject({
         ACL: "public-read",
-        CopySource: `/viact/frames/${monitor_id}/latest-detection-helmet.jpg`,
-        Bucket: "viact",
+        CopySource: `/viact20/frames/${monitor_id}/latest-detection-helmet.jpg`,
+        Bucket: "viact20",
         Key: `alerts/${monitor_id}/${uuid}.jpg`
       })
       .promise();
