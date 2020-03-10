@@ -65,17 +65,28 @@ module.exports = {
           from: "+13526334065",
           to: number
         })
-        .then(message => console.log(message.sid));
-    });
-
-    // save notification sent log
-    await notificationSendLog.saveLog({
-      alert_id: alert.id,
-      detection_id: detectionId,
-      user_id: userId,
-      output_type: alert.output_type,
-      output_address: alert.output_address,
-      output_detail: message,
+        .then(async message => {
+          console.log(message.sid);
+          await notificationSendLog.saveLog({
+            alert_id: alert.id,
+            detection_id: detectionId,
+            user_id: userId,
+            output_type: alert.output_type,
+            output_address: alert.output_address,
+            output_detail: `${notificationSendLog.SEND_STATUS.Success} ${message.sid}`,
+          });
+        })
+        .catch(async err => {
+          console.log(err);
+          await notificationSendLog.saveLog({
+            alert_id: alert.id,
+            detection_id: detectionId,
+            user_id: userId,
+            output_type: alert.output_type,
+            output_address: alert.output_address,
+            output_detail: `${notificationSendLog.SEND_STATUS.Fail}`,
+          });
+        })
     });
 
     return;

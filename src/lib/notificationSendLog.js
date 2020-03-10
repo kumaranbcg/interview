@@ -1,6 +1,12 @@
 const { NotificationSentLog, Alert, Detection, User } = require("./db");
 
+const SEND_STATUS = {
+  Success: "Send success",
+  Fail: "Send fail"
+};
+
 module.exports = {
+  SEND_STATUS,
   saveLog: async ({alert_id, detection_id, user_id, output_address, output_detail, output_type}) => {
     try {
       // validate alert

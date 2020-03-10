@@ -60,18 +60,28 @@ module.exports = {
             ...rest
           }
         })
-        .then(console.log)
-        .catch(console.error);
-    });
-
-    // save notification sent log
-    notificationSendLog.saveLog({
-      alert_id: alert.id,
-      detection_id: detectionId,
-      user_id: userId,
-      output_type: alert.output_type,
-      output_address: alert.output_address,
-      // output_detail: message, // for email pass this parameter
+        .then(async (res)=>{
+          console.log(res);
+          await notificationSendLog.saveLog({
+            alert_id: alert.id,
+            detection_id: detectionId,
+            user_id: userId,
+            output_type: alert.output_type,
+            output_address: alert.output_address,
+            output_detail: notificationSendLog.SEND_STATUS.Success
+          });
+        })
+        .catch(async err => {
+          console.log(err);
+          await notificationSendLog.saveLog({
+            alert_id: alert.id,
+            detection_id: detectionId,
+            user_id: userId,
+            output_type: alert.output_type,
+            output_address: alert.output_address,
+            output_detail: notificationSendLog.SEND_STATUS.Fail
+          });
+        });
     });
   }
 };
