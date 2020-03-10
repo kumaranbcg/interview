@@ -25,7 +25,14 @@ const email = new Email({
   preview: false
 });
 
-saveLog = async (req) => {
+saveLog = async (req,status) => {
+  let output_detail = "";
+  if(status=="success"){
+    output_detail="Send Success";
+  }
+  else{
+    output_detail="Send Failed";
+  }
     await axios({
       url: "http://localhost:3000/api/notification-sent-logs",
       method: "POST",
@@ -38,7 +45,7 @@ saveLog = async (req) => {
         detection_id: req.detection_id || "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c",
         user_id: req.user_id || "b5a3fc33-deec-4509-9f0d-72be1ca877b6",
         output_address: req.output_address,
-        output_detail: req.output_detail || "test detail",
+        output_detail: output_detail || "test detail",
         output_type: req.output_type,
         created_at: req.created_at,
         updated_at: req.updatedAt
@@ -68,8 +75,15 @@ module.exports = {
             ...rest
           }
         })
-        .then(console.log)
-        .catch(console.error);
+        .then(response => {
+          shortenUrl = response.data.link;
+          saveLog(alert, "success");
+  
+        })
+        .catch(function (error) {
+          console.log("Post Error : " + error);
+          saveLog(alert, "failed");
+        });
     });
     saveLog(alert);
 
