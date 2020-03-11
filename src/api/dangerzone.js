@@ -231,25 +231,27 @@ router.get('/alert-distribution', async (req, res) => {
   try {
 
 
-    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), machine_id = '', monitor_id = '' } = req.query;
+    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), machine_id = '', monitor_id = '', engine='danger-zone' } = req.query;
 
-    const detectionsDaily = await sequelize.query("SELECT * FROM detections_daily_camera WHERE (:machine_id='' OR machine_id=:machine_id) AND (:monitor_id='' OR monitor_id=:monitor_id) AND date BETWEEN :period_from AND :period_to ORDER BY date ASC",
+    const detectionsDaily = await sequelize.query("SELECT * FROM detections_daily_camera WHERE (:machine_id='' OR machine_id=:machine_id) AND engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id) AND date BETWEEN :period_from AND :period_to ORDER BY date ASC",
       {
         replacements: {
           period_from, period_to,
           machine_id,
-          monitor_id
+          monitor_id,
+          engine
         },
         type: QueryTypes.SELECT
       });
 
 
 
-    const detectionsHourly = await sequelize.query("SELECT * FROM detections_hourly WHERE (:machine_id='' OR machine_id=:machine_id) AND (:monitor_id='' OR monitor_id=:monitor_id) AND date = CURDATE()",
+    const detectionsHourly = await sequelize.query("SELECT * FROM detections_hourly WHERE (:machine_id='' OR machine_id=:machine_id) AND engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id) AND date = CURDATE()",
       {
         replacements: {
           period_from, period_to,
-          machine_id, monitor_id
+          machine_id, monitor_id,
+          engine
         },
         type: QueryTypes.SELECT
       });
