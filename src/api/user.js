@@ -31,7 +31,9 @@ router.get("/", async (req, res, next) => {
           response[obj.Name.replace('custom:', '')] = obj.Value
         })
         return response;
-      });
+      }).filter(user=> {
+        return user.created_by === req.user['cognito:username']
+      })
       res
         .send(responseData)
         .status(200)
@@ -99,6 +101,10 @@ router.post("/", async (req, res, next) => {
         {
           Name: 'custom:role',
           Value: role
+        },
+        {
+          Name: 'custom:created_by',
+          Value: req.user["cognito:username"]
         },
       ],
     };

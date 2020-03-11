@@ -53,7 +53,7 @@ router.use(
   detectionAdminRouter
 );
 router.use("/admin/vod", authentication.verifyMachine, vodAdminRouter);
-router.use("/admin/user",  userRouter);
+router.use("/admin/user",  authentication.verify, userRouter);
 
 router.use(
   "/admin/configuration",
