@@ -37,6 +37,36 @@ router.get('/machines', async (req, res) => {
 });
 
 
+router.get('/cameras', async (req, res) => {
+  try {
+    const { engine = 'danger-zone' } = req.query;
+
+    const cameras = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detections` WHERE alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a where user_id=:user_id) a GROUP BY a.monitor_id ORDER BY time_in ASC, time_out DESC",
+      {
+        replacements: { engine, user_id: req.user["cognito:username"] },
+        type: QueryTypes.SELECT
+      });
+
+    res
+      .send({
+        cameras
+      })
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.error(err)
+    res
+      .status(400)
+      .send({
+        message: err.message
+      })
+      .end();
+  }
+});
+
+
+
 router.get('/camera-devices', async (req, res) => {
   try {
     const { engine = 'danger-zone', machine_id } = req.query;
@@ -143,29 +173,29 @@ router.get('/device-logs', async (req, res) => {
 router.get('/detections', async (req, res) => {
   try {
 
-let detections ;
+    let detections;
     const { period_from, period_to, engine = 'danger-zone', monitor_id } = req.query;
 
-    if(period_from && period_to){
+    if (period_from && period_to) {
       detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
-      {
-        replacements: {
-          period_from, period_to,
-          engine, monitor_id
-        },
-        type: QueryTypes.SELECT
-      });
-    }else{
+        {
+          replacements: {
+            period_from, period_to,
+            engine, monitor_id
+          },
+          type: QueryTypes.SELECT
+        });
+    } else {
       detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detections` b ON a.id= b.monitor_id WHERE b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
-      {
-        replacements: {
-          engine, monitor_id
-        },
-        type: QueryTypes.SELECT
-      });
+        {
+          replacements: {
+            engine, monitor_id
+          },
+          type: QueryTypes.SELECT
+        });
 
     }
-    
+
     res
       .send({
         detections,
@@ -231,7 +261,7 @@ router.get('/alert-distribution', async (req, res) => {
   try {
 
 
-    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), machine_id = '', monitor_id = '', engine='danger-zone' } = req.query;
+    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), machine_id = '', monitor_id = '', engine = 'danger-zone' } = req.query;
 
     const detectionsDaily = await sequelize.query("SELECT * FROM detections_daily_camera WHERE (:machine_id='' OR machine_id=:machine_id) AND engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id) AND date BETWEEN :period_from AND :period_to ORDER BY date ASC",
       {
