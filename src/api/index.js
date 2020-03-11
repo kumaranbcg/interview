@@ -34,9 +34,9 @@ router.get("/authenticated", authentication.verify, function (req, res) {
 
 router.use("/auth", authRouter);
 router.use("/monitor", authentication.verifyMachine, monitorRouter);
-router.use("/dashboard", dangerzoneRouter);
-router.use("/dashboard", dumptruckRouter);
-router.use("/projects", projectsRouter);
+router.use("/dashboard", authentication.verify, dangerzoneRouter);
+router.use("/dashboard", authentication.verify, dumptruckRouter);
+router.use("/projects", authentication.verify, projectsRouter);
 router.use("/detection", authentication.verify, detectionRouter);
 router.use("/vod", authentication.verify, vodRouter);
 router.use("/alert", authentication.verify, alertRouter);
