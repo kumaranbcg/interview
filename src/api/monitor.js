@@ -174,7 +174,7 @@ router.post("/", async (req, res, next) => {
     const MONITOR_ID = req.body.monitor_id || req.body.id || shortid.generate();
 
     const newMonitor = {
-      user_id: req.user ? req.user["cognito:username"] : 'admin',
+      user_id: req.user ? req.user["cognito:username"] : 'windht',
       ...req.body,
       id: MONITOR_ID,
       name: req.body.name || "Default Monitor Name",
