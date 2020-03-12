@@ -180,7 +180,7 @@ router.get('/detections', async (req, res) => {
     const { period_from, period_to, engine = 'danger-zone', monitor_id } = req.query;
     const username = req.user["cognito:username"];
 
-    console.log(username,engine,monitor_id)
+    console.log(username, engine, monitor_id)
     if (period_from && period_to) {
       detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE username=:username AND b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
         {
@@ -191,11 +191,11 @@ router.get('/detections', async (req, res) => {
           },
           type: QueryTypes.SELECT
         });
-    } else if(monitor_id) {
+    } else if (monitor_id) {
       detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE username=:username AND b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
         {
           replacements: {
-            engine, monitor_id,username
+            engine, monitor_id, username
           },
           type: QueryTypes.SELECT
         });
@@ -281,20 +281,20 @@ router.get('/alert-distribution', async (req, res) => {
     const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), machine_id = '', monitor_id = '', engine = 'danger-zone' } = req.query;
     const username = req.user["cognito:username"];
 
-    const detectionsDaily = await sequelize.query("SELECT * FROM detections_daily_camera WHERE username=:username AND (:machine_id='' OR machine_id=:machine_id) AND engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id) AND date BETWEEN :period_from AND :period_to ORDER BY date ASC",
+    const detectionsDaily = await sequelize.query("SELECT * FROM detections_daily_camera WHERE date BETWEEN :period_from AND :period_to ORDER BY date ASC",
       {
         replacements: {
           period_from, period_to,
           machine_id,
           monitor_id,
-          engine,username
+          engine, username
         },
         type: QueryTypes.SELECT
       });
 
 
 
-    const detectionsHourly = await sequelize.query("SELECT * FROM detections_hourly WHERE username=:username AND  (:machine_id='' OR machine_id=:machine_id) AND engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id) AND date = CURDATE()",
+    const detectionsHourly = await sequelize.query("SELECT * FROM detections_hourly WHERE date = CURDATE()",
       {
         replacements: {
           period_from, period_to,
@@ -310,7 +310,14 @@ router.get('/alert-distribution', async (req, res) => {
       if (!output[obj.date]) {
         output[obj.date] = {}
       }
-      output[obj.date][obj.monitor_id] = obj.count;
+      if (
+        (monitor_id ? obj.monitor_id === monitor_id : true) &&
+        (machine_id ? obj.machine_id === machine_id : true) &&
+        (engine ? obj.engine === engine : true) &&
+        (username ? obj.username === username : true)
+      ) {
+        output[obj.date][obj.monitor_id] = obj.count;
+      }
     })
 
     const output_hourly = {}
@@ -318,7 +325,14 @@ router.get('/alert-distribution', async (req, res) => {
       if (!output_hourly[`${obj.hour}:00`]) {
         output_hourly[`${obj.hour}:00`] = {}
       }
-      output_hourly[`${obj.hour}:00`][obj.monitor_id] = obj.count;
+      if (
+        (monitor_id ? obj.monitor_id === monitor_id : true) &&
+        (machine_id ? obj.machine_id === machine_id : true) &&
+        (engine ? obj.engine === engine : true) &&
+        (username ? obj.username === username : true)
+      ) {
+        output_hourly[`${obj.hour}:00`][obj.monitor_id] = obj.count;
+      }
     })
 
     const result1 = []
@@ -327,7 +341,7 @@ router.get('/alert-distribution', async (req, res) => {
     Object.keys(output).forEach(key => {
       result1.push({
         date: key,
-        sum: monitor_id?output[key][monitor_id]: undefined,
+        sum: monitor_id ? output[key][monitor_id] : undefined,
         ...output[key]
       })
     })
@@ -335,7 +349,7 @@ router.get('/alert-distribution', async (req, res) => {
     Object.keys(output_hourly).forEach(key => {
       result2.push({
         hour: key,
-        sum: monitor_id?output_hourly[key][monitor_id]: undefined,
+        sum: monitor_id ? output_hourly[key][monitor_id] : undefined,
         ...output_hourly[key]
       })
     })
