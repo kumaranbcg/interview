@@ -327,6 +327,7 @@ router.get('/alert-distribution', async (req, res) => {
     Object.keys(output).forEach(key => {
       result1.push({
         date: key,
+        sum: monitor_id?output[key][monitor_id]: undefined,
         ...output[key]
       })
     })
@@ -334,6 +335,7 @@ router.get('/alert-distribution', async (req, res) => {
     Object.keys(output_hourly).forEach(key => {
       result2.push({
         hour: key,
+        sum: monitor_id?output_hourly[key][monitor_id]: undefined,
         ...output_hourly[key]
       })
     })
