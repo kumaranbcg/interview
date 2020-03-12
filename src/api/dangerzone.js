@@ -328,7 +328,6 @@ router.get('/alert-distribution', async (req, res) => {
       result1.push({
         date: key,
         sum: monitor_id?output[key][monitor_id]: undefined,
-        count: monitor_id?output[key][monitor_id]: undefined,
         ...output[key]
       })
     })
@@ -337,7 +336,6 @@ router.get('/alert-distribution', async (req, res) => {
       result2.push({
         hour: key,
         sum: monitor_id?output_hourly[key][monitor_id]: undefined,
-        count: monitor_id?output_hourly[key][monitor_id]: undefined,
         ...output_hourly[key]
       })
     })
