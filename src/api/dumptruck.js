@@ -181,7 +181,7 @@ router.get('/summary', async (req, res) => {
     }
     const { period_from, period_to, target, capacity } = project;
 
-    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where username=:username AND engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to", {
+    const detections = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where username=:username AND  alert = '1' AND engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to", {
       replacements: { period_from, period_to, engine, username },
       type: QueryTypes.SELECT
     });
