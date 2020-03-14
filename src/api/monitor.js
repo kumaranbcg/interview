@@ -186,7 +186,7 @@ router.post("/", async (req, res, next) => {
       type: req.body.type || "normal",
     };
 
-    console.log(newMonitor)
+    //console.log(newMonitor)
 
     await Monitor.create(newMonitor);
 

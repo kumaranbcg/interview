@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false
       },
+      rtmp_uri: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
       play_from_source: {
         type: DataTypes.BOOLEAN
       },
