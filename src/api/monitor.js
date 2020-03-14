@@ -179,6 +179,7 @@ router.post("/", async (req, res, next) => {
       id: MONITOR_ID,
       name: req.body.name || "Default Monitor Name",
       connection_uri: req.body.connection_uri,
+      rtmp_uri: req.body.rtmp_uri,
       play_from_source: false,
       graph: [],
       engines: [],
