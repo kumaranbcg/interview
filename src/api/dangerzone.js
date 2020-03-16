@@ -192,7 +192,7 @@ router.get('/detections', async (req, res) => {
           type: QueryTypes.SELECT
         });
     } else if (monitor_id) {
-      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE username=:username AND b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC LIMIT 5",
+      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE username=:username AND b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC",
         {
           replacements: {
             engine, monitor_id, username
