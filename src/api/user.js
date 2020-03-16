@@ -31,7 +31,7 @@ router.get("/", async (req, res, next) => {
           response[obj.Name.replace('custom:', '')] = obj.Value
         })
         return response;
-      }).filter(user=> {
+      }).filter(user => {
         return user.created_by === req.user['cognito:username']
       })
       res
@@ -128,6 +128,52 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const params = {
+      UserPoolId: USER_POOL, /* required */
+      Filter: "username = \"" + req.params.id + "\"",
+      // Limit: 'NUMBER_VALUE',
+      // PaginationToken: 'STRING_VALUE'
+    };
+    cognitoidentityserviceprovider.listUsers(params, function (err, data) {
+      if (err) return res
+        .status(400)
+        .send(err)
+        .end();
+
+      const responseData = data.Users.map(user => {
+        const response = {
+          username: user.Username
+        }
+        user.Attributes.forEach(obj => {
+          response[obj.Name.replace('custom:', '')] = obj.Value
+        })
+        return response;
+      })
+      if (responseData.length) {
+        res
+          .json(responseData[0])
+          .status(200)
+          .end();
+      } else {
+
+        res
+          .json({ message: 'User data not found' })
+          .status(404)
+          .end();
+      }
+    });
+
+  } catch (err) {
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
 router.put("/:id", async (req, res, next) => {
   const { firstname, surname, email, phone = "0", role = 'user', profile_pic = DEFAULT_PIC, permissions = "[]", report_frequency = "none", notification_type = "none" } = req.body;
 
@@ -205,7 +251,7 @@ router.delete("/:id", async (req, res, next) => {
         .end();
       res
         .json({
-          message: "Successfully Deleted User"
+          data,
         })
         .status(200)
         .end();
