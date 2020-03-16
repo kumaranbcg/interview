@@ -11,7 +11,10 @@ router.get('/', async (req, res) => {
   try {
 
     const query = {
-      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]]
+      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
+      where: {
+        user_id: req.user["cognito:username"]
+      }
     };
 
     if (req.query.limit) {
@@ -57,7 +60,10 @@ router.get('/:id', async (req, res) => {
   try {
 
     const data = await Projects.findOne({
-      where: { id: req.params.id }
+      where: {
+        id: req.params.id,
+        user_id: req.user["cognito:username"]
+      }
     });
 
     if (!data) {
@@ -82,6 +88,7 @@ router.post('/', async (req, res) => {
     const data = await Projects.create({
       ...req.body,
       id: shortid(),
+      user_id: req.user["cognito:username"],
       quarter: `${req.body.quarter}`.toUpperCase(),
     });
 
@@ -103,6 +110,7 @@ router.put("/:id", async (req, res, next) => {
     delete req.body.id;
     await Projects.update({
       ...req.body,
+      user_id: req.user["cognito:username"],
       quarter: `${req.body.quarter}`.toUpperCase()
     }, {
       where: { id: req.params.id }
@@ -126,7 +134,8 @@ router.delete("/:id", async (req, res, next) => {
   try {
     let data = await Projects.findOne({
       where: {
-        id: req.params.id
+        id: req.params.id,
+        user_id: req.user["cognito:username"]
       }
     });
     if (!data) {
