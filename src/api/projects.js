@@ -6,49 +6,74 @@ const Sequelize = require("sequelize");
 
 const { Projects, Detection, Monitor } = require("../lib/db");
 const { today, week } = require("../lib/utils");
+const { USER_POOL, cognitoidentityserviceprovider } = require('../lib/cognito')
 
 router.get('/', async (req, res) => {
   try {
-
-    const query = {
-      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
-      where: {
-        user_id: req.user["cognito:username"]
-      }
+    var params = {
+      UserPoolId: USER_POOL,
+      Filter: "email = \"" + req.user.email + "\"",
     };
-
-    if (req.query.limit) {
-      query.limit = parseInt(req.query.limit);
-      if (req.query.page) {
-        query.offset =
-          (parseInt(req.query.page) - 1) * parseInt(req.query.limit);
+    cognitoidentityserviceprovider.listUsers(params, async function (err, data) {
+      if (err) {
+        console.log(err)
+        return res
+          .status(400)
+          .send(err)
+          .end();
       }
-    }
 
-    if (req.query.start_timestamp) {
-      query.where.createdAt = {
-        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
+      const users = data.Users.map(user => {
+        const response = {
+          username: user.Username
+        }
+        user.Attributes.forEach(obj => {
+          response[obj.Name.replace('custom:', '')] = obj.Value
+        })
+        return response;
+      })
+
+      // console.log(users[0]);
+      const query = {
+        order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
+        where: {
+          user_id: [users[0].username,users[0].created_by]
+        }
       };
-    }
-    if (req.query.end_timestamp) {
-      if (!query.where.createdAt) {
+
+      if (req.query.limit) {
+        query.limit = parseInt(req.query.limit);
+        if (req.query.page) {
+          query.offset =
+            (parseInt(req.query.page) - 1) * parseInt(req.query.limit);
+        }
+      }
+
+      if (req.query.start_timestamp) {
         query.where.createdAt = {
-          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
-        };
-      } else {
-        query.where.createdAt = {
-          ...query.where.createdAt,
-          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+          [Op.gte]: new Date(parseInt(req.query.start_timestamp))
         };
       }
-    }
-    const data = await Projects.findAndCountAll(query);
+      if (req.query.end_timestamp) {
+        if (!query.where.createdAt) {
+          query.where.createdAt = {
+            [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+          };
+        } else {
+          query.where.createdAt = {
+            ...query.where.createdAt,
+            [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+          };
+        }
+      }
+      const projectsList = await Projects.findAndCountAll(query);
 
-    res.send(data).end();
+      res.send(projectsList).end();
 
+    });
 
   } catch (err) {
-    console.log(err.message);
+    console.log(err);
     res
       .status(400)
       .send(err)
@@ -62,7 +87,6 @@ router.get('/:id', async (req, res) => {
     const data = await Projects.findOne({
       where: {
         id: req.params.id,
-        user_id: req.user["cognito:username"]
       }
     });
 
@@ -110,10 +134,12 @@ router.put("/:id", async (req, res, next) => {
     delete req.body.id;
     await Projects.update({
       ...req.body,
-      user_id: req.user["cognito:username"],
       quarter: `${req.body.quarter}`.toUpperCase()
     }, {
-      where: { id: req.params.id }
+      where: {
+        id: req.params.id,
+        user_id: req.user["cognito:username"]
+      }
     });
     res
       .send({
