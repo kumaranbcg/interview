@@ -29,7 +29,7 @@ router.get("/", function (req, res) {
 });
 // define the about route
 router.get("/authenticated", authentication.verify, function (req, res) {
-  res.send("Authenticated!");
+  res.send(req.user);
 });
 
 router.use("/auth", authRouter);
