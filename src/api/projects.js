@@ -132,10 +132,9 @@ router.put("/:id", async (req, res, next) => {
 
 router.delete("/:id", async (req, res, next) => {
   try {
-    let data = await Projects.findOne({
+    let data = await Projects.destroy({
       where: {
         id: req.params.id,
-        user_id: req.user["cognito:username"]
       }
     });
     if (!data) {
