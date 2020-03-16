@@ -6,18 +6,26 @@ const DATE_FORMAT = 'YYYY-MM-DD';
 const { sequelize } = require("../lib/db");
 
 const { QueryTypes } = require("sequelize");
+const { Projects } = require("../lib/db");
+const { Op } = require("sequelize");
 
 
 router.get('/camera-list', async (req, res) => {
   try {
     const { engine = 'dump-truck' } = req.query;
 
-    let project = await sequelize.query("SELECT * FROM projects where period_from <= CURDATE() AND period_to >= CURDATE()", {
-      type: QueryTypes.SELECT
-    });
-
-    project = project[0];
-
+    let project = await Projects.findOne({
+      user_id: [req.user.username, req.user.created_by],
+      [Op.and]: [{
+        period_from: {
+          [Op.lte]: moment().format(DATE_FORMAT)
+        }
+      }, {
+        period_to: {
+          [Op.gte]: moment().format(DATE_FORMAT)
+        }
+      }]
+    })
     if (!project) {
       project = {
         period_from: moment().format(DATE_FORMAT),
@@ -55,13 +63,18 @@ router.get('/progress', async (req, res) => {
 
     const { period_from, period_to, engine = 'dump-truck' } = req.query;
 
-    let project = await sequelize.query("SELECT * FROM projects where period_from <= :period_from AND period_to >= :period_to", {
-      replacements: { period_from, period_to },
-      type: QueryTypes.SELECT
-    });
-
-    project = project[0];
-
+    let project = await Projects.findOne({
+      user_id: [req.user.username, req.user.created_by],
+      [Op.and]: [{
+        period_from: {
+          [Op.lte]: moment().format(DATE_FORMAT)
+        }
+      }, {
+        period_to: {
+          [Op.gte]: moment().format(DATE_FORMAT)
+        }
+      }]
+    })
     if (!project) {
       project = {
         period_from: moment().format(DATE_FORMAT),
@@ -70,6 +83,7 @@ router.get('/progress', async (req, res) => {
         target: 1
       }
     }
+
 
     const { target, capacity } = project;
     const username = req.user["cognito:username"];
@@ -165,12 +179,18 @@ router.get('/summary', async (req, res) => {
     const { engine = 'dump-truck' } = req.query;
     const username = req.user["cognito:username"];
 
-    let project = await sequelize.query("SELECT * FROM projects where period_from <= CURDATE() AND period_to >= CURDATE()", {
-      type: QueryTypes.SELECT
-    });
-
-    project = project[0];
-
+    let project = await Projects.findOne({
+      user_id: [req.user.username, req.user.created_by],
+      [Op.and]: [{
+        period_from: {
+          [Op.lte]: moment().format(DATE_FORMAT)
+        }
+      }, {
+        period_to: {
+          [Op.gte]: moment().format(DATE_FORMAT)
+        }
+      }]
+    })
     if (!project) {
       project = {
         period_from: moment().format(DATE_FORMAT),
@@ -179,6 +199,8 @@ router.get('/summary', async (req, res) => {
         target: 1
       }
     }
+
+
     const { period_from, period_to, target, capacity } = project;
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where username=:username AND  alert = '1' AND engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to", {
@@ -398,21 +420,28 @@ router.get('/soil-removed', async (req, res) => {
     const { period_from, period_to, monitor_id = '', engine = 'dump-truck' } = req.query;
     const username = req.user["cognito:username"];
 
-    let project = await sequelize.query("SELECT * FROM projects where period_from <= :period_from AND period_to >= :period_to", {
-      replacements: { period_from, period_to },
-      type: QueryTypes.SELECT
-    });
-
-    project = project[0];
-
+    let project = await Projects.findOne({
+      user_id: [req.user.username, req.user.created_by],
+      [Op.and]: [{
+        period_from: {
+          [Op.lte]: moment().format(DATE_FORMAT)
+        }
+      }, {
+        period_to: {
+          [Op.gte]: moment().format(DATE_FORMAT)
+        }
+      }]
+    })
     if (!project) {
       project = {
-        period_from,
-        period_to,
+        period_from: moment().format(DATE_FORMAT),
+        period_to: moment().format(DATE_FORMAT),
         capacity: 1,
         target: 1
       }
     }
+
+
     const { capacity } = project;
 
     const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where username=:username AND engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
