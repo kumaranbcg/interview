@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       rtmp_uri: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
       play_from_source: {
         type: DataTypes.BOOLEAN

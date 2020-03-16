@@ -39,18 +39,18 @@ socket.on('connect', async () => {
   }, 1000)
 
 
-  // setTimeout(async () => {
-  //   console.log('disconnect')
-  //   socket.disconnect();
-  //   // If any detection found send the video url or image url with socket id information and engine type along with camera id
-  //   await axios.post(`${URL}/api/admin/detection/incoming`, {
-  //     "engine": "danger-zone",
-  //     "monitor_id": monitor_id,
-  //     "socket_id": socket_id,
-  //     "video_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-  //     "image_url": "https://media.gettyimages.com/photos/high-angle-view-of-people-on-street-picture-id973190966?s=2048x2048"
-  //   });
-  // }, process.env.TIMEOUT || 60000)
+  setTimeout(async () => {
+    console.log('disconnect')
+    socket.disconnect();
+    // If any detection found send the video url or image url with socket id information and engine type along with camera id
+    await axios.post(`${URL}/api/admin/detection/incoming`, {
+      "engine": "danger-zone",
+      "monitor_id": monitor_id,
+      "socket_id": socket_id,
+      "video_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      "image_url": "https://media.gettyimages.com/photos/high-angle-view-of-people-on-street-picture-id973190966?s=2048x2048"
+    }).catch(c)
+  }, process.env.TIMEOUT || 60000)
 
 });
 
