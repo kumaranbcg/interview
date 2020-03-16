@@ -137,10 +137,9 @@ router.delete("/:id", async (req, res, next) => {
         id: req.params.id,
       }
     });
-    if (!data) {
-      throw new Error("No Project Found");
-    }
-    res.send(data);
+    res.send({
+      message: 'Removed project'
+    });
   } catch (err) {
     console.log(err);
     res
