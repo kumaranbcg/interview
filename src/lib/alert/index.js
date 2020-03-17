@@ -52,11 +52,11 @@ module.exports = {
 
               if (config.sms && phone) {
                 smsCount += 1;
-                // sms.send({
-                //   alert,
-                //   url,
-                //   phones: [phone]
-                // });
+                sms.send({
+                  alert,
+                  url,
+                  phones: [phone]
+                });
               }
             } catch (error) {
               reject(error);
