@@ -32,7 +32,7 @@ module.exports = {
       if (detection_id) {
         const detection = await Detection.findOne({
           where: {
-            id: body.detection_id
+            id: detection_id
           }
         });
         if (!detection) {
