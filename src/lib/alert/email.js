@@ -27,7 +27,7 @@ const email = new Email({
 });
 
 module.exports = {
-  send: ({ template, alert, addresses = ["zq.donald.chong@gmail.com", "Joergen@viact.ai"], ...rest }) => {
+  send: ({ template, alert, addresses = ["zq.donald.chong@gmail.com", "Joergen@viact.ai"],company_code, ...rest }) => {
     switch (alert.engine) {
       case "helmet":
         alert.detectionType = "Helmet Detection";
@@ -61,11 +61,11 @@ module.exports = {
         })
         .then(async (response) => {
           console.log(response)
-          await common.saveLog("b5a3fc33-deec-4509-9f0d-72be1ca877b6", alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Success, constants.AlertType.Email)
+          await common.saveLog(company_code, alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Success, constants.AlertType.Email)
         })
         .catch(async (error) => {
           console.log(error)
-          await common.saveLog("b5a3fc33-deec-4509-9f0d-72be1ca877b6", alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Faile, constants.AlertType.Email)
+          await common.saveLog(company_code, alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Faile, constants.AlertType.Email)
         });
     });
   }

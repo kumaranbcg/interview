@@ -11,7 +11,7 @@ const authToken = "6f05338cdc990f3ee3de7b0e23a27eff";
 const client = require("twilio")(accountSid, authToken);
 
 module.exports = {
-  send: async ({ alert, url, phones = ["+85259231994"] }) => {
+  send: async ({ alert, url, phones = ["+85259231994"], company_code }) => {
     let detectionType = "";
     switch (alert.engine) {
       case "helmet":
@@ -66,9 +66,9 @@ module.exports = {
         .then(async message => {
           console.log(message.sid);
           await common.saveLog(
-            "b5a3fc33-deec-4509-9f0d-72be1ca877b6",
+            company_code,
             alert.id,
-            "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c",
+            " ",
             number,
             constants.AlertMessage.Success,
             constants.AlertType.SMS
@@ -77,9 +77,9 @@ module.exports = {
         .catch(async error => {
           console.log(error);
           await common.saveLog(
-            "b5a3fc33-deec-4509-9f0d-72be1ca877b6",
+            company_code,
             alert.id,
-            "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c",
+            " ",
             number,
             constants.AlertMessage.Faile,
             constants.AlertType.SMS
