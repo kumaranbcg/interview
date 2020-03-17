@@ -1,5 +1,7 @@
 var dotenv = require("dotenv");
 const axios = require("axios");
+const common = require("./common");
+const constants = require("../../configs/constants");
 //dotenv.config({ path: "../../../.env" });
 
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -43,7 +45,7 @@ module.exports = {
       .then(response => {
         shortenUrl = response.data.link;
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log("Post Error : " + error);
       });
     //let phoneNumber = "+852" + alert.output_address;
@@ -61,7 +63,28 @@ module.exports = {
           from: "+13526334065",
           to: number
         })
-        .then(message => console.log(message.sid));
+        .then(async message => {
+          console.log(message.sid);
+          await common.saveLog(
+            "b5a3fc33-deec-4509-9f0d-72be1ca877b6",
+            alert.id,
+            "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c",
+            number,
+            constants.AlertMessage.Success,
+            constants.AlertType.SMS
+          );
+        })
+        .catch(async error => {
+          console.log(error);
+          await common.saveLog(
+            "b5a3fc33-deec-4509-9f0d-72be1ca877b6",
+            alert.id,
+            "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c",
+            number,
+            constants.AlertMessage.Faile,
+            constants.AlertType.SMS
+          );
+        });
     });
     return;
   }

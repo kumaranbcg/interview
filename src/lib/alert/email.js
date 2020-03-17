@@ -2,6 +2,8 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 const Email = require("email-templates");
 const path = require("path");
+const common = require('./common')
+const constants = require('../../configs/constants')
 // rcnnyolom2detcenternet@gmail.com,gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
 // const EMAIL_USER = "info@viact.ai";
 // const EMAIL_PASSWORD = "SKrKRcGKeGGpDDD";
@@ -57,8 +59,14 @@ module.exports = {
             ...rest
           }
         })
-        .then(console.log)
-        .catch(console.error);
+        .then(async (response) => {
+          console.log(response)
+          await common.saveLog("b5a3fc33-deec-4509-9f0d-72be1ca877b6", alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Success, constants.AlertType.Email)
+        })
+        .catch(async (error) => {
+          console.log(error)
+          await common.saveLog("b5a3fc33-deec-4509-9f0d-72be1ca877b6", alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Faile, constants.AlertType.Email)
+        });
     });
   }
 };
