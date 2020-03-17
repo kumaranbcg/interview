@@ -14,7 +14,7 @@ router.get('/machines', async (req, res) => {
     const { engine = 'danger-zone' } = req.query;
     const username = req.user["cognito:username"];
 
-    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detectionsview`  WHERE  username=:username AND alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a WHERE user_id=:username) a GROUP BY a.machine_id ORDER BY time_in ASC, time_out DESC",
+    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detectionsview`  WHERE  username=:username AND alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a WHERE user_id=:username and machine_id IS NOT NULL) a GROUP BY a.machine_id ORDER BY time_in ASC, time_out DESC",
       {
         replacements: { engine, username },
         type: QueryTypes.SELECT
