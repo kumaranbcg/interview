@@ -18,4 +18,4 @@ RUN npm install
 COPY . .
 
 EXPOSE 5000
-CMD [ "node", "src/local.js" ]
+CMD [ "node", "src/local.js" ] 
