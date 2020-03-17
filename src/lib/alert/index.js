@@ -2,6 +2,9 @@ const dingtalk = require("./dingtalk");
 const email = require("./email");
 const sms = require("./sms")
 const { USER_POOL, cognitoidentityserviceprovider } = require('../cognito')
+const {Company, NotificationSentLog} = require("../db");
+const { Op } = require("sequelize");
+const moment = require('moment');
 
 var params = {
   UserPoolId: USER_POOL
@@ -20,10 +23,20 @@ module.exports = {
           reject(err);
           return;
         }
-        data.Users.forEach(user => {
-          let notification_type;
-          let emailValue;
-          let phone;
+        data.Users.forEach(async (user) => {
+          let notification_type,
+            emailValue,
+            phone,
+            company,
+            logs,
+            company_code,
+            smsLogsCount = 0,
+            emailLogsCount = 0,
+            sms_frequency = 5,
+            email_frequency = 100,
+            sms_sent = 0,
+            email_sent = 0;
+
 
           user['Attributes'].forEach(obj => {
             if (obj.Name === 'custom:notification_type') {
@@ -35,27 +48,67 @@ module.exports = {
             if (obj.Name === 'email') {
               emailValue = obj.Value
             }
+            if (obj.Name === 'custom:company_code') {
+              company_code = obj.Value
+            }
           });
+
+          try {
+            company = await Company.findOne({
+              where: {
+                company_code: company_code
+              }
+            });
+            logs = await NotificationSentLog.findAll({
+              where:{
+                user_id:company_code,
+                created_at:{[Op.between]: [moment().format("YYYY-MM-DD HH:00:00"), moment().add(1,"hour").format("YYYY-MM-DD HH:00:00")]}
+              }
+            })
+          } catch (err) {
+            console.log(err);
+          }
+
+          if(company){
+            let data = company.dataValues;
+            sms_frequency = data.sms_frequency;
+            email_frequency = data.email_frequency;
+          }
+
+          if(logs){
+            logs.forEach(sentLog => {
+              const log = sentLog.dataValues;
+              if (log.output_type === "email") emailLogsCount += 1;
+              else smsLogsCount += 1;
+            })
+          }
+
           if (notification_type) {
             try {
               const config = JSON.parse(notification_type);
-              if (config.email && emailValue) {
+              if (
+                config.email &&
+                emailValue &&
+                emailLogsCount < email_frequency
+              ) {
                 emailCount += 1;
                 email.send({
                   template: "alert",
                   alert,
                   addresses: [emailValue],
                   image,
+                  company_code: company_code,
                   url
                 });
               }
 
-              if (config.sms && phone) {
+              if (config.sms && phone && smsLogsCount < sms_frequency) {
                 smsCount += 1;
                 sms.send({
                   alert,
                   url,
-                  phones: [phone]
+                  phones: [phone],
+                  company_code: company_code
                 });
               }
             } catch (error) {

@@ -2,6 +2,8 @@ const nodemailer = require("nodemailer");
 const moment = require("moment");
 const Email = require("email-templates");
 const path = require("path");
+const common = require('./common')
+const constants = require('../../configs/constants')
 // rcnnyolom2detcenternet@gmail.com,gary.ng@customindz.com,harry.ng@dixlpm.com.hk,buildmindht@outlook.com,izaac.leung@customindz.com,hc@botzup.com,jurge92@icloud.com,zq.donald.chong@gmail.com
 // const EMAIL_USER = "info@viact.ai";
 // const EMAIL_PASSWORD = "SKrKRcGKeGGpDDD";
@@ -25,7 +27,7 @@ const email = new Email({
 });
 
 module.exports = {
-  send: ({ template, alert, addresses = ["zq.donald.chong@gmail.com", "Joergen@viact.ai"], ...rest }) => {
+  send: ({ template, alert, addresses = ["zq.donald.chong@gmail.com", "Joergen@viact.ai"],company_code, ...rest }) => {
     switch (alert.engine) {
       case "helmet":
         alert.detectionType = "Helmet Detection";
@@ -57,8 +59,14 @@ module.exports = {
             ...rest
           }
         })
-        .then(console.log)
-        .catch(console.error);
+        .then(async (response) => {
+          console.log(response)
+          await common.saveLog(company_code, alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Success, constants.AlertType.Email)
+        })
+        .catch(async (error) => {
+          console.log(error)
+          await common.saveLog(company_code, alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Faile, constants.AlertType.Email)
+        });
     });
   }
 };
