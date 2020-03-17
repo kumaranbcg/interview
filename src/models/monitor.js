@@ -48,6 +48,10 @@ module.exports = (sequelize, DataTypes) => {
       socket_id: {
         type: DataTypes.STRING
       },
+      ys_token: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
       time_in: {
         type: DataTypes.DATE
       },
