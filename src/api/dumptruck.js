@@ -15,16 +15,18 @@ router.get('/camera-list', async (req, res) => {
     const { engine = 'dump-truck' } = req.query;
 
     let project = await Projects.findOne({
-      user_id: [req.user.username, req.user.created_by],
-      [Op.and]: [{
-        period_from: {
-          [Op.lte]: moment().format(DATE_FORMAT)
-        }
-      }, {
-        period_to: {
-          [Op.gte]: moment().format(DATE_FORMAT)
-        }
-      }]
+      where: {
+        user_id: [req.user.username, req.user.created_by],
+        [Op.and]: [{
+          period_from: {
+            [Op.lte]: moment().format(DATE_FORMAT)
+          }
+        }, {
+          period_to: {
+            [Op.gte]: moment().format(DATE_FORMAT)
+          }
+        }]
+      }
     })
     if (!project) {
       project = {
@@ -64,16 +66,18 @@ router.get('/progress', async (req, res) => {
     const { period_from, period_to, engine = 'dump-truck' } = req.query;
 
     let project = await Projects.findOne({
-      user_id: [req.user.username, req.user.created_by],
-      [Op.and]: [{
-        period_from: {
-          [Op.lte]: moment().format(DATE_FORMAT)
-        }
-      }, {
-        period_to: {
-          [Op.gte]: moment().format(DATE_FORMAT)
-        }
-      }]
+      where: {
+        user_id: [req.user.username, req.user.created_by],
+        [Op.and]: [{
+          period_from: {
+            [Op.lte]: moment().format(DATE_FORMAT)
+          }
+        }, {
+          period_to: {
+            [Op.gte]: moment().format(DATE_FORMAT)
+          }
+        }]
+      }
     })
     if (!project) {
       project = {
@@ -180,16 +184,18 @@ router.get('/summary', async (req, res) => {
     const username = req.user["cognito:username"];
 
     let project = await Projects.findOne({
-      user_id: [req.user.username, req.user.created_by],
-      [Op.and]: [{
-        period_from: {
-          [Op.lte]: moment().format(DATE_FORMAT)
-        }
-      }, {
-        period_to: {
-          [Op.gte]: moment().format(DATE_FORMAT)
-        }
-      }]
+      where: {
+        user_id: [req.user.username, req.user.created_by],
+        [Op.and]: [{
+          period_from: {
+            [Op.lte]: moment().format(DATE_FORMAT)
+          }
+        }, {
+          period_to: {
+            [Op.gte]: moment().format(DATE_FORMAT)
+          }
+        }]
+      }
     })
     if (!project) {
       project = {
@@ -421,16 +427,18 @@ router.get('/soil-removed', async (req, res) => {
     const username = req.user["cognito:username"];
 
     let project = await Projects.findOne({
-      user_id: [req.user.username, req.user.created_by],
-      [Op.and]: [{
-        period_from: {
-          [Op.lte]: moment().format(DATE_FORMAT)
-        }
-      }, {
-        period_to: {
-          [Op.gte]: moment().format(DATE_FORMAT)
-        }
-      }]
+      where: {
+        user_id: [req.user.username, req.user.created_by],
+        [Op.and]: [{
+          period_from: {
+            [Op.lte]: moment().format(DATE_FORMAT)
+          }
+        }, {
+          period_to: {
+            [Op.gte]: moment().format(DATE_FORMAT)
+          }
+        }]
+      }
     })
     if (!project) {
       project = {
