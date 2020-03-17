@@ -95,21 +95,16 @@ router.post("/incoming", async (req, res) => {
       engine
     };
     await Detection.create(newDetection);
-
-    res.status(200).json({
-      id: newDetection.id,
-      message: "Successfully Added Detection"
-    });
+    let alertsResult = {};
 
     if (newDetection.alert) {
+
       console.log('alert detected')
 
       try {
-        const alert = await Alert.findOne({
+        const alert = await Detection.findOne({
           where: {
-            monitor_id,
-            engine,
-            alert_type: "Trigger"
+            id: newDetection.id,
           },
           include: [
             {
@@ -120,40 +115,40 @@ router.post("/incoming", async (req, res) => {
           ]
         });
 
-        if (!alert) {
-          return;
-        }
-
-        const recentLog = await AlertLog.findOne({
-          where: {
-            createdAt: {
-              [Op.gte]: moment()
-                .subtract(1, "minutes")
-                .toDate()
-            },
-            alert_id: alert.id
-          }
+        await AlertLog.create({
+          id: uuidv4(),
         });
-        if (!recentLog) {
-          await AlertLog.create({
-            id: uuidv4(),
-            alert_id: alert.id
-          });
-
-          const alerts = [alert];
-
-          alertUtil.do(alerts, {
-            image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-            url: `http://app.viact.ai/#/report/${monitor_id}/detection/${uuid}`
-          });
-
-          console.log(`Made an alert at ${new Date().toString()}!`);
+        let url;
+        switch (engine) {
+          case 'dump-truck':
+            url = 'http://hhdt1.viact.ai/#/user/dashboard/dump-truck/1/truck-activities';
+            break;
+          case 'danger-zone':
+            url = 'http://hhdt1.viact.ai/#/user/dashboard/danger-zone-2';
+            break;
+          default:
+            url = 'http://hhdt1.viact.ai/#/user/dashboard/';
+            break;
         }
+        alertsResult = await alertUtil.do({
+          image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
+          url
+        }, alert);
+
+        console.log(`Made an alert at ${new Date().toString()}!`);
       } catch (err) {
         console.log("Alert error");
         console.log(err.message);
       }
     }
+
+
+    res.status(200).json({
+      id: newDetection.id,
+      ...alertsResult,
+      message: "Successfully Added Detection"
+    });
+
   } catch (err) {
     if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
       res

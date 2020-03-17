@@ -174,18 +174,20 @@ router.post("/", async (req, res, next) => {
     const MONITOR_ID = req.body.monitor_id || req.body.id || shortid.generate();
 
     const newMonitor = {
+      user_id: req.user ? req.user["cognito:username"] : 'windht',
       ...req.body,
       id: MONITOR_ID,
-      user_id: 'admin',
       name: req.body.name || "Default Monitor Name",
       connection_uri: req.body.connection_uri,
+      rtmp_uri: req.body.rtmp_uri,
       play_from_source: false,
+      ys_token:req.body.ys_token || "",
       graph: [],
       engines: [],
       type: req.body.type || "normal",
     };
 
-    console.log(newMonitor)
+    //console.log(newMonitor)
 
     await Monitor.create(newMonitor);
 

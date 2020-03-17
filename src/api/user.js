@@ -4,13 +4,10 @@ const router = express.Router();
 
 const fs = require('fs');
 const path = require('path');
-const AWS = require('../lib/aws')
-const s3 = new AWS.S3();
-const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
-const USER_POOL = 'ap-southeast-1_vUjO2Mocs';
-const DEFAULT_PIC = 'https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwjduaSVu6jnAhXEpOkKHdGBCW4QjRx6BAgBEAQ&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fuser-image-png%2F&psig=AOvVaw2_q_xmciS4aHdKUrzYRAD4&ust=1580375362869936'
-const MONITOR_ZOOM_CONFIG = path.join(__dirname, './../../', 'monitor_level.json');
+const { USER_POOL, cognitoidentityserviceprovider } = require('../lib/cognito')
+const s3 = require('../lib/upload');
 
+const DEFAULT_PIC = 'https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwjduaSVu6jnAhXEpOkKHdGBCW4QjRx6BAgBEAQ&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fuser-image-png%2F&psig=AOvVaw2_q_xmciS4aHdKUrzYRAD4&ust=1580375362869936'
 
 router.get("/", async (req, res, next) => {
 
@@ -34,7 +31,9 @@ router.get("/", async (req, res, next) => {
           response[obj.Name.replace('custom:', '')] = obj.Value
         })
         return response;
-      });
+      }).filter(user => {
+        return user.created_by === req.user['cognito:username']
+      })
       res
         .send(responseData)
         .status(200)
@@ -103,6 +102,10 @@ router.post("/", async (req, res, next) => {
           Name: 'custom:role',
           Value: role
         },
+        {
+          Name: 'custom:created_by',
+          Value: req.user["cognito:username"]
+        },
       ],
     };
     cognitoidentityserviceprovider.adminCreateUser(params, function (err, data) {
@@ -118,6 +121,52 @@ router.post("/", async (req, res, next) => {
 
   } catch (err) {
     console.log(err);
+    res
+      .status(400)
+      .send(err)
+      .end();
+  }
+});
+
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const params = {
+      UserPoolId: USER_POOL, /* required */
+      Filter: "username = \"" + req.params.id + "\"",
+      // Limit: 'NUMBER_VALUE',
+      // PaginationToken: 'STRING_VALUE'
+    };
+    cognitoidentityserviceprovider.listUsers(params, function (err, data) {
+      if (err) return res
+        .status(400)
+        .send(err)
+        .end();
+
+      const responseData = data.Users.map(user => {
+        const response = {
+          username: user.Username
+        }
+        user.Attributes.forEach(obj => {
+          response[obj.Name.replace('custom:', '')] = obj.Value
+        })
+        return response;
+      })
+      if (responseData.length) {
+        res
+          .json(responseData[0])
+          .status(200)
+          .end();
+      } else {
+
+        res
+          .json({ message: 'User data not found' })
+          .status(404)
+          .end();
+      }
+    });
+
+  } catch (err) {
     res
       .status(400)
       .send(err)
@@ -202,7 +251,7 @@ router.delete("/:id", async (req, res, next) => {
         .end();
       res
         .json({
-          message: "Successfully Deleted User"
+          data,
         })
         .status(200)
         .end();
@@ -220,18 +269,19 @@ router.post('/upload', async (req, res) => {
   try {
 
     const params = {
-      Bucket: 'customindz-profiles',
+      Bucket: 'customindz-shinobi',
       Key: req.body.id,
       ACL: "public-read",
       Body: req.files.file.data
     };
     s3.upload(params, (s3Err, data) => {
-      if (s3Err) return res
-        .status(400)
-        .send(err)
-        .end();
-      console.log()
-      res
+      if (s3Err) {
+        console.log(s3Err)
+        return res.status(400)
+          .send(s3Err.message)
+          .end();
+      }
+      return res
         .json({
           message: 'File uploaded successfully',
           data: data.Location
@@ -244,7 +294,9 @@ router.post('/upload', async (req, res) => {
   } catch (err) {
     res
       .status(400)
-      .send(err)
+      .send({
+        message: err.message
+      })
       .end();
   }
 })
