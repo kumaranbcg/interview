@@ -181,6 +181,7 @@ router.post("/", async (req, res, next) => {
       connection_uri: req.body.connection_uri,
       rtmp_uri: req.body.rtmp_uri,
       play_from_source: false,
+      ys_token:req.body.ys_token || "",
       graph: [],
       engines: [],
       type: req.body.type || "normal",
