@@ -4,6 +4,7 @@ const moment = require('moment');
 const DATE_FORMAT = 'YYYY-MM-DD';
 
 const { sequelize } = require("../lib/db");
+const { paginate } = require("../lib/utils");
 
 const { QueryTypes } = require("sequelize");
 
@@ -177,7 +178,7 @@ router.get('/detections', async (req, res) => {
   try {
 
     let detections;
-    const { period_from, period_to, engine = 'danger-zone', monitor_id } = req.query;
+    const { period_from, period_to, engine = 'danger-zone', monitor_id, page_size = 10, page_number = 1 } = req.query;
     const username = req.user["cognito:username"];
 
     console.log(username, engine, monitor_id)
@@ -213,7 +214,7 @@ router.get('/detections', async (req, res) => {
 
     res
       .send({
-        detections,
+        detections: paginate(detections, page_size, page_number),
       })
       .status(200)
       .end();
