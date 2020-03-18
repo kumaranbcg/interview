@@ -61,11 +61,11 @@ module.exports = {
         })
         .then(async (response) => {
           console.log(response)
-          await common.saveLog(company_code, alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Success, constants.AlertType.Email)
+          await common.saveLog(company_code, " ", alert.id,  address, constants.AlertMessage.Success, constants.AlertType.Email, " ")
         })
         .catch(async (error) => {
           console.log(error)
-          await common.saveLog(company_code, alert.id, "fe9fcabf-1f3a-4631-a9d8-4f7e6103487c", address, constants.AlertMessage.Faile, constants.AlertType.Email)
+          await common.saveLog(company_code, " ", alert.id, address, constants.AlertMessage.Faile, constants.AlertType.Email, error.response)
         });
     });
   }
