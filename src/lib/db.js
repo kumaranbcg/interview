@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === "local") {
         timezone: '+08:00'
     });
 } else {
-    sequelize = new Sequelize("customindz", "customindz", "Customindz2019", {
+    sequelize = new Sequelize("customindz_dev", "customindz", "Customindz2019", {
         dialect: "mysql",
         host: "customindz.cfvqlp7ufmv9.ap-east-1.rds.amazonaws.com",
         logging: false,

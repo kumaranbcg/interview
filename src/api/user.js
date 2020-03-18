@@ -7,7 +7,7 @@ const path = require('path');
 const { USER_POOL, cognitoidentityserviceprovider } = require('../lib/cognito')
 const s3 = require('../lib/upload');
 
-const DEFAULT_PIC = 'https://www.google.com/url?sa=i&source=images&cd=&ved=2ahUKEwjduaSVu6jnAhXEpOkKHdGBCW4QjRx6BAgBEAQ&url=https%3A%2F%2Fya-webdesign.com%2Fexplore%2Fuser-image-png%2F&psig=AOvVaw2_q_xmciS4aHdKUrzYRAD4&ust=1580375362869936'
+const DEFAULT_PIC = 'https://i.picsum.photos/id/500/500/500.jpg'
 
 router.get("/", async (req, res, next) => {
 
@@ -175,7 +175,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 router.put("/:id", async (req, res, next) => {
-  const { firstname, surname, email, phone = "0", role = 'user', profile_pic = DEFAULT_PIC, permissions = "[]", report_frequency = "none", notification_type = "none" } = req.body;
+  const { firstname, surname, email, phone = "0", role = 'user', profile_pic = DEFAULT_PIC, permissions = "[]", report_frequency = "none", notification_type = "none", company_code, created_by = req.user['cognito:username'] } = req.body;
 
   try {
     var params = {
@@ -215,6 +215,10 @@ router.put("/:id", async (req, res, next) => {
         {
           Name: 'custom:role',
           Value: role
+        },
+        {
+          Name: 'custom:company_code',
+          Value: company_code
         },
       ],
       UserPoolId: USER_POOL,

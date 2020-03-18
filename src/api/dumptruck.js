@@ -16,7 +16,7 @@ router.get('/camera-list', async (req, res) => {
 
     let project = await Projects.findOne({
       where: {
-        user_id: [req.user.username, req.user.created_by],
+        company_code: [req.user.company_code],
         [Op.and]: [{
           period_from: {
             [Op.lte]: moment().format(DATE_FORMAT)
@@ -67,7 +67,7 @@ router.get('/progress', async (req, res) => {
 
     let project = await Projects.findOne({
       where: {
-        user_id: [req.user.username, req.user.created_by],
+       company_code: [req.user.company_code],
         [Op.and]: [{
           period_from: {
             [Op.lte]: moment().format(DATE_FORMAT)
@@ -185,7 +185,7 @@ router.get('/summary', async (req, res) => {
 
     let project = await Projects.findOne({
       where: {
-        user_id: [req.user.username, req.user.created_by],
+       company_code: [req.user.company_code],
         [Op.and]: [{
           period_from: {
             [Op.lte]: moment().format(DATE_FORMAT)
@@ -449,7 +449,7 @@ router.get('/soil-removed', async (req, res) => {
 
     let project = await Projects.findOne({
       where: {
-        user_id: [req.user.username, req.user.created_by],
+       company_code: [req.user.company_code],
         [Op.and]: [{
           period_from: {
             [Op.lte]: moment().format(DATE_FORMAT)

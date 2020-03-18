@@ -33,11 +33,10 @@ router.get('/', async (req, res) => {
         return response;
       })
 
-      // console.log(users[0]);
       const query = {
         order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
         where: {
-          user_id: [users[0].username,users[0].created_by]
+          company_code: [req.user.company_code]
         }
       };
 
@@ -112,7 +111,7 @@ router.post('/', async (req, res) => {
     const data = await Projects.create({
       ...req.body,
       id: shortid(),
-      user_id: req.user["cognito:username"],
+      company_code: [req.user.company_code],
       quarter: `${req.body.quarter}`.toUpperCase(),
     });
 
@@ -138,7 +137,7 @@ router.put("/:id", async (req, res, next) => {
     }, {
       where: {
         id: req.params.id,
-        user_id: req.user["cognito:username"]
+        company_code: [req.user.company_code]
       }
     });
     res

@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
   try {
     const data = await Monitor.findAll({
       where: {
-        user_id: req.user["cognito:username"]
+        company_code: [req.user.company_code]
       }
     });
     res
@@ -174,7 +174,7 @@ router.post("/", async (req, res, next) => {
     const MONITOR_ID = req.body.monitor_id || req.body.id || shortid.generate();
 
     const newMonitor = {
-      user_id: req.user ? req.user["cognito:username"] : 'windht',
+      company_code: req.user.company_code || req.body.company_code || 'viact',
       ...req.body,
       id: MONITOR_ID,
       name: req.body.name || "Default Monitor Name",
