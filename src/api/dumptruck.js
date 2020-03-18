@@ -278,6 +278,8 @@ router.get('/summary', async (req, res) => {
     estimatedDays = Number(estimatedDays > -1 ? estimatedDays : 0).toFixed(0);
 
     let recommendedTrucksPerDay = Number((remaining / capacity) / endsBy).toFixed(0);
+    let estimatedTrucks = remaining / capacity;
+    let estimatedTrucksPerDay = estimatedTrucks / estimatedDays;
 
     res
       .send({
@@ -289,6 +291,8 @@ router.get('/summary', async (req, res) => {
         dailyRemovalCapacity: recommendedTrucksPerDay * capacity,
         estimatedDate: moment().add(estimatedDays, 'days'),
         estimatedDays,
+        estimatedTrucks,
+        estimatedTrucksPerDay,
         trucksTotal,
         activeDays: activeDays.length,
         totalRemoved,
