@@ -239,8 +239,8 @@ router.get('/summary', async (req, res) => {
       return obj;
     })
 
-    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where username=:username AND  engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
-      replacements: { engine, monitor_id, username },
+    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where username=:username AND  engine=:engine AND DATE(created_at) = CURDATE() ORDER BY created_at", {
+      replacements: { engine, username },
       type: QueryTypes.SELECT
     });
 
