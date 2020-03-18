@@ -32,7 +32,7 @@ router.get("/", async (req, res, next) => {
         })
         return response;
       }).filter(user => {
-        return user.created_by === req.user['cognito:username'] || Boolean(req.query.all)
+        return user.company_code === req.user.company_code || Boolean(req.query.all)
       })
       res
         .send(responseData)
@@ -175,7 +175,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 router.put("/:id", async (req, res, next) => {
-  const { firstname, surname, email, phone = "0", role = 'user', profile_pic = DEFAULT_PIC, permissions = "[]", report_frequency = "none", notification_type = "none", company_code, created_by = req.user['cognito:username'] } = req.body;
+  const { firstname, surname, email, phone = "0", role = 'user', profile_pic = DEFAULT_PIC, permissions = "[]", report_frequency = "none", notification_type = "none", company_code } = req.body;
 
   try {
     var params = {

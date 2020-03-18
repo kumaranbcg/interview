@@ -10,66 +10,42 @@ const { USER_POOL, cognitoidentityserviceprovider } = require('../lib/cognito')
 
 router.get('/', async (req, res) => {
   try {
-    var params = {
-      UserPoolId: USER_POOL,
-      Filter: "email = \"" + req.user.email + "\"",
+    const query = {
+      order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
+      where: {
+        company_code: [req.user.company_code]
+      }
     };
-    cognitoidentityserviceprovider.listUsers(params, async function (err, data) {
-      if (err) {
-        console.log(err)
-        return res
-          .status(400)
-          .send(err)
-          .end();
+
+    if (req.query.limit) {
+      query.limit = parseInt(req.query.limit);
+      if (req.query.page) {
+        query.offset =
+          (parseInt(req.query.page) - 1) * parseInt(req.query.limit);
       }
+    }
 
-      const users = data.Users.map(user => {
-        const response = {
-          username: user.Username
-        }
-        user.Attributes.forEach(obj => {
-          response[obj.Name.replace('custom:', '')] = obj.Value
-        })
-        return response;
-      })
-
-      const query = {
-        order: [[req.query.orderBy || "createdAt", req.query.direction || "DESC"]],
-        where: {
-          company_code: [req.user.company_code]
-        }
+    if (req.query.start_timestamp) {
+      query.where.createdAt = {
+        [Op.gte]: new Date(parseInt(req.query.start_timestamp))
       };
-
-      if (req.query.limit) {
-        query.limit = parseInt(req.query.limit);
-        if (req.query.page) {
-          query.offset =
-            (parseInt(req.query.page) - 1) * parseInt(req.query.limit);
-        }
-      }
-
-      if (req.query.start_timestamp) {
+    }
+    if (req.query.end_timestamp) {
+      if (!query.where.createdAt) {
         query.where.createdAt = {
-          [Op.gte]: new Date(parseInt(req.query.start_timestamp))
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
+        };
+      } else {
+        query.where.createdAt = {
+          ...query.where.createdAt,
+          [Op.lte]: new Date(parseInt(req.query.end_timestamp))
         };
       }
-      if (req.query.end_timestamp) {
-        if (!query.where.createdAt) {
-          query.where.createdAt = {
-            [Op.lte]: new Date(parseInt(req.query.end_timestamp))
-          };
-        } else {
-          query.where.createdAt = {
-            ...query.where.createdAt,
-            [Op.lte]: new Date(parseInt(req.query.end_timestamp))
-          };
-        }
-      }
-      const projectsList = await Projects.findAndCountAll(query);
+    }
+    const projectsList = await Projects.findAndCountAll(query);
 
-      res.send(projectsList).end();
+    res.send(projectsList).end();
 
-    });
 
   } catch (err) {
     console.log(err);

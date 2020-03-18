@@ -16,7 +16,6 @@ const reportRouter = require("./report");
 const ysRouter = require("./ys");
 const pullerRouter = require("./puller");
 const pullerServerRouter = require("./puller-server");
-const authRouter = require("./auth");
 const userRouter = require("./user");
 const dangerzoneRouter = require("./dangerzone");
 const dumptruckRouter = require("./dumptruck");
@@ -33,7 +32,6 @@ router.get("/authenticated", authentication.verify, function (req, res) {
   res.send(req.user);
 });
 
-router.use("/auth", authRouter);
 router.use("/monitor", authentication.verifyMachine, monitorRouter);
 router.use("/dashboard", authentication.verify, dangerzoneRouter);
 router.use("/dashboard", authentication.verify, dumptruckRouter);
