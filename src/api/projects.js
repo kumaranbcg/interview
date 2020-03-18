@@ -87,7 +87,7 @@ router.post('/', async (req, res) => {
     const data = await Projects.create({
       ...req.body,
       id: shortid(),
-      company_code: [req.user.company_code],
+      company_code: req.user.company_code,
       quarter: `${req.body.quarter}`.toUpperCase(),
     });
 
