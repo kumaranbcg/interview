@@ -32,7 +32,7 @@ router.get("/", async (req, res, next) => {
         })
         return response;
       }).filter(user => {
-        return user.created_by === req.user['cognito:username']
+        return user.created_by === req.user['cognito:username'] || Boolean(req.query.all)
       })
       res
         .send(responseData)

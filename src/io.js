@@ -12,7 +12,6 @@ module.exports = server => {
 
     io.on("connection", async socket => {
       let monitor_id;
-      socket.emit('ping', '');
 
       socket.on('disconnect', async () => {
         console.log("LOG: just disconnected: " + socket.id)
@@ -30,6 +29,7 @@ module.exports = server => {
           }, {
             where: { id: monitor_id }
           });
+          socket.broadcast.emit('status-change');
         }
       })
 
@@ -39,6 +39,8 @@ module.exports = server => {
 
           monitor_id = data.monitor_id || data.id;;
           console.log('connected', socket.id, data.monitor_id)
+          socket.broadcast.emit('status-change');
+
           const socketLog = await Monitor.findOne({
             where: {
               socket_id: socket.id
