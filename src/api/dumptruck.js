@@ -239,11 +239,11 @@ router.get('/summary', async (req, res) => {
       return obj;
     })
 
-
-    const detectionsByDate = await sequelize.query("SELECT DATE(created_at) as date,COUNT(*) as count FROM detectionsview where username=:username AND engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to GROUP by DATE(created_at)", {
-      replacements: { period_from, period_to, engine, username },
+    const detectionsToday = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where username=:username AND  engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
+      replacements: { engine, monitor_id, username },
       type: QueryTypes.SELECT
     });
+
 
     const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where username=:username AND d.alert = '1' AND engine=:engine GROUP BY d.monitor_id",
       {
@@ -280,6 +280,9 @@ router.get('/summary', async (req, res) => {
     let recommendedTrucksPerDay = Number((remaining / capacity) / endsBy).toFixed(0);
     let estimatedTrucks = remaining / capacity;
     let estimatedTrucksPerDay = estimatedTrucks / estimatedDays;
+    let todayTrucks = detectionsToday[0].count;
+    let todayRemoved = todayTrucks * capacity;
+    let todayRemovedPercentage = Number(target ? todayRemoved / target * 100 : todayRemoved).toFixed(0);
 
     res
       .send({
@@ -293,6 +296,9 @@ router.get('/summary', async (req, res) => {
         estimatedDays,
         estimatedTrucks,
         estimatedTrucksPerDay,
+        todayTrucks,
+        todayRemoved,
+        todayRemovedPercentage,
         trucksTotal,
         activeDays: activeDays.length,
         totalRemoved,
