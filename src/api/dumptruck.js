@@ -262,7 +262,7 @@ router.get('/summary', async (req, res) => {
 
     const completedPercentage = Number(target ? totalRemoved / target * 100 : totalRemoved).toFixed(0);
 
-    const trucksDailyAverage = Number(trucksDailyAverageactiveDays.length ? trucksTotal / activeDays.length : 0).toFixed(0);
+    const trucksDailyAverage = Number(activeDays.length ? trucksTotal / activeDays.length : 0).toFixed(0);
 
     const dailyAverageRemoved = trucksDailyAverage * capacity;
 
