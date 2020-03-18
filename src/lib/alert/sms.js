@@ -26,6 +26,9 @@ module.exports = {
       case "dump-truck":
         detectionType = "Dump truck";
         break;
+      default:
+        detectionType = "None";
+        break;
     }
     let shortenUrl;
     await axios({
@@ -67,22 +70,24 @@ module.exports = {
           console.log(message.sid);
           await common.saveLog(
             company_code,
-            alert.id,
             " ",
+            alert.id,
             number,
             constants.AlertMessage.Success,
-            constants.AlertType.SMS
+            constants.AlertType.SMS,
+            " "
           );
         })
         .catch(async error => {
           console.log(error);
           await common.saveLog(
             company_code,
-            alert.id,
             " ",
+            alert.id,
             number,
             constants.AlertMessage.Faile,
-            constants.AlertType.SMS
+            constants.AlertType.SMS,
+            error.message
           );
         });
     });
