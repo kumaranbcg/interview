@@ -277,7 +277,8 @@ router.get('/summary', async (req, res) => {
     let estimatedDays = dailyAverageRemoved ? remaining / dailyAverageRemoved : 'N/A';
     estimatedDays = Number(estimatedDays > -1 ? estimatedDays : 0).toFixed(0);
 
-    let recommendedTrucksPerDay = Number((remaining / capacity) / endsBy).toFixed(0);
+    let recommendedTrucks = (remaining / capacity);
+    let recommendedTrucksPerDay = Number(recommendedTrucks / endsBy).toFixed(0);
     let estimatedTrucks = remaining / capacity;
     let estimatedTrucksPerDay = Number(estimatedTrucks / estimatedDays).toFixed(0)
     let todayTrucks = detectionsToday[0].count;
@@ -289,6 +290,7 @@ router.get('/summary', async (req, res) => {
         project,
         cameras,
         remaining,
+        recommendedTrucks,
         recommendedTrucksPerDay,
         recommendedDays: endsBy,
         dailyRemovalCapacity: recommendedTrucksPerDay * capacity,
