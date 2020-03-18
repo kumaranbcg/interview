@@ -130,10 +130,10 @@ router.post("/incoming", async (req, res) => {
             url = 'http://hhdt1.viact.ai/#/user/dashboard/';
             break;
         }
-        alertsResult = await alertUtil.do({
-          image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-          url
-        }, alert);
+        // alertsResult = await alertUtil.do({
+        //   image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
+        //   url
+        // }, alert);
 
         console.log(`Made an alert at ${new Date().toString()}!`);
       } catch (err) {
