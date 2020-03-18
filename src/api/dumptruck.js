@@ -121,8 +121,8 @@ router.get('/progress', async (req, res) => {
       });
 
     var today = moment();
-    var startedBefore = moment([period_from]);
-    var endsBy = moment([period_to]);
+    var startedBefore = moment(period_from);
+    var endsBy = moment(period_to);
 
 
     const trucksTotal = detections[0].count;
@@ -252,8 +252,8 @@ router.get('/summary', async (req, res) => {
       });
 
     var today = moment();
-    var startedBefore = moment([period_from]);
-    var endsBy = moment([period_to]);
+    var startedBefore = moment(period_from);
+    var endsBy = moment(period_to);
 
 
     const trucksTotal = detections[0].count;
@@ -269,19 +269,25 @@ router.get('/summary', async (req, res) => {
     const remaining = target - totalRemoved || 0;
 
 
+    console.log(startedBefore.toString(), endsBy.toString())
     startedBefore = today.diff(startedBefore, 'days') // 1
     endsBy = endsBy.diff(today, 'days') // 1
+    console.log(startedBefore, endsBy)
 
     let estimatedDays = dailyAverageRemoved ? remaining / dailyAverageRemoved : 'N/A';
     estimatedDays = Number(estimatedDays > -1 ? estimatedDays : 0).toFixed(0);
+
+    let recommendedTrucksPerDay = Number((remaining / capacity) / endsBy).toFixed(0);
 
     res
       .send({
         project,
         cameras,
         remaining,
-        requiredTrucksPerDay: endsBy > 0 ? (remaining / capacity) / endsBy : 0,
-        estimatedDate: moment().add('days', estimatedDays),
+        recommendedTrucksPerDay,
+        recommendedDays: endsBy,
+        dailyRemovalCapacity: recommendedTrucksPerDay * capacity,
+        estimatedDate: moment().add(estimatedDays, 'days'),
         estimatedDays,
         trucksTotal,
         activeDays: activeDays.length,
