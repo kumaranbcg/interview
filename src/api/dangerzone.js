@@ -14,7 +14,7 @@ router.get('/machines', async (req, res) => {
     const { engine = 'danger-zone' } = req.query;
     const company_code = req.user.company_code;
 
-    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detectionsview`  WHERE  company_code=:company_code AND alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a WHERE company_code=:company_code and machine_id IS NOT NULL) a GROUP BY a.machine_id ORDER BY time_in ASC, time_out ASC",
+    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detectionsview`  WHERE  detection_company_code=:company_code AND alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a WHERE detection_company_code=:company_code and machine_id IS NOT NULL) a GROUP BY a.machine_id ORDER BY time_in ASC, time_out ASC",
       {
         replacements: { engine, company_code },
         type: QueryTypes.SELECT
@@ -44,7 +44,7 @@ router.get('/cameras', async (req, res) => {
     const { engine = 'danger-zone' } = req.query;
     const company_code = req.user.company_code;
 
-    const cameras = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detectionsview`  WHERE  company_code=:company_code AND alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a where company_code=:company_code) a GROUP BY a.monitor_id ORDER BY time_in ASC, time_out DESC",
+    const cameras = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detectionsview`  WHERE  detection_company_code=:company_code AND alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a where company_code=:company_code) a GROUP BY a.monitor_id ORDER BY time_in ASC, time_out DESC",
       {
         replacements: { engine, company_code },
         type: QueryTypes.SELECT
@@ -182,7 +182,7 @@ router.get('/detections', async (req, res) => {
     const company_code = req.user.company_code;
 
     if (period_from && period_to) {
-      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE company_code=:company_code AND b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to AND video_url IS NOT NULL ORDER BY b.created_at DESC",
+      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE detection_company_code=:company_code AND b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND DATE(b.created_at) BETWEEN :period_from AND :period_to AND video_url IS NOT NULL ORDER BY b.created_at DESC",
         {
           replacements: {
             period_from, period_to,
@@ -192,7 +192,7 @@ router.get('/detections', async (req, res) => {
           type: QueryTypes.SELECT
         });
     } else if (monitor_id) {
-      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE company_code=:company_code AND b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC",
+      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE detection_company_code=:company_code AND b.alert = '1' AND b.monitor_id = :monitor_id AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC",
         {
           replacements: {
             engine, monitor_id, company_code
@@ -201,7 +201,7 @@ router.get('/detections', async (req, res) => {
         });
 
     } else {
-      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE company_code=:company_code AND b.alert = '1' AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC",
+      detections = await sequelize.query("SELECT a.id,a.name,a.machine_id,a.device_id,a.ip,a.config, b.* FROM `monitors` a RIGHT JOIN `detectionsview`  b ON a.id= b.monitor_id WHERE detection_company_code=:company_code AND b.alert = '1' AND engine=:engine AND video_url IS NOT NULL ORDER BY b.created_at DESC",
         {
           replacements: {
             engine, company_code
@@ -237,7 +237,7 @@ router.get('/snapshot/:monitor_id', async (req, res) => {
     const { monitor_id } = req.params;
     const company_code = req.user.company_code;
 
-    const detections = await sequelize.query("SELECT * FROM `detectionsview`  WHERE  company_code=:company_code AND  image_url IS NOT NULL AND monitor_id = :monitor_id and image_url IS NOT NULL ORDER BY created_at DESC LIMIT 1",
+    const detections = await sequelize.query("SELECT * FROM `detectionsview`  WHERE  detection_company_code=:company_code AND  image_url IS NOT NULL AND monitor_id = :monitor_id and image_url IS NOT NULL ORDER BY created_at DESC LIMIT 1",
       {
         replacements: {
           monitor_id,
