@@ -279,7 +279,7 @@ router.get('/summary', async (req, res) => {
 
     let recommendedTrucksPerDay = Number((remaining / capacity) / endsBy).toFixed(0);
     let estimatedTrucks = remaining / capacity;
-    let estimatedTrucksPerDay = estimatedTrucks / estimatedDays;
+    let estimatedTrucksPerDay = Number(estimatedTrucks / estimatedDays).toFixed(0)
     let todayTrucks = detectionsToday[0].count;
     let todayRemoved = todayTrucks * capacity;
     let todayRemovedPercentage = Number(target ? todayRemoved / target * 100 : todayRemoved).toFixed(0);
