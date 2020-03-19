@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const uuidv4 = require("uuid/v4");
-const fs = require('fs');
-const path = require('path');
+
+const URL = `http://0.0.0.0:${process.env.PORT || 3000}`;
+var socket = require('socket.io-client')(URL);
+socket.on('connect', async () => {
+  socket.emit('internal-socket');
+});
 
 const { AlertLog, Alert, Monitor, Detection, Projects, SocketLog } = require("../lib/db");
 
@@ -139,6 +143,8 @@ router.post("/incoming", async (req, res) => {
       } catch (err) {
         console.log("Alert error");
         console.log(err.message);
+      } finally {
+        socket.emit('new-detection');
       }
     }
 

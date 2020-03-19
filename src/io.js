@@ -13,6 +13,31 @@ module.exports = server => {
     io.on("connection", async socket => {
       let monitor_id;
 
+
+      socket.on('internal-socket', () => {
+        console.log('connected with internal socket');
+
+        let now = new Date().getDay();
+
+        // Emit when a server restart
+        socket.broadcast.emit('new-detection')
+        setInterval(() => {
+          const current = new Date().getDay();
+          if (current != now) {
+            console.log(`Day changed from ${now} to ${current}`)
+            now = current;
+            // Emit when day changes
+            socket.broadcast.emit('new-detection')
+          }
+        }, 1000);
+      })
+
+
+      socket.on('new-detection', () => {
+        // Emit when a new detection arrives from internal socket
+        socket.broadcast.emit('new-detection');
+      })
+
       socket.on('disconnect', async () => {
         console.log("LOG: just disconnected: " + socket.id)
         const time_out = moment().toDate();
@@ -68,22 +93,6 @@ module.exports = server => {
           }
         }
       })
-
-      // socket.on("pong", async () => {
-      //   console.error('pong');
-      //   if (monitor_id) {
-      //     const time_out = moment().toDate();
-      //     await Monitor.update({
-      //       time_out
-      //     }, {
-      //       where: { id: monitor_id }
-      //     });
-      //     setTimeout(() => {
-      //       socket.emit('ping', '');
-      //     }, 5000);
-      //   }
-
-      // });
 
       socket.on("get-zoom", async data => {
         const output = await ZoomConfig.findOne({
