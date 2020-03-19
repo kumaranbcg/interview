@@ -4,7 +4,7 @@ const axios = require('axios').default;
 socket.on('connect', async () => {
   console.log('connected')
   // Initialize Monitor ID 
-  const monitor_id = 'AHt7TLfXU'
+  const monitor_id = 'AkC3l7VPe'
   // Take Socket ID and store for passing in detection
   const socket_id = socket.id;
 
@@ -49,8 +49,8 @@ socket.on('connect', async () => {
       "socket_id": socket_id,
       "video_url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
       "image_url": "https://media.gettyimages.com/photos/high-angle-view-of-people-on-street-picture-id973190966?s=2048x2048"
-    }).catch(c)
-  }, process.env.TIMEOUT || 60000)
+    }).catch(console.error)
+  }, process.env.TIMEOUT || 30000)
 
 });
 
