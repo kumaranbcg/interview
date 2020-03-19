@@ -36,7 +36,7 @@ router.get('/camera-list', async (req, res) => {
         target: 1
       }
     }
-    console.log(project,req.user.company_code)
+    console.log(project, req.user.company_code)
 
     const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where company_code= :company_code AND d.alert = '1' AND engine=:engine AND DATE(d.created_at) BETWEEN :period_from AND :period_to  GROUP BY d.monitor_id",
       {
@@ -68,7 +68,7 @@ router.get('/progress', async (req, res) => {
 
     let project = await Projects.findOne({
       where: {
-       company_code: [req.user.company_code],
+        company_code: [req.user.company_code],
         [Op.and]: [{
           period_from: {
             [Op.lte]: moment().format(DATE_FORMAT)
@@ -186,7 +186,7 @@ router.get('/summary', async (req, res) => {
 
     let project = await Projects.findOne({
       where: {
-       company_code: [req.user.company_code],
+        company_code: [req.user.company_code],
         [Op.and]: [{
           period_from: {
             [Op.lte]: moment().format(DATE_FORMAT)
@@ -246,6 +246,13 @@ router.get('/summary', async (req, res) => {
     });
 
 
+    const detectionsByDate = await sequelize.query("SELECT a.date, coalesce(b.count,0) as count FROM dates a  LEFT JOIN (SELECT DATE(created_at) as date,COUNT(*) as count FROM detectionsview where detection_company_code=:company_code AND engine=:engine GROUP by DATE(created_at) ) b ON a.date = b.date WHERE DATE(a.date) BETWEEN :period_from AND :period_to ORDER BY a.date", {
+      replacements: { period_from, period_to, engine, company_code },
+      type: QueryTypes.SELECT
+    });
+
+
+
     const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND engine=:engine GROUP BY d.monitor_id",
       {
         replacements: { engine, company_code },
@@ -286,6 +293,12 @@ router.get('/summary', async (req, res) => {
     let todayRemoved = todayTrucks * capacity;
     let todayRemovedPercentage = Number(target ? todayRemoved / target * 100 : todayRemoved).toFixed(0);
 
+    let dailyAverageRemovedPercentage = 0;
+    detectionsByDate.foReac(obj => {
+      dailyAverageRemovedPercentage += Number((obj.count * capacity / target) * 100).toFixed(0);
+      dailyAverageRemovedPercentage /= detectionsByDate.length;
+    })
+
     res
       .send({
         project,
@@ -302,6 +315,7 @@ router.get('/summary', async (req, res) => {
         todayTrucks,
         todayRemoved,
         todayRemovedPercentage,
+        dailyAveragePercentage,
         trucksTotal,
         activeDays: activeDays.length,
         totalRemoved,
@@ -450,7 +464,7 @@ router.get('/soil-removed', async (req, res) => {
 
     let project = await Projects.findOne({
       where: {
-       company_code: [req.user.company_code],
+        company_code: [req.user.company_code],
         [Op.and]: [{
           period_from: {
             [Op.lte]: moment().format(DATE_FORMAT)
