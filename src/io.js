@@ -19,23 +19,21 @@ module.exports = server => {
 
         let now = new Date().getDay();
 
-        // Emit when a server restart
-        socket.broadcast.emit('new-detection')
         setInterval(() => {
           const current = new Date().getDay();
           if (current != now) {
             console.log(`Day changed from ${now} to ${current}`)
             now = current;
             // Emit when day changes
-            socket.broadcast.emit('new-detection')
+            socket.broadcast.emit('new-detection', { engine: 'date-change', monitor_name: 'Date change refresh'})
           }
         }, 1000);
       })
 
 
-      socket.on('new-detection', () => {
+      socket.on('new-detection', data => {
         // Emit when a new detection arrives from internal socket
-        socket.broadcast.emit('new-detection');
+        socket.broadcast.emit('new-detection', data);
       })
 
       socket.on('disconnect', async () => {

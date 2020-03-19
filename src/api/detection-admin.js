@@ -63,8 +63,10 @@ router.post("/", async (req, res, next) => {
 });
 
 router.post("/incoming", async (req, res) => {
+  const { alert = "Y", timestamp = new Date(), monitor_id, engine = "helmet" } = req.body;
+  let monitor = { name: monitor_id };
+
   try {
-    const { alert = "Y", timestamp = new Date(), monitor_id, engine = "helmet" } = req.body;
     const current_date = moment(new Date()).format('YYYY-MM-DD')
 
     if (!monitor_id) {
@@ -88,6 +90,7 @@ router.post("/incoming", async (req, res) => {
 
 
     const project = await Projects.findOne(query)
+    monitor = await Monitor.findOne({ where: { id: monitor_id } })
 
     const newDetection = {
       ...req.body,
@@ -144,7 +147,7 @@ router.post("/incoming", async (req, res) => {
         console.log("Alert error");
         console.log(err.message);
       } finally {
-        socket.emit('new-detection');
+        socket.emit('new-detection', { engine, monitor_name: monitor.name });
       }
     }
 
