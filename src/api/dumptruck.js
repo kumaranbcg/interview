@@ -294,7 +294,7 @@ router.get('/summary', async (req, res) => {
     let todayRemovedPercentage = Number(target ? todayRemoved / target * 100 : todayRemoved).toFixed(0);
 
     let dailyAverageRemovedPercentage = 0;
-    detectionsByDate.foReac(obj => {
+    detectionsByDate.forEach(obj => {
       dailyAverageRemovedPercentage += Number((obj.count * capacity / target) * 100).toFixed(0);
       dailyAverageRemovedPercentage /= detectionsByDate.length;
     })
