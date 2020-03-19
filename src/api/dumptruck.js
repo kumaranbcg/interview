@@ -295,9 +295,12 @@ router.get('/summary', async (req, res) => {
 
     let dailyAveragePercentage = 0;
     detectionsByDate.forEach(obj => {
-      dailyAveragePercentage += Number((obj.count * capacity / target) * 100).toFixed(0);
-      dailyAveragePercentage /= detectionsByDate.length;
+      dailyAveragePercentage += Number((obj.count * capacity / target) * 100);
+      console.log(dailyAveragePercentage)
+
     })
+
+    dailyAveragePercentage /= activeDays.length;
 
     res
       .send({
@@ -315,9 +318,9 @@ router.get('/summary', async (req, res) => {
         todayTrucks,
         todayRemoved,
         todayRemovedPercentage,
-        // dailyAveragePercentage,
-        trucksTotal,
+        dailyAveragePercentage: Number(dailyAveragePercentage).toFixed(0),
         activeDays: activeDays.length,
+        trucksTotal,
         totalRemoved,
         trucksDailyAverage,
         dailyAverageRemoved: Number(dailyAverageRemoved).toFixed(0),
