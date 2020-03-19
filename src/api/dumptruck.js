@@ -315,7 +315,7 @@ router.get('/summary', async (req, res) => {
         todayTrucks,
         todayRemoved,
         todayRemovedPercentage,
-        dailyAveragePercentage,
+        // dailyAveragePercentage,
         trucksTotal,
         activeDays: activeDays.length,
         totalRemoved,
