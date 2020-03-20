@@ -378,12 +378,12 @@ router.get('/truck-activity', async (req, res) => {
     });
 
 
-    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detectionsview where detection_company_code=:company_code AND  engine=:engine AND DATE(created_at) = CURDATE() GROUP by HOUR(created_at) AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
+    const detectionsByHourToday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detectionsview where detection_company_code=:company_code AND  engine=:engine AND DATE(created_at) = CURDATE() AND (:monitor_id='' OR monitor_id=:monitor_id)  GROUP by HOUR(created_at) ORDER BY created_at", {
       replacements: { engine, monitor_id, company_code },
       type: QueryTypes.SELECT
     });
 
-    const detectionsByHourYesterday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detectionsview where detection_company_code=:company_code AND  engine=:engine AND DATE(created_at) = CURDATE()-1 GROUP by HOUR(created_at) AND (:monitor_id='' OR monitor_id=:monitor_id) ORDER BY created_at", {
+    const detectionsByHourYesterday = await sequelize.query("SELECT HOUR(created_at) as hour,COUNT(*) as count FROM detectionsview where detection_company_code=:company_code AND  engine=:engine AND DATE(created_at) = CURDATE()-1  AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by HOUR(created_at) ORDER BY created_at", {
       replacements: { engine, monitor_id, company_code },
       type: QueryTypes.SELECT
     });
