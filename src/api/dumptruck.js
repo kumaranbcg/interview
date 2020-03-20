@@ -181,23 +181,27 @@ router.get('/progress', async (req, res) => {
 router.get('/summary', async (req, res) => {
   try {
 
-    const { engine = 'dump-truck' } = req.query;
+    const { engine = 'dump-truck', showtoday = true } = req.query;
     const company_code = req.user.company_code;
 
-    let project = await Projects.findOne({
-      where: {
-        company_code: [req.user.company_code],
-        [Op.and]: [{
-          period_from: {
-            [Op.lte]: moment().format(DATE_FORMAT)
-          }
-        }, {
-          period_to: {
-            [Op.gte]: moment().format(DATE_FORMAT)
-          }
-        }]
-      }
-    })
+    let project;
+
+    if (!showtoday) {
+     project = await Projects.findOne({
+        where: {
+          company_code: [req.user.company_code],
+          [Op.and]: [{
+            period_from: {
+              [Op.lte]: moment().format(DATE_FORMAT)
+            }
+          }, {
+            period_to: {
+              [Op.gte]: moment().format(DATE_FORMAT)
+            }
+          }]
+        }
+      })
+    }
     if (!project) {
       project = {
         period_from: moment().format(DATE_FORMAT),
