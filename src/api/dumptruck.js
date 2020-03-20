@@ -181,13 +181,13 @@ router.get('/progress', async (req, res) => {
 router.get('/summary', async (req, res) => {
   try {
 
-    const { engine = 'dump-truck', showtoday = true } = req.query;
+    const { engine = 'dump-truck', today = true } = req.query;
     const company_code = req.user.company_code;
 
     let project;
 
-    if (!showtoday) {
-     project = await Projects.findOne({
+    if (today) {
+      project = await Projects.findOne({
         where: {
           company_code: [req.user.company_code],
           [Op.and]: [{
