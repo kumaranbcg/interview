@@ -226,7 +226,7 @@ router.get('/summary', async (req, res) => {
       replacements: { period_from: project.period_from, period_to: project.period_to, company_code },
       type: QueryTypes.SELECT
     });
-    const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detectionsview` WHERE detection_company_code=:company_code AND alert = '1' AND video_url IS NOT NULL group by engine;", {
+    const data = await sequelize.query("SELECT engine as name, COUNT(*) as count FROM `detectionsview` WHERE detection_company_code=:company_code AND alert = '1' group by engine;", {
       type: QueryTypes.SELECT,
       replacements: { company_code },
     });
