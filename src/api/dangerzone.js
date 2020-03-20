@@ -14,7 +14,7 @@ router.get('/machines', async (req, res) => {
     const { engine = 'danger-zone' } = req.query;
     const company_code = req.user.company_code;
 
-    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detectionsview`  WHERE  detection_company_code=:company_code AND alert = '1' AND engine=:engine AND monitor_id = a.id) as count FROM `monitors` a WHERE company_code=:company_code and machine_id IS NOT NULL) a GROUP BY a.machine_id ORDER BY time_in ASC, time_out ASC",
+    const machines = await sequelize.query("SELECT *, SUM(count) as count FROM (SELECT a.id as monitor_id,a.name,a.machine_id,a.device_id,a.ip, a.time_in, a.time_out,(SELECT COUNT(*) FROM `detectionsview`  WHERE  detection_company_code=:company_code AND alert = '1' AND engine=:engine AND monitor_id = a.id AND created = CURDATE()) as count FROM `monitors` a WHERE company_code=:company_code and machine_id IS NOT NULL) a GROUP BY a.machine_id ORDER BY time_in ASC, time_out ASC",
       {
         replacements: { engine, company_code },
         type: QueryTypes.SELECT
