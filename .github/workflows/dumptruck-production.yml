@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: mr-smithers-excellent/docker-build-push@v2
       with:
-        image: hhdt1-viact-back-end
+        image: viact/hhdt1-viact-back-end
         registry: 655384763347.dkr.ecr.ap-southeast-1.amazonaws.com
         tag: prod.latest
       env:
