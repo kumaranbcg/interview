@@ -132,23 +132,23 @@ router.get('/device-logs', async (req, res) => {
   try {
 
 
-    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), monitor_id = '', machine_id = '' } = req.query;
+    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), machine_id = '' } = req.query;
 
-    const socketLogs = await sequelize.query("SELECT * FROM device_logs where (:machine_id='' OR machine_id=:machine_id) AND (:monitor_id='' OR monitor_id=:monitor_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
+    const socketLogs = await sequelize.query("SELECT * FROM device_logs where (:machine_id='' OR machine_id=:machine_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
       {
-        replacements: { period_from, period_to, monitor_id, machine_id },
+        replacements: { period_from, period_to, machine_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where  (:machine_id='' OR machine_id=:machine_id) AND (:monitor_id='' OR monitor_id=:monitor_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
+    const socketLogsHourly = await sequelize.query("SELECT * FROM device_logs_hourly where  (:machine_id='' OR machine_id=:machine_id) AND DATE(created_at) BETWEEN :period_from AND :period_to",
       {
-        replacements: { period_from, period_to, monitor_id, machine_id },
+        replacements: { period_from, period_to, machine_id },
         type: QueryTypes.SELECT
       });
 
-    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily_all where  (:machine_id='' OR machine_id IS NULL OR  machine_id=:machine_id) AND (:monitor_id='' OR monitor_id IS NULL OR monitor_id=:monitor_id)  AND date BETWEEN :period_from AND :period_to",
+    const socketLogsDaily = await sequelize.query("SELECT * FROM device_logs_daily_all where  (:machine_id='' OR machine_id IS NULL OR  machine_id=:machine_id) AND date BETWEEN :period_from AND :period_to",
       {
-        replacements: { period_from, period_to, monitor_id, machine_id },
+        replacements: { period_from, period_to, machine_id },
         type: QueryTypes.SELECT
       });
 
