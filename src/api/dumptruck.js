@@ -115,7 +115,7 @@ router.get('/progress', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND DATE(created_at) = CURDATE() AND engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND DATE(d.created_at) = CURDATE() AND engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
       {
         replacements: { engine, company_code },
         type: QueryTypes.SELECT
@@ -257,7 +257,7 @@ router.get('/summary', async (req, res) => {
 
 
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND DATE(created_at) = CURDATE() AND engine=:engine GROUP BY d.monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND DATE(d.created_at) = CURDATE() AND engine=:engine GROUP BY d.monitor_id",
       {
         replacements: { engine, company_code },
         type: QueryTypes.SELECT
@@ -404,7 +404,7 @@ router.get('/truck-activity', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND engine=:engine GROUP BY d.monitor_id  AND DATE(created_at) = CURDATE() ORDER BY monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND engine=:engine GROUP BY d.monitor_id  AND DATE(d.created_at) = CURDATE() ORDER BY monitor_id",
       {
         replacements: { engine, company_code },
         type: QueryTypes.SELECT
@@ -532,7 +532,7 @@ router.get('/soil-removed', async (req, res) => {
       type: QueryTypes.SELECT
     });
 
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND engine=:engine GROUP BY d.monitor_id AND DATE(created_at) = CURDATE()  ORDER BY monitor_id",
+    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND engine=:engine GROUP BY d.monitor_id AND DATE(d.created_at) = CURDATE()  ORDER BY monitor_id",
       {
         replacements: { engine, monitor_id, company_code },
         type: QueryTypes.SELECT
