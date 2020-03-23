@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const uuidv4 = require("uuid/v4");
-const fs = require('fs');
-const path = require('path');
+
+const URL = `http://0.0.0.0:${process.env.PORT || 3000}`;
+var socket = require('socket.io-client')(URL);
+socket.on('connect', async () => {
+  socket.emit('internal-socket');
+});
 
 const { AlertLog, Alert, Monitor, Detection, Projects, SocketLog } = require("../lib/db");
 
@@ -59,8 +63,10 @@ router.post("/", async (req, res, next) => {
 });
 
 router.post("/incoming", async (req, res) => {
+  const { alert = "Y", timestamp = new Date(), monitor_id, engine = "helmet" } = req.body;
+  let monitor = { name: monitor_id };
+
   try {
-    const { alert = "Y", timestamp = new Date(), monitor_id, engine = "helmet" } = req.body;
     const current_date = moment(new Date()).format('YYYY-MM-DD')
 
     if (!monitor_id) {
@@ -84,6 +90,7 @@ router.post("/incoming", async (req, res) => {
 
 
     const project = await Projects.findOne(query)
+    monitor = await Monitor.findOne({ where: { id: monitor_id } })
 
     const newDetection = {
       ...req.body,
@@ -130,15 +137,17 @@ router.post("/incoming", async (req, res) => {
             url = 'http://hhdt1.viact.ai/#/user/dashboard/';
             break;
         }
-        alertsResult = await alertUtil.do({
-          image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-          url
-        }, alert);
+        // alertsResult = await alertUtil.do({
+        //   image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
+        //   url
+        // }, alert);
 
         console.log(`Made an alert at ${new Date().toString()}!`);
       } catch (err) {
         console.log("Alert error");
         console.log(err.message);
+      } finally {
+        socket.emit('new-detection', { engine, monitor_name: monitor.name });
       }
     }
 

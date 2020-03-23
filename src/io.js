@@ -12,7 +12,29 @@ module.exports = server => {
 
     io.on("connection", async socket => {
       let monitor_id;
-      socket.emit('ping', '');
+
+
+      socket.on('internal-socket', () => {
+        console.log('connected with internal socket');
+
+        let now = new Date().getDay();
+
+        setInterval(() => {
+          const current = new Date().getDay();
+          if (current != now) {
+            console.log(`Day changed from ${now} to ${current}`)
+            now = current;
+            // Emit when day changes
+            socket.broadcast.emit('new-detection', { engine: 'date-change', monitor_name: 'Date change refresh'})
+          }
+        }, 1000);
+      })
+
+
+      socket.on('new-detection', data => {
+        // Emit when a new detection arrives from internal socket
+        socket.broadcast.emit('new-detection', data);
+      })
 
       socket.on('disconnect', async () => {
         console.log("LOG: just disconnected: " + socket.id)
@@ -30,6 +52,7 @@ module.exports = server => {
           }, {
             where: { id: monitor_id }
           });
+          socket.broadcast.emit('status-change');
         }
       })
 
@@ -39,6 +62,8 @@ module.exports = server => {
 
           monitor_id = data.monitor_id || data.id;;
           console.log('connected', socket.id, data.monitor_id)
+          socket.broadcast.emit('status-change');
+
           const socketLog = await Monitor.findOne({
             where: {
               socket_id: socket.id
@@ -66,22 +91,6 @@ module.exports = server => {
           }
         }
       })
-
-      // socket.on("pong", async () => {
-      //   console.error('pong');
-      //   if (monitor_id) {
-      //     const time_out = moment().toDate();
-      //     await Monitor.update({
-      //       time_out
-      //     }, {
-      //       where: { id: monitor_id }
-      //     });
-      //     setTimeout(() => {
-      //       socket.emit('ping', '');
-      //     }, 5000);
-      //   }
-
-      // });
 
       socket.on("get-zoom", async data => {
         const output = await ZoomConfig.findOne({

@@ -6,6 +6,9 @@ The user authentication is made using cognito and permissions are being managed 
 
 `https://documenter.getpostman.com/view/1901360/SWTK4u6g`
 
+# Socket For UI
+status-change whenever a device connects or disconnects. this event  should be handled by frontend and make a api call to update machines list
+
 # Camera for Socket/General API
 
 1. Register Camera in POST call to `/api/monitor` endpoint

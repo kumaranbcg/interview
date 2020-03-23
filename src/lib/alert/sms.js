@@ -1,5 +1,7 @@
 var dotenv = require("dotenv");
 const axios = require("axios");
+const common = require("./common");
+const constants = require("../../configs/constants");
 //dotenv.config({ path: "../../../.env" });
 
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -9,7 +11,7 @@ const authToken = "6f05338cdc990f3ee3de7b0e23a27eff";
 const client = require("twilio")(accountSid, authToken);
 
 module.exports = {
-  send: async ({ alert, url, phones = ["+85259231994"] }) => {
+  send: async ({ alert, url, phones = ["+85259231994"], company_code }) => {
     let detectionType = "";
     switch (alert.engine) {
       case "helmet":
@@ -23,6 +25,9 @@ module.exports = {
         break;
       case "dump-truck":
         detectionType = "Dump truck";
+        break;
+      default:
+        detectionType = "None";
         break;
     }
     let shortenUrl;
@@ -43,7 +48,7 @@ module.exports = {
       .then(response => {
         shortenUrl = response.data.link;
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log("Post Error : " + error);
       });
     //let phoneNumber = "+852" + alert.output_address;
@@ -61,7 +66,30 @@ module.exports = {
           from: "+13526334065",
           to: number
         })
-        .then(message => console.log(message.sid));
+        .then(async message => {
+          console.log(message.sid);
+          await common.saveLog(
+            company_code,
+            " ",
+            alert.id,
+            number,
+            constants.AlertMessage.Success,
+            constants.AlertType.SMS,
+            " "
+          );
+        })
+        .catch(async error => {
+          console.log(error);
+          await common.saveLog(
+            company_code,
+            " ",
+            alert.id,
+            number,
+            constants.AlertMessage.Faile,
+            constants.AlertType.SMS,
+            error.message
+          );
+        });
     });
     return;
   }
