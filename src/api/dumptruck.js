@@ -12,11 +12,11 @@ const { Op } = require("sequelize");
 
 router.get('/camera-list', async (req, res) => {
   try {
-    const { engine = 'dump-truck', period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT) } = req.query;
+    const { engine = 'dump-truck' } = req.query;
 
-    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where company_code= :company_code AND engine=:engine AND DATE(d.created_at) BETWEEN :period_from AND :period_to  GROUP BY d.monitor_id order by d.monitor_id",
+    const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where company_code= :company_code AND engine=:engine AND DATE(d.created_at) = CURDATE() GROUP BY d.monitor_id order by d.monitor_id",
       {
-        replacements: { period_from, period_to, engine, company_code: req.user.company_code },
+        replacements: { engine, company_code: req.user.company_code },
         type: QueryTypes.SELECT
       });
 
@@ -90,12 +90,6 @@ router.get('/progress', async (req, res) => {
       replacements: { engine, company_code },
       type: QueryTypes.SELECT
     });
-
-    const cameras = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where detection_company_code=:company_code AND d.alert = '1' AND DATE(d.created_at) = CURDATE() AND engine=:engine GROUP BY d.monitor_id   ORDER BY monitor_id",
-      {
-        replacements: { engine, company_code },
-        type: QueryTypes.SELECT
-      });
 
     var today = moment();
     var startedBefore = moment(period_from);
@@ -329,6 +323,21 @@ router.get('/truck-activity', async (req, res) => {
     var yesterday = moment().subtract(1, 'days').format(DATE_FORMAT)
     const company_code = req.user.company_code;
 
+    let project = await Projects.findOne({
+      where: {
+        company_code: [req.user.company_code],
+        [Op.and]: [{
+          period_from: {
+            [Op.lte]: moment().format(DATE_FORMAT)
+          }
+        }, {
+          period_to: {
+            [Op.gte]: moment().format(DATE_FORMAT)
+          }
+        }]
+      }
+    })
+
     const { engine = 'dump-truck', period_from = yesterday, period_to = today, monitor_id = '' } = req.query;
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where detection_company_code=:company_code AND engine=:engine AND (:monitor_id='' OR monitor_id=:monitor_id)", {
@@ -406,6 +415,7 @@ router.get('/truck-activity', async (req, res) => {
 
     res
       .send({
+        project,
         trucksByHourDaily: detectionsByHourDaily,
         trucksByHourToday: detectionsByHourToday,
         cameras,
