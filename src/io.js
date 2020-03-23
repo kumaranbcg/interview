@@ -13,10 +13,10 @@ module.exports = server => {
     io.on("connection", async socket => {
       let monitor_id;
 
-      socket.broadcast.emit('new-detection')
 
       socket.on('internal-socket', () => {
         console.log('connected with internal socket');
+        socket.broadcast.emit('new-detection')
 
         let now = new Date().getDay();
 
