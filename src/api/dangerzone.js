@@ -385,4 +385,38 @@ router.get('/alert-distribution', async (req, res) => {
 
 
 
+router.get('/device-logs-hourly', async (req, res) => {
+  try {
+
+
+    const { period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT), machine_id = '' } = req.query;
+
+    const data = await sequelize.query("select * from device_logs_hourly_seperated WHERE DATE(created_at) BETWEEN :period_from AND :period_to AND machine_id=:machine_id ORDER BY created_at ASC",
+      {
+        replacements: {
+          period_from, period_to,
+          machine_id
+        },
+        type: QueryTypes.SELECT
+      });
+
+    res
+      .send(data)
+      .status(200)
+      .end();
+
+  } catch (err) {
+    console.error(err)
+    res
+      .status(400)
+      .send({
+        message: err.message
+      })
+      .end();
+  }
+});
+
+
+
+
 module.exports = router;
