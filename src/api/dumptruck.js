@@ -12,35 +12,13 @@ const { Op } = require("sequelize");
 
 router.get('/camera-list', async (req, res) => {
   try {
-    const { engine = 'dump-truck' } = req.query;
+    const { engine = 'dump-truck', period_from = moment().format(DATE_FORMAT), period_to = moment().format(DATE_FORMAT) } = req.query;
 
-    let project = await Projects.findOne({
-      where: {
-        company_code: [req.user.company_code],
-        [Op.and]: [{
-          period_from: {
-            [Op.lte]: moment().format(DATE_FORMAT)
-          }
-        }, {
-          period_to: {
-            [Op.gte]: moment().format(DATE_FORMAT)
-          }
-        }]
-      }
-    })
-    if (!project) {
-      project = {
-        period_from: moment().format(DATE_FORMAT),
-        period_to: moment().format(DATE_FORMAT),
-        capacity: 1,
-        target: 1
-      }
-    }
-    console.log(project, req.user.company_code)
+    let project
 
     const data = await sequelize.query("SELECT c.id, c.name, COUNT(*) as alerts FROM `monitors` c JOIN `detectionsview` d ON c.id=d.monitor_id where company_code= :company_code AND d.alert = '1' AND engine=:engine AND DATE(d.created_at) BETWEEN :period_from AND :period_to  GROUP BY d.monitor_id",
       {
-        replacements: { period_from: project.period_from, period_to: project.period_to, engine, company_code: req.user.company_code },
+        replacements: { period_from, period_to, engine, company_code: req.user.company_code },
         type: QueryTypes.SELECT
       });
 
@@ -518,7 +496,7 @@ router.get('/soil-removed', async (req, res) => {
 
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where detection_company_code=:company_code AND engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
-      replacements: { period_from:project.period_from, period_to:project.period_to, engine, monitor_id, company_code },
+      replacements: { period_from: project.period_from, period_to: project.period_to, engine, monitor_id, company_code },
       type: QueryTypes.SELECT
     });
 
