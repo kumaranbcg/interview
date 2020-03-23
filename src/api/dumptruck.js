@@ -399,7 +399,7 @@ router.get('/truck-activity', async (req, res) => {
 
 
 
-    const detectionsByHourDaily = await sequelize.query("SELECT a.date,coalesce(b.hour,0) as hour,sum(b.count) as count, round(avg(b.count),0) as average  FROM dates a  LEFT JOIN (SELECT date, hour, count FROM(SELECT DATE(created_at) as date, HOUR(created_at) as hour, COUNT(*) as count FROM detectionsview WHERE detection_company_code=:company_code AND engine = :engine AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at), HOUR(created_at)) as summary) b ON a.date = b.date where DATE(a.date) between :period_from and :period_to group by date;", {
+    const detectionsByHourDaily = await sequelize.query("SELECT a.date,coalesce(b.hour,0) as hour,sum(b.count) as count, round(avg(b.count),0) as average  FROM dates a  LEFT JOIN (SELECT date, hour, count FROM(SELECT DATE(created_at) as date, HOUR(created_at) as hour, COUNT(*) as count FROM detectionsview WHERE detection_company_code=:company_code AND engine = :engine AND (:monitor_id='' OR monitor_id=:monitor_id) GROUP by DATE(created_at), HOUR(created_at)) as summary) b ON a.date = b.date where DATE(a.date) between :period_from and :period_to group by date order by date;", {
       replacements: { period_from, period_to, engine, monitor_id, company_code },
       type: QueryTypes.SELECT
     });
