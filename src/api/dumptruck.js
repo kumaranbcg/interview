@@ -518,7 +518,7 @@ router.get('/soil-removed', async (req, res) => {
 
 
     const detections = await sequelize.query("SELECT COUNT(*) as count FROM detectionsview where detection_company_code=:company_code AND engine=:engine AND DATE(created_at) BETWEEN :period_from AND :period_to  AND (:monitor_id='' OR monitor_id=:monitor_id)  ORDER BY created_at", {
-      replacements: { period_from, period_to, engine, monitor_id, company_code },
+      replacements: { period_from:project.period_from, period_to:project.period_to, engine, monitor_id, company_code },
       type: QueryTypes.SELECT
     });
 
