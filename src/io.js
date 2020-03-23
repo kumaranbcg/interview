@@ -16,6 +16,7 @@ module.exports = server => {
 
       socket.on('internal-socket', () => {
         console.log('connected with internal socket');
+        socket.broadcast.emit('new-detection', { engine: 'restart', monitor_name: 'server'})
 
         let now = new Date().getDay();
 
