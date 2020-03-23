@@ -563,7 +563,10 @@ router.get('/soil-removed', async (req, res) => {
         totalRemoved: trucksTotal * capacity,
         todayRemoved: trucksTotalToday * capacity,
 
-        detectionsByDate,
+        detectionsByDate: detectionsByDate.map(obj => {
+          obj.removed = capacity ? obj.count * capacity : obj.count;
+          return obj;
+        }),
         detectionsByHourToday: detectionsByHourToday.map(obj => {
           obj.removed = capacity ? obj.count * capacity : obj.count;
           return obj;
