@@ -79,6 +79,10 @@ router.post("/", async (req, res, next) => {
           Value: firstname
         },
         {
+          Name: 'custom:company_code',
+          Value: req.user.company_code
+        },
+        {
           Name: 'custom:surname',
           Value: surname
         },
