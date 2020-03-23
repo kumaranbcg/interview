@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true
       },
-      user_id: {
+      company_code: {
         type: DataTypes.STRING,
         allowNull: false
       },
@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       socket_id: {
         type: DataTypes.STRING
+      },
+      ys_token: {
+        type: DataTypes.STRING,
+        allowNull: true
       },
       time_in: {
         type: DataTypes.DATE
@@ -106,7 +110,6 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Monitor.associate = models => {
-    models.Monitor.belongsTo(models.User);
     models.Monitor.hasMany(models.Detection, {
       as: "detection"
     });

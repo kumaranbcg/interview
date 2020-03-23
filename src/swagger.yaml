@@ -21,70 +21,6 @@ schemes:
   - https
   - http
 paths:
-  # /alert:
-  #   get:
-  #     tags:
-  #     - "alert"
-  #     description: "alert"
-  #     produces:
-  #     - "application/xml"
-  #     - "application/json"
-  #     parameters:
-  #     - name: "username"
-  #       in: "query"
-  #       description: "user_id"
-  #       required: true
-  #       type: "string"
-  #     - name: "monitor_id"
-  #       in: "query"
-  #       description: "monitor_id"
-  #       type: "string"
-  #     - name: "limit"
-  #       in: "query"
-  #       description: "limit"
-  #       type: "string"
-  #     - name: "orderBy"
-  #       in: "query"
-  #       description: "order"
-  #       type: "string"
-  #     responses:
-  #       200:
-  #         description: "success"
-  #         schema:
-  #           $ref: "#/definitions/alert"
-  #       400:
-  #         description: "err"
-  # /alert-log:
-  #   get:
-  #     tags:
-  #     - "alert-log"
-  #     description: "alert-log"
-  #     produces:
-  #     - "application/xml"
-  #     - "application/json"
-  #     parameters:
-  #     - name: "username"
-  #       in: "query"
-  #       description: "user_id"
-  #       required: true
-  #       type: "string"
-  #     - name: "limit"
-  #       in: "query"
-  #       description: "limit"
-  #       required: true
-  #       type: "string"
-  #     - name: "orderBy"
-  #       in: "query"
-  #       description: "order"
-  #       required: true
-  #       type: "string"
-  #     responses:
-  #       200:
-  #         description: "success"
-  #         schema:
-  #           $ref: "#/definitions/alert-log"
-  #       400:
-  #         description: "err"
   /configuration:
     get:
       tags:
@@ -276,9 +212,9 @@ paths:
       - "application/xml"
       - "application/json"
       parameters:
-      - name: "user_id"
+      - name: "company_code"
         in: "query"
-        description: "user_id"
+        description: "company_code"
         required: true
         type: "string"
       responses:
@@ -319,9 +255,9 @@ paths:
       - "application/xml"
       - "application/json"
       parameters:
-      - name: "user_id"
+      - name: "company_code"
         in: "query"
-        description: "user_id"
+        description: "company_code"
         required: true
         type: "string"
       responses:
@@ -686,7 +622,7 @@ definitions:
       id:
         type: "integer"
         format: "int64"
-      user_id:
+      company_code:
         type: "integer"
         format: "int64"
       name:

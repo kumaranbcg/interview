@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       underscored: true,
-      tableName: "detections"
+      tableName: "alert_logs"
       // options
     }
   );
