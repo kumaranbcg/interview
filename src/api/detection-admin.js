@@ -104,24 +104,11 @@ router.post("/incoming", async (req, res) => {
     await Detection.create(newDetection);
     let alertsResult = {};
 
-    if (newDetection.alert) {
+    if (newDetection.alert && engine != 'helmet') {
 
       console.log('alert detected')
 
       try {
-        const alert = await Detection.findOne({
-          where: {
-            id: newDetection.id,
-          },
-          include: [
-            {
-              model: Monitor,
-              required: true,
-              as: "monitor"
-            }
-          ]
-        });
-
         await AlertLog.create({
           id: uuidv4(),
         });
@@ -137,11 +124,6 @@ router.post("/incoming", async (req, res) => {
             url = 'http://hhdt1.viact.ai/#/user/dashboard/';
             break;
         }
-        // alertsResult = await alertUtil.do({
-        //   image: `${MEDIA_URL}/alerts/${monitor_id}/${uuid}.jpg`,
-        //   url
-        // }, alert);
-
         console.log(`Made an alert at ${new Date().toString()}!`);
       } catch (err) {
         console.log("Alert error");

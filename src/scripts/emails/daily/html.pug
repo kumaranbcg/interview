@@ -3,6 +3,7 @@ style(type='text/css').
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     padding: 30px 15px;
     margin-bottom:15px;
+    border:1px solid grey;
   }
 
   .email-title {
@@ -15,15 +16,24 @@ style(type='text/css').
   }
 
   .card-info-line {
+    display:-webkit-flex;
     display:flex;
     flex-direction:row;
     justify-content:space-between;
     align-items:center;
     margin:5px 0;
+    font-size: 1em;
+    justify-content: space-between;
   }
+
+  .card-info-line > div{
+    width:150px;
+  }
+  
 
   .card-image {
     width:100%;
+    margin: 15px auto;
   }
 
   .center {
@@ -45,25 +55,24 @@ style(type='text/css').
     margin: 15px auto;
   }
 
-.email-title Daily Report For #{data.date}
-.card 
-  .card-title Monitor Information
-  .card-info-line 
-    div Monitor Name
-    b #{monitor.name}
-  .card-info-line 
-    div Engines
-    b Helmet Detections
+
+.email-title Alert for #{alert.monitor.name}
 
 .card 
-  .card-title Report Summary
+  .card-title Alert Detail
   .card-info-line 
-    div Without Helmet Occasions
-    b #{data.noHelmetCount}
+    div Alert At
+    b #{alert.createdAt}
+  .card-info-line 
+    div Monitor Name
+    b #{alert.monitor.name}
+  .card-info-line
+    div Event
+    b #{alert.detectionType}
 
 .center 
   a(href=`${url}`) 
-    button.view-on-site View On Site
+    button.view-on-site View Detail On Site
 
 include ../footer.pug
 
