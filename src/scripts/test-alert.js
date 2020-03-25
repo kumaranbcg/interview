@@ -55,5 +55,4 @@ alert.do(
     url: "http://http://hhdt1.viact.ai/#/user/alert-detail/8b8901b2-b58d-4823-8bd1-a88f0d2b0f79",
     title: "Alert for HHDT1",
     subtitle: "Check the alert"
-  }
-);
+  })

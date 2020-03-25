@@ -1,5 +1,6 @@
 var dotenv = require("dotenv");
 const axios = require("axios");
+const savelogs = require("../../api/savelog")
 //dotenv.config({ path: "../../../.env" });
 
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -60,7 +61,28 @@ module.exports = {
           from: "+13526334065",
           to: number
         })
-        .then(message => console.log(message.sid));
+        .then(async (message) => {
+          console.log(message.sid)
+          let body = {
+            alert_id : alert.id,
+            detection_id :"fe9fcabf-1f3a-4631-a9d8-4f7e6103487c",
+            user_id:"b5a3fc33-deec-4509-9f0d-72be1ca877b6",
+            output_address:alert.output_address,
+            output_detail : 'Send Success '+message.sid,
+            output_type : alert.output_type
+          }
+          await savelogs.save(body)
+        }).catch(async ()=>{
+          let body = {
+            alert_id : alert.id,
+            detection_id :"fe9fcabf-1f3a-4631-a9d8-4f7e6103487c",
+            user_id:"b5a3fc33-deec-4509-9f0d-72be1ca877b6",
+            output_address:alert.output_address,
+            output_detail : 'Send Failed',
+            output_type : alert.output_type
+          }
+          await savelogs.save(body)
+        });
     });
     return;
   }

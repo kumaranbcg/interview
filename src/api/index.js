@@ -20,7 +20,7 @@ const userRouter = require("./user");
 const dashboardRouter = require("./dashboard");
 const projectsRouter = require("./projects");
 const companysRouter = require("./company");
-
+const savelogs = require("./savelog");
 // define the home page route
 router.get("/", function (req, res) {
   console.log(req.query);
@@ -60,7 +60,9 @@ router.use(
   configurationAdminRouter
 );
 
-
+router.post("/savelog", (req, res) => {
+  res.status(200).end();
+});
 router.use("/company", authentication.verify, companysRouter);
 
 router.post("/local", authentication.verifyMachine, (req, res) => {
